@@ -3,14 +3,16 @@
 package resolver
 
 import (
+	"context"
+
 	"github.com/graph-gophers/graphql-go"
 	"github.com/sylabs/compute-service/internal/pkg/model"
 )
 
 // JobPersister is the interface by which jobs are persisted.
 type JobPersister interface {
-	CreateJob(name string) (*model.Job, error)
-	GetJob(id string) (*model.Job, error)
+	CreateJob(context.Context, model.Job) (model.Job, error)
+	GetJob(context.Context, string) (model.Job, error)
 }
 
 // JobResolver resolves a job.

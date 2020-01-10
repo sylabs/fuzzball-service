@@ -10,9 +10,9 @@ import (
 func (r Resolver) Job(ctx context.Context, args struct {
 	ID string
 }) (*JobResolver, error) {
-	j, err := r.p.GetJob(args.ID)
+	j, err := r.p.GetJob(ctx, args.ID)
 	if err != nil {
 		return nil, err
 	}
-	return &JobResolver{j}, nil
+	return &JobResolver{&j}, nil
 }

@@ -4,6 +4,6 @@ package model
 
 // Job represents a job.
 type Job struct {
-	ID   string
-	Name string
+	ID   string `bson:"_id,omitempty"`
+	Name string `bson:"name"`
 }
