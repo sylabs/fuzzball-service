@@ -7,13 +7,11 @@ import (
 	"net"
 	"net/http"
 
+	"github.com/graph-gophers/graphql-go"
 	"github.com/sirupsen/logrus"
+	"github.com/sylabs/compute-service/internal/pkg/resolver"
+	"github.com/sylabs/compute-service/internal/pkg/schema"
 )
-
-// Persister is the interface by which data is persisted.
-type Persister interface {
-	// TODO: flesh this out with concrete CRUD implementation as that's built.
-}
 
 // Config describes server configuration.
 type Config struct {
@@ -21,7 +19,7 @@ type Config struct {
 	HTTPAddr           string
 	CORSAllowedOrigins []string
 	CORSDebug          bool
-	Persist            Persister
+	Persist            resolver.Persister
 }
 
 // Server contains the state of the server.
@@ -31,7 +29,7 @@ type Server struct {
 	corsDebug          bool
 	httpSrv            *http.Server
 	httpLn             net.Listener
-	persist            Persister
+	schema             *graphql.Schema
 }
 
 // New returns a new Server.
@@ -40,8 +38,14 @@ func New(ctx context.Context, c Config) (s Server, err error) {
 		version:            c.Version,
 		corsAllowedOrigins: c.CORSAllowedOrigins,
 		corsDebug:          c.CORSDebug,
-		persist:            c.Persist,
 	}
+
+	// Initialize GraphQL.
+	schema, err := graphql.ParseSchema(schema.String(), resolver.New(c.Persist))
+	if err != nil {
+		return Server{}, err
+	}
+	s.schema = schema
 
 	// Set up HTTP server.
 	h, err := NewRouter(&s)

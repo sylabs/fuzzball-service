@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/friendsofgo/graphiql"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 )
@@ -46,4 +47,37 @@ func (*Server) getMetricsHandler() (http.Handler, error) {
 		ph.ServeHTTP(w, r)
 	}
 	return http.HandlerFunc(h), nil
+}
+
+// getGraphQLHandler returns a GraphQL handler.
+func (s *Server) getGraphQLHandler() (http.Handler, error) {
+	h := func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "405 method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		var params struct {
+			Query         string                 `json:"query"`
+			OperationName string                 `json:"operationName"`
+			Variables     map[string]interface{} `json:"variables"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		res := s.schema.Exec(r.Context(), params.Query, params.OperationName, params.Variables)
+
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(res); err != nil {
+			logrus.WithError(err).Warning("failed to write response")
+		}
+	}
+	return http.HandlerFunc(h), nil
+}
+
+// getGraphiQLHandler returns a GraphiQL handler.
+func (s *Server) getGraphiQLHandler() (http.Handler, error) {
+	return graphiql.NewGraphiqlHandler("/graphql")
 }

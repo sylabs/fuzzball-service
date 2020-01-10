@@ -17,6 +17,8 @@ var routeConfigs = []struct {
 }{
 	{"/version", (*Server).getVersionHandler},
 	{"/metrics", (*Server).getMetricsHandler},
+	{"/graphql", (*Server).getGraphQLHandler},
+	{"/graphiql", (*Server).getGraphiQLHandler},
 }
 
 // NewRouter configures router and returns it.
