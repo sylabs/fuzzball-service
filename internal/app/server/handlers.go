@@ -36,5 +36,14 @@ func (s *Server) getVersionHandler() (http.Handler, error) {
 
 // getMetricsHandler returns a Prometheus metrics handler.
 func (*Server) getMetricsHandler() (http.Handler, error) {
-	return promhttp.Handler(), nil
+	ph := promhttp.Handler()
+
+	h := func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "405 method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		ph.ServeHTTP(w, r)
+	}
+	return http.HandlerFunc(h), nil
 }
