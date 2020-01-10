@@ -66,9 +66,6 @@ func New(ctx context.Context, c Config) (s Server, err error) {
 		version:            c.Version,
 		corsAllowedOrigins: c.CORSAllowedOrigins,
 		corsDebug:          c.CORSDebug,
-		httpSrv: &http.Server{
-			Handler: loggingHandler(NewRouter(&s)),
-		},
 	}
 
 	// Connect to database.
@@ -84,6 +81,15 @@ func New(ctx context.Context, c Config) (s Server, err error) {
 		}
 	}(db)
 	s.db = db
+
+	// Set up HTTP server.
+	h, err := NewRouter(&s)
+	if err != nil {
+		return Server{}, err
+	}
+	s.httpSrv = &http.Server{
+		Handler: loggingHandler(h),
+	}
 
 	// Start listening for HTTP.
 	ln, err := net.Listen("tcp", c.HTTPAddr)

@@ -5,46 +5,40 @@ package server
 import (
 	"net/http"
 
-	"github.com/gorilla/mux"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rs/cors"
 )
 
-type handlerFunc func(*Server, http.ResponseWriter, *http.Request)
+type getHandlerFunc func(*Server) (http.Handler, error)
 
 var routeConfigs = []struct {
-	method  string
 	pattern string
-	handlerFunc
+	getHandlerFunc
 }{
-	{http.MethodGet, "/version", (*Server).getVersion},
-	{http.MethodGet, "/metrics", (*Server).getMetrics},
-}
-
-// handler returns an http.Handler that passes the Server as a receiver.
-func (s *Server) handler(f handlerFunc) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		f(s, w, r)
-	})
+	{"/version", (*Server).getVersionHandler},
+	{"/metrics", (*Server).getMetricsHandler},
 }
 
 // NewRouter configures router and returns it.
-func NewRouter(s *Server) http.Handler {
-	router := mux.NewRouter().StrictSlash(true)
+func NewRouter(s *Server) (http.Handler, error) {
+	mux := http.NewServeMux()
 
 	for _, routeConfig := range routeConfigs {
-		h := promhttp.InstrumentHandlerInFlight(httpRequestsInFlight,
+		// Get handler.
+		h, err := routeConfig.getHandlerFunc(s)
+		if err != nil {
+			return nil, err
+		}
+
+		// Instrument with Prometheus.
+		h = promhttp.InstrumentHandlerInFlight(httpRequestsInFlight,
 			promhttp.InstrumentHandlerCounter(httpRequestsTotal,
-				promhttp.InstrumentHandlerDuration(httpResponseTime,
-					s.handler(routeConfig.handlerFunc),
-				),
+				promhttp.InstrumentHandlerDuration(httpResponseTime, h),
 			),
 		)
 
-		router.
-			Methods(routeConfig.method).
-			Path(routeConfig.pattern).
-			Handler(h)
+		// Add to mux.
+		mux.Handle(routeConfig.pattern, h)
 	}
 
 	// Implement CORS specification for all routes.
@@ -66,5 +60,5 @@ func NewRouter(s *Server) http.Handler {
 		AllowCredentials: true,
 		Debug:            s.corsDebug,
 	})
-	return c.Handler(router)
+	return c.Handler(mux), nil
 }
