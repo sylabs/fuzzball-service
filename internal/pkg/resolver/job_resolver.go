@@ -7,6 +7,12 @@ import (
 	"github.com/sylabs/compute-service/internal/pkg/model"
 )
 
+// JobPersister is the interface by which jobs are persisted.
+type JobPersister interface {
+	CreateJob(name string) (*model.Job, error)
+	GetJob(id string) (*model.Job, error)
+}
+
 // JobResolver resolves a job.
 type JobResolver struct {
 	j *model.Job

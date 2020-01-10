@@ -6,11 +6,11 @@ import (
 	"context"
 )
 
-// Job returns a job resolver.
-func (r Resolver) Job(ctx context.Context, args struct {
-	ID string
+// CreateJob creates a new job.
+func (r Resolver) CreateJob(ctx context.Context, args struct {
+	Name string
 }) (*JobResolver, error) {
-	j, err := r.p.GetJob(args.ID)
+	j, err := r.p.CreateJob(args.Name)
 	if err != nil {
 		return nil, err
 	}

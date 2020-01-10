@@ -8,10 +8,15 @@ func String() string {
 	return `
 schema {
   query: Query
+  mutation: Mutation
 }
 
 type Query {
   job(id: ID!): Job
+}
+
+type Mutation {
+    createJob(name: String!): Job
 }
 
 type Job {
