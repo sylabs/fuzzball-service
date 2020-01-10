@@ -6,14 +6,14 @@ import (
 	"context"
 	"net"
 	"net/http"
-	"time"
 
 	"github.com/sirupsen/logrus"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const dbName = "server"
+// Persister is the interface by which data is persisted.
+type Persister interface {
+	// TODO: flesh this out with concrete CRUD implementation as that's built.
+}
 
 // Config describes server configuration.
 type Config struct {
@@ -21,7 +21,7 @@ type Config struct {
 	HTTPAddr           string
 	CORSAllowedOrigins []string
 	CORSDebug          bool
-	MongoURI           string
+	Persist            Persister
 }
 
 // Server contains the state of the server.
@@ -31,33 +31,7 @@ type Server struct {
 	corsDebug          bool
 	httpSrv            *http.Server
 	httpLn             net.Listener
-	db                 *mongo.Database
-}
-
-// newDB connects to the DB, and returns a Database.
-func newDB(ctx context.Context, mongoURI string) (db *mongo.Database, err error) {
-	logrus.Info("connecting to database")
-	defer func(t time.Time) {
-		if err == nil {
-			logrus.WithField("took", time.Since(t)).Info("database ready")
-		}
-	}(time.Now())
-
-	o := options.Client().ApplyURI(mongoURI)
-	if err := o.Validate(); err != nil {
-		return nil, err
-	}
-	mc, err := mongo.NewClient(o)
-	if err != nil {
-		return nil, err
-	}
-	if err := mc.Connect(ctx); err != nil {
-		return nil, err
-	}
-	if err := mc.Ping(ctx, nil); err != nil {
-		return nil, err
-	}
-	return mc.Database(dbName), nil
+	persist            Persister
 }
 
 // New returns a new Server.
@@ -66,21 +40,8 @@ func New(ctx context.Context, c Config) (s Server, err error) {
 		version:            c.Version,
 		corsAllowedOrigins: c.CORSAllowedOrigins,
 		corsDebug:          c.CORSDebug,
+		persist:            c.Persist,
 	}
-
-	// Connect to database.
-	db, err := newDB(ctx, c.MongoURI)
-	if err != nil {
-		return Server{}, err
-	}
-	defer func(db *mongo.Database) {
-		if err != nil {
-			if err := db.Client().Disconnect(ctx); err != nil {
-				logrus.WithError(err).Warning("disconnect error")
-			}
-		}
-	}(db)
-	s.db = db
 
 	// Set up HTTP server.
 	h, err := NewRouter(&s)
@@ -118,12 +79,5 @@ func (s Server) Run() {
 
 // Stop is used to gracefully stop the Server.
 func (s Server) Stop(ctx context.Context) error {
-	if err := s.httpSrv.Shutdown(ctx); err != nil {
-		logrus.WithError(err).Warning("shutdown error")
-	}
-
-	if err := s.db.Client().Disconnect(ctx); err != nil {
-		logrus.WithError(err).Warning("disconnect error")
-	}
-	return nil
+	return s.httpSrv.Shutdown(ctx)
 }

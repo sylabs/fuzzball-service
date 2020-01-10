@@ -13,15 +13,18 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"github.com/sylabs/compute-service/internal/app/server"
+	"github.com/sylabs/compute-service/internal/pkg/mongodb"
 )
 
 const (
 	org  = "Sylabs"
 	name = "Compute Server"
+
+	dbName = "server"
 )
 
 var (
-	version = ""
+	version = "unknown"
 )
 
 var (
@@ -46,6 +49,18 @@ func signalHandler(s server.Server) {
 	}
 }
 
+// connectDB attempts to connect to the database.
+func connectDB(ctx context.Context) (conn *mongodb.Connection, err error) {
+	logrus.Info("connecting to database")
+	defer func(t time.Time) {
+		if err == nil {
+			logrus.WithField("took", time.Since(t)).Info("database ready")
+		}
+	}(time.Now())
+
+	return mongodb.NewConnection(ctx, *mongoURI, dbName)
+}
+
 func main() {
 	flag.Parse()
 
@@ -57,26 +72,42 @@ func main() {
 		log = log.WithField("version", version)
 	}
 	log.Info("starting")
+	defer log.Info("stopped")
 
+	// Context to control startup timeout.
+	ctx, cancel := context.WithTimeout(context.Background(), *startupTime)
+	defer cancel()
+
+	// Connect to MongoDB.
+	conn, err := connectDB(ctx)
+	if err != nil {
+		logrus.WithError(err).Error("failed to connect to database")
+		return
+	}
+	defer func() {
+		logrus.Info("disconnecting from database")
+		if err := conn.Disconnect(context.Background()); err != nil {
+			logrus.WithError(err).Warning("failed to disconnect from database")
+		}
+	}()
+
+	// Spin up HTTP server.
 	c := server.Config{
 		Version:            version,
 		HTTPAddr:           *httpAddr,
 		CORSAllowedOrigins: strings.Split(*corsAllowedOrigins, ","),
 		CORSDebug:          *corsDebug,
-		MongoURI:           *mongoURI,
+		Persist:            conn,
 	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), *startupTime)
-	defer cancel()
-
 	s, err := server.New(ctx, c)
 	if err != nil {
-		log.WithError(err).Fatal("failed to create server")
+		logrus.WithError(err).Error("failed to create server")
+		return
 	}
 
+	// Spin off signal handler to do graceful shutdown.
 	go signalHandler(s)
 
+	// Main server routine.
 	s.Run()
-
-	log.Info("stopping")
 }
