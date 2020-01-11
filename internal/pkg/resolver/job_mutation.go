@@ -21,3 +21,14 @@ func (r Resolver) CreateJob(ctx context.Context, args struct {
 	}
 	return &JobResolver{&j}, nil
 }
+
+// DeleteJob deletes a job.
+func (r Resolver) DeleteJob(ctx context.Context, args struct {
+	ID string
+}) (*JobResolver, error) {
+	j, err := r.p.DeleteJob(ctx, args.ID)
+	if err != nil {
+		return nil, err
+	}
+	return &JobResolver{&j}, nil
+}
