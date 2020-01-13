@@ -24,6 +24,8 @@ var testRouteConfigs = []struct {
 }{
 	{"GetVersion", http.MethodGet, "/version", http.StatusOK},
 	{"GetMetrics", http.MethodGet, "/metrics", http.StatusOK},
+	{"PostGraphQL", http.MethodPost, "/graphql", http.StatusBadRequest},
+	{"GetGraphiQL", http.MethodGet, "/graphiql", http.StatusOK},
 }
 
 func TestRouteConfigs(t *testing.T) {
