@@ -31,3 +31,27 @@ INFO[0000] connecting to database
 INFO[0000] database ready                                took=7.375268ms
 INFO[0000] listening                                     addr="[::]:8080"
 ```
+
+## Testing
+
+### Unit Tests
+
+Unit tests can be run like so:
+
+```sh
+go test ./...
+```
+
+### Integration Tests
+
+To run integration tests, you'll need a MongoDB endpoint to point it to. If you don't have one already, you can start one with Docker easy enough:
+
+```sh
+docker run -d -p 27017:27017 mongo
+```
+
+Integration tests can then be run like so:
+
+```sh
+go test -tags=integration ./...
+```
