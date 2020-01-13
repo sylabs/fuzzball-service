@@ -31,3 +31,29 @@ jobs:
         run: go build ./...
       - name: Unit Test
         run: go test -cover -race ./...
+
+  integration-test:
+    strategy:
+      matrix:
+        go: ['1.13.x']
+    services:
+      mongo:
+        image: mongo
+        ports:
+          - 27017:27017
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: ${{ matrix.go }}
+      - name: Add Go Bin to Path
+        run: echo "::add-path::$(go env GOPATH)/bin"
+      - name: Install go-bindata
+        run: go get -u github.com/jteeuwen/go-bindata/...
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Generate
+        run: go generate ./...
+      - name: Test
+        run: go test -cover -race -tags=integration ./...
