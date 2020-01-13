@@ -1,5 +1,9 @@
 name: ci
-on: [pull_request, push]
+on:
+  pull_request:
+  push:
+    branches:
+      - master
 env:
   GOPRIVATE: github.com/sylabs/compute-service
 
