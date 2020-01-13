@@ -1,0 +1,4 @@
+type Mutation {
+  createJob(name: String!): Job
+  deleteJob(id: ID!): Job
+}

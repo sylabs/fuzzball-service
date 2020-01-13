@@ -16,6 +16,14 @@ If using Go 1.13, the `go` command defaults to downloading modules from the publ
 go env -w GOPRIVATE=github.com/sylabs
 ```
 
+Install `go-bindata` to help generate the GraphQL schema later:
+
+```sh
+go get -u github.com/jteeuwen/go-bindata/...
+```
+
+In order for go to execute this binary the path in `go env GOPATH` needs to be included in your `PATH`.
+
 To run the server, you'll need a MongoDB endpoint to point it to. If you don't have one already, you can start one with Docker easy enough:
 
 ```sh
@@ -25,7 +33,7 @@ docker run -d -p 27017:27017 mongo
 Finally, start the server:
 
 ```sh
-$ go run ./cmd/server/
+$ go generate ./... && go run ./cmd/server/
 INFO[0000] starting                                      name="Compute Server" org=Sylabs
 INFO[0000] connecting to database
 INFO[0000] database ready                                took=7.375268ms

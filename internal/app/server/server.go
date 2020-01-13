@@ -4,6 +4,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"net"
 	"net/http"
 
@@ -41,7 +42,12 @@ func New(ctx context.Context, c Config) (s Server, err error) {
 	}
 
 	// Initialize GraphQL.
-	schema, err := graphql.ParseSchema(schema.String(), resolver.New(c.Persist))
+	sch, err := schema.String()
+	if err != nil {
+		return Server{}, fmt.Errorf("unable to init GraphQL schema: %w", err)
+	}
+
+	schema, err := graphql.ParseSchema(sch, resolver.New(c.Persist))
 	if err != nil {
 		return Server{}, err
 	}
