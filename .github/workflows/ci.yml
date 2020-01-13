@@ -1,5 +1,9 @@
 name: ci
-on: [pull_request, push]
+on:
+  pull_request:
+  push:
+    branches:
+      - master
 env:
   GOPRIVATE: github.com/sylabs/compute-service
 
@@ -15,6 +19,8 @@ jobs:
         uses: actions/setup-go@v1
         with:
           go-version: ${{ matrix.go }}
+      - name: Add Go Bin to Path
+        run: echo "::add-path::$(go env GOPATH)/bin"
       - name: Install go-bindata
         run: go get -u github.com/jteeuwen/go-bindata/...
       - name: Checkout code
