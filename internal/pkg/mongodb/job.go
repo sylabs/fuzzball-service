@@ -13,11 +13,6 @@ import (
 
 const jobCollectionName = "jobs"
 
-type JobsQueryArgs struct {
-	ID   *string
-	Name *string
-}
-
 // CreateJob creates a new job. If an ID is provided in j, it is ignored and replaced with a unique
 // identifier in the returned job.
 func (c *Connection) CreateJob(ctx context.Context, j model.Job) (model.Job, error) {
