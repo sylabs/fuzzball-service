@@ -40,6 +40,20 @@ func (c *Connection) DeleteJob(ctx context.Context, id string) (j model.Job, err
 	return j, nil
 }
 
+// GetJob retrieves a job by ID. If the supplied ID is not valid, or there there is not a job with
+// a matching ID in the database, an error is returned.
+func (c *Connection) GetJob(ctx context.Context, id string) (j model.Job, err error) {
+	oid, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return model.Job{}, fmt.Errorf("failed to convert object ID: %w", err)
+	}
+	err = c.db.Collection(jobCollectionName).FindOne(ctx, bson.M{"_id": oid}).Decode(&j)
+	if err != nil {
+		return model.Job{}, fmt.Errorf("failed to get job: %w", err)
+	}
+	return j, nil
+}
+
 // GetJobs returns all jobs if no search arguments specified, otherwise
 // returns matching job
 func (c *Connection) GetJobs(ctx context.Context, filterSpec map[string]string) (j []model.Job, err error) {

@@ -13,6 +13,7 @@ import (
 type JobPersister interface {
 	CreateJob(context.Context, model.Job) (model.Job, error)
 	DeleteJob(context.Context, string) (model.Job, error)
+	GetJob(context.Context, string) (model.Job, error)
 	GetJobs(context.Context, map[string]string) ([]model.Job, error)
 }
 
