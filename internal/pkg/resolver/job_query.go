@@ -17,7 +17,7 @@ func (r Resolver) Jobs(ctx context.Context, args struct {
 	}
 
 	if args.Name != nil {
-		filterSpec["Name"] = *args.Name
+		filterSpec["name"] = *args.Name
 	}
 
 	jobs, err := r.p.GetJobs(ctx, filterSpec)
