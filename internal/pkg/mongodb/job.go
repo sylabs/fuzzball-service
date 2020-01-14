@@ -60,6 +60,7 @@ func (c *Connection) GetJobs(ctx context.Context, filterSpec map[string]string) 
 	if oid != primitive.NilObjectID {
 		s = bson.M{"_id": oid}
 	} else {
+		s = bson.M{}
 		for key, value := range filterSpec {
 			s[key] = value
 		}
