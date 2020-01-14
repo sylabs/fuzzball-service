@@ -1,0 +1,9 @@
+type Capability {
+    key: String!
+    value: String!
+}
+
+type SystemInfo {
+  hostname: String!
+  capabilities: [Capability]
+}
