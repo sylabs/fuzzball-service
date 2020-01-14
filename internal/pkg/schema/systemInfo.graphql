@@ -5,5 +5,8 @@ type Capability {
 
 type SystemInfo {
   hostname: String!
+  cpuArchitecture: String!
+  osPlatform: String!
+  memory: Int!
   capabilities: [Capability]
 }
