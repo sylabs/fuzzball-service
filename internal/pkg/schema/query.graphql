@@ -1,3 +1,4 @@
 type Query {
   job(id: ID!): Job
+  systemInfo: SystemInfo
 }
