@@ -1,4 +1,4 @@
 type Query {
-  job(id: ID!): Job
+  jobs(id: ID, name: String): [Job]
   systemInfo: SystemInfo
 }

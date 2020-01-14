@@ -13,6 +13,11 @@ import (
 
 const jobCollectionName = "jobs"
 
+type JobsQueryArgs struct {
+	ID   *string
+	Name *string
+}
+
 // CreateJob creates a new job. If an ID is provided in j, it is ignored and replaced with a unique
 // identifier in the returned job.
 func (c *Connection) CreateJob(ctx context.Context, j model.Job) (model.Job, error) {
@@ -40,16 +45,39 @@ func (c *Connection) DeleteJob(ctx context.Context, id string) (j model.Job, err
 	return j, nil
 }
 
-// GetJob retrieves a job by ID. If the supplied ID is not valid, or there there is not a job with
-// a matching ID in the database, an error is returned.
-func (c *Connection) GetJob(ctx context.Context, id string) (j model.Job, err error) {
-	oid, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return model.Job{}, fmt.Errorf("failed to convert object ID: %w", err)
+// GetJobs returns all jobs if no search arguments specified, otherwise
+// returns matching job
+func (c *Connection) GetJobs(ctx context.Context, args JobsQueryArgs) (j []model.Job, err error) {
+	var oid primitive.ObjectID
+
+	if args.ID != nil {
+		var err error
+		oid, err = primitive.ObjectIDFromHex(*args.ID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert object ID: %w", err)
+		}
 	}
-	err = c.db.Collection(jobCollectionName).FindOne(ctx, bson.M{"_id": oid}).Decode(&j)
-	if err != nil {
-		return model.Job{}, fmt.Errorf("failed to get job: %w", err)
+
+	var s bson.M
+
+	if oid != primitive.NilObjectID {
+		s = bson.M{"_id": oid}
+	} else if args.Name != nil {
+		s = bson.M{"name": *args.Name}
 	}
-	return j, nil
+
+	cur, err := c.db.Collection(jobCollectionName).Find(ctx, s)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get job(s): %w", err)
+	}
+
+	var results []model.Job
+	for cur.Next(ctx) {
+		var j model.Job
+		if err := cur.Decode(&j); err != nil {
+			continue
+		}
+		results = append(results, j)
+	}
+	return results, nil
 }

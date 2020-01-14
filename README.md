@@ -63,3 +63,40 @@ Integration tests can then be run like so:
 ```sh
 go test -tags=integration ./...
 ```
+
+## Sample GraphQL queries
+
+### Jobs
+
+1. Get all jobs
+
+    ```sh
+    query {
+        jobs {
+            id
+            name
+        }
+    }
+    ```
+
+2. Get job matching id 5e1ddf67b70ba0568544b999
+
+    ```sh
+    query {
+        jobs(id: "5e1ddf67b70ba0568544b999") {
+            id
+            name
+        }
+    }
+    ```
+
+3. Get job matching name "job1"
+
+    ```sh
+    query {
+        jobs(name: "job1") {
+            id
+            name
+        }
+    }
+    ```

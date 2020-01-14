@@ -4,15 +4,27 @@ package resolver
 
 import (
 	"context"
+
+	"github.com/sylabs/compute-service/internal/pkg/mongodb"
 )
 
-// Job returns a job resolver.
-func (r Resolver) Job(ctx context.Context, args struct {
-	ID string
-}) (*JobResolver, error) {
-	j, err := r.p.GetJob(ctx, args.ID)
+type JobsArgs struct {
+	ID   *string
+	Name *string
+}
+
+func (r Resolver) Jobs(ctx context.Context, args JobsArgs) (*[]*JobResolver, error) {
+	jobs, err := r.p.GetJobs(ctx, mongodb.JobsQueryArgs{
+		ID:   args.ID,
+		Name: args.Name,
+	})
 	if err != nil {
 		return nil, err
 	}
-	return &JobResolver{&j}, nil
+
+	var resolvers = make([]*JobResolver, 0, len(jobs))
+	for n := 0; n<len(jobs); n++ {
+		resolvers = append(resolvers, &JobResolver{&jobs[n]})
+	}
+	return &resolvers, nil
 }
