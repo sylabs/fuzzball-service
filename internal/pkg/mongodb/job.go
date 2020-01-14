@@ -47,12 +47,14 @@ func (c *Connection) DeleteJob(ctx context.Context, id string) (j model.Job, err
 
 // GetJobs returns all jobs if no search arguments specified, otherwise
 // returns matching job
-func (c *Connection) GetJobs(ctx context.Context, args JobsQueryArgs) (j []model.Job, err error) {
+func (c *Connection) GetJobs(ctx context.Context, filterSpec map[string]string) (j []model.Job, err error) {
 	var oid primitive.ObjectID
 
-	if args.ID != nil {
+	filterID, ok := filterSpec["ID"]
+	if ok && filterID != "" {
+		// Handle 'ID'
 		var err error
-		oid, err = primitive.ObjectIDFromHex(*args.ID)
+		oid, err = primitive.ObjectIDFromHex(filterID)
 		if err != nil {
 			return nil, fmt.Errorf("failed to convert object ID: %w", err)
 		}
@@ -62,8 +64,10 @@ func (c *Connection) GetJobs(ctx context.Context, args JobsQueryArgs) (j []model
 
 	if oid != primitive.NilObjectID {
 		s = bson.M{"_id": oid}
-	} else if args.Name != nil {
-		s = bson.M{"name": *args.Name}
+	} else {
+		for key, value := range filterSpec {
+			s[key] = value
+		}
 	}
 
 	cur, err := c.db.Collection(jobCollectionName).Find(ctx, s)

@@ -7,14 +7,13 @@ import (
 
 	"github.com/graph-gophers/graphql-go"
 	"github.com/sylabs/compute-service/internal/pkg/model"
-	"github.com/sylabs/compute-service/internal/pkg/mongodb"
 )
 
 // JobPersister is the interface by which jobs are persisted.
 type JobPersister interface {
 	CreateJob(context.Context, model.Job) (model.Job, error)
 	DeleteJob(context.Context, string) (model.Job, error)
-	GetJobs(context.Context, mongodb.JobsQueryArgs) ([]model.Job, error)
+	GetJobs(context.Context, map[string]string) ([]model.Job, error)
 }
 
 // JobResolver resolves a job.
