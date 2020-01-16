@@ -2,8 +2,8 @@
 
 package model
 
-// Job represents a job.
-type Job struct {
+// Workflow represents a workflow.
+type Workflow struct {
 	ID   string `bson:"_id,omitempty"`
 	Name string `bson:"name"`
 }
