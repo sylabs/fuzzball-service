@@ -4,7 +4,7 @@ package resolver
 
 // Persister is the interface by which all data is persisted.
 type Persister interface {
-	JobPersister
+	WorkflowPersister
 }
 
 // Resolver is the root type for resolving GraphQL queries.

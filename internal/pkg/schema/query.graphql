@@ -1,4 +1,4 @@
 type Query {
-  job(id: ID!): Job
+  workflow(id: ID!): Workflow
   systemInfo: SystemInfo
 }

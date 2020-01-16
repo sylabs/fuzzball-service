@@ -1,4 +1,4 @@
 type Mutation {
-  createJob(name: String!): Job
-  deleteJob(id: ID!): Job
+  createWorkflow(name: String!): Workflow
+  deleteWorkflow(id: ID!): Workflow
 }
