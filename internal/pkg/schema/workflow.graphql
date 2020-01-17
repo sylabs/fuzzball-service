@@ -1,4 +1,31 @@
 type Workflow {
+  # Unique workflow ID.
   id: ID!
+
+  # The name assigned to the workflow.
   name: String!
+}
+
+# An edge in a connection.
+type WorkflowEdge {
+  # A cursor for use in pagination.
+  cursor: String!
+
+  # The item at the end of the edge.
+  node: Workflow
+}
+
+# The connection type for Workflow.
+type WorkflowConnection {
+  # A list of edges.
+  edges: [WorkflowEdge]
+
+  # A list of nodes.
+  nodes: [Workflow]
+
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # Identifies the total count of items in the connection.
+  totalCount: Int!
 }

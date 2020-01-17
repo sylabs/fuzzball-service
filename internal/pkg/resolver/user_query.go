@@ -10,8 +10,11 @@ import (
 
 // Viewer returns the currently authenticated user.
 func (r Resolver) Viewer(ctx context.Context) (*UserResolver, error) {
-	return &UserResolver{&model.User{
-		ID:    "507f1f77bcf86cd799439011",
-		Login: "jimbob",
-	}}, nil
+	return &UserResolver{
+		u: &model.User{
+			ID:    "507f1f77bcf86cd799439011",
+			Login: "jimbob",
+		},
+		wp: r.p,
+	}, nil
 }

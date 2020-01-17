@@ -3,13 +3,16 @@
 package resolver
 
 import (
+	"context"
+
 	"github.com/graph-gophers/graphql-go"
 	"github.com/sylabs/compute-service/internal/pkg/model"
 )
 
 // UserResolver resolves a user.
 type UserResolver struct {
-	u *model.User
+	u  *model.User
+	wp WorkflowPersister
 }
 
 // ID resolves the unique user ID.
@@ -20,4 +23,18 @@ func (r *UserResolver) ID() graphql.ID {
 // Login resolves the username used to login.
 func (r *UserResolver) Login() string {
 	return r.u.Login
+}
+
+// Workflows looks up workflows associated with the user.
+func (r *UserResolver) Workflows(ctx context.Context, args struct {
+	After  *string
+	Before *string
+	First  *int
+	Last   *int
+}) (*WorkflowConnectionResolver, error) {
+	p, err := r.wp.GetWorkflows(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &WorkflowConnectionResolver{p}, nil
 }
