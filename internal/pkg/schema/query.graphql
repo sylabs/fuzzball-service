@@ -1,4 +1,7 @@
 type Query {
   workflow(id: ID!): Workflow
   systemInfo: SystemInfo
+
+  # The currently authenticated user.
+  viewer: User!
 }

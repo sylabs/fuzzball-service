@@ -1,0 +1,8 @@
+# A user is an individual's account.
+type User {
+  # Unique user ID.
+  id: ID!
+
+  # The username used to login.
+  login: String!
+}
