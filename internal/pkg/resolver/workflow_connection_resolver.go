@@ -6,16 +6,17 @@ import "github.com/sylabs/compute-service/internal/pkg/model"
 
 // WorkflowEdgeResolver resolves a workflow edge.
 type WorkflowEdgeResolver struct {
+	w model.Workflow
 }
 
 // Cursor resolves a cursor for use in pagination.
 func (r *WorkflowEdgeResolver) Cursor() string {
-	return "" // TODO
+	return r.w.ID
 }
 
 // Node resolves the item at the end of the edge.
 func (r *WorkflowEdgeResolver) Node() *WorkflowResolver {
-	return nil // TODO
+	return &WorkflowResolver{r.w}
 }
 
 // WorkflowConnectionResolver resolves a workflow connection.
@@ -25,14 +26,18 @@ type WorkflowConnectionResolver struct {
 
 // Edges resolves a list of edges.
 func (r *WorkflowConnectionResolver) Edges() *[]*WorkflowEdgeResolver {
-	return nil // TODO
+	wer := []*WorkflowEdgeResolver{}
+	for _, w := range r.p.Workflows {
+		wer = append(wer, &WorkflowEdgeResolver{w})
+	}
+	return &wer
 }
 
 // Nodes resolves a list of nodes.
 func (r *WorkflowConnectionResolver) Nodes() *[]*WorkflowResolver {
 	wr := []*WorkflowResolver{}
 	for _, w := range r.p.Workflows {
-		wr = append(wr, &WorkflowResolver{&w})
+		wr = append(wr, &WorkflowResolver{w})
 	}
 	return &wr
 }

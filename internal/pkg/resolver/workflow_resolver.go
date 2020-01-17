@@ -19,7 +19,7 @@ type WorkflowPersister interface {
 
 // WorkflowResolver resolves a workflow.
 type WorkflowResolver struct {
-	w *model.Workflow
+	w model.Workflow
 }
 
 // ID resolves the workflow ID.
