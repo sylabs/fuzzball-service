@@ -1,8 +1,1 @@
-{
-	"data": {
-		"deleteWorkflow": {
-			"id": "workflowID",
-			"name": "workflowName"
-		}
-	}
-}
+{"data":{"deleteWorkflow":{"id":"workflowID","name":"workflowName"}}}

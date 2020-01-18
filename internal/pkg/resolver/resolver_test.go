@@ -65,7 +65,7 @@ func verifyGolden(name string, b []byte) error {
 }
 
 func verifyGoldenJSON(name string, v interface{}) error {
-	b, err := json.MarshalIndent(v, "", "\t")
+	b, err := json.Marshal(v)
 	if err != nil {
 		return err
 	}

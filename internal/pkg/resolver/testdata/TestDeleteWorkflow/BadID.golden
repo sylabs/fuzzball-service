@@ -1,13 +1,1 @@
-{
-	"errors": [
-		{
-			"message": "got ID bad, want workflowID",
-			"path": [
-				"deleteWorkflow"
-			]
-		}
-	],
-	"data": {
-		"deleteWorkflow": null
-	}
-}
+{"errors":[{"message":"got ID bad, want workflowID","path":["deleteWorkflow"]}],"data":{"deleteWorkflow":null}}
