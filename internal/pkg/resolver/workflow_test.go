@@ -41,13 +41,15 @@ func (p *mockPersister) GetWorkflows(ctx context.Context) (model.WorkflowsPage, 
 }
 
 func TestWorkflow(t *testing.T) {
-	p := mockPersister{
-		w: model.Workflow{
-			ID:   "workflowID",
-			Name: "workflowName",
+	r := Resolver{
+		p: &mockPersister{
+			w: model.Workflow{
+				ID:   "workflowID",
+				Name: "workflowName",
+			},
 		},
 	}
-	s, err := getSchema(&p)
+	s, err := getSchema(&r)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -83,13 +85,15 @@ func TestWorkflow(t *testing.T) {
 }
 
 func TestCreateWorkflow(t *testing.T) {
-	p := mockPersister{
-		w: model.Workflow{
-			ID:   "workflowID",
-			Name: "workflowName",
+	r := Resolver{
+		p: &mockPersister{
+			w: model.Workflow{
+				ID:   "workflowID",
+				Name: "workflowName",
+			},
 		},
 	}
-	s, err := getSchema(&p)
+	s, err := getSchema(&r)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -124,13 +128,15 @@ func TestCreateWorkflow(t *testing.T) {
 }
 
 func TestDeleteWorkflow(t *testing.T) {
-	p := mockPersister{
-		w: model.Workflow{
-			ID:   "workflowID",
-			Name: "workflowName",
+	r := Resolver{
+		p: &mockPersister{
+			w: model.Workflow{
+				ID:   "workflowID",
+				Name: "workflowName",
+			},
 		},
 	}
-	s, err := getSchema(&p)
+	s, err := getSchema(&r)
 	if err != nil {
 		t.Fatal(err)
 	}

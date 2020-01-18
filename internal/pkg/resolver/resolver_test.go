@@ -22,12 +22,12 @@ var (
 )
 
 // GetScheman returns a schema that uses r as a resolver.
-func getSchema(p Persister) (*graphql.Schema, error) {
+func getSchema(r *Resolver) (*graphql.Schema, error) {
 	s, err := schema.String()
 	if err != nil {
 		return nil, err
 	}
-	return graphql.ParseSchema(s, New(p))
+	return graphql.ParseSchema(s, r)
 }
 
 // goldenPath returns the path of the golden file corresponding to name.

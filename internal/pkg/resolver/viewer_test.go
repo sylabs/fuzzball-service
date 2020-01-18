@@ -12,28 +12,30 @@ import (
 func TestViewer(t *testing.T) {
 	sc := "startCursor"
 	ec := "endCursor"
-	p := mockPersister{
-		wp: model.WorkflowsPage{
-			Workflows: []model.Workflow{
-				{
-					ID:   "id1",
-					Name: "name1",
+	r := Resolver{
+		p: &mockPersister{
+			wp: model.WorkflowsPage{
+				Workflows: []model.Workflow{
+					{
+						ID:   "id1",
+						Name: "name1",
+					},
+					{
+						ID:   "id2",
+						Name: "name2",
+					},
 				},
-				{
-					ID:   "id2",
-					Name: "name2",
+				PageInfo: model.PageInfo{
+					StartCursor:     &sc,
+					EndCursor:       &ec,
+					HasNextPage:     true,
+					HasPreviousPage: false,
 				},
+				TotalCount: 2,
 			},
-			PageInfo: model.PageInfo{
-				StartCursor:     &sc,
-				EndCursor:       &ec,
-				HasNextPage:     true,
-				HasPreviousPage: false,
-			},
-			TotalCount: 2,
 		},
 	}
-	s, err := getSchema(&p)
+	s, err := getSchema(&r)
 	if err != nil {
 		t.Fatal(err)
 	}
