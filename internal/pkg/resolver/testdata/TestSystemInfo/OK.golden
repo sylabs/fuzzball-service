@@ -1,0 +1,16 @@
+{
+	"data": {
+		"systemInfo": {
+			"hostname": "hostname",
+			"cpuArchitecture": "cpuArch",
+			"osPlatform": "osPlatform",
+			"memory": 1234,
+			"capabilities": [
+				{
+					"key": "GPU",
+					"value": "false"
+				}
+			]
+		}
+	}
+}

@@ -78,3 +78,9 @@ func TestMain(m *testing.M) {
 
 	os.Exit(m.Run())
 }
+
+func TestNew(t *testing.T) {
+	if _, err := New(&mockPersister{}); err != nil {
+		t.Fatal(err)
+	}
+}
