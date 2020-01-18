@@ -1,0 +1,8 @@
+{
+	"data": {
+		"workflow": {
+			"id": "workflowID",
+			"name": "workflowName"
+		}
+	}
+}
