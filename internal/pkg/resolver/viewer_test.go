@@ -60,10 +60,6 @@ func TestViewer(t *testing.T) {
                       name
                     }
                   }
-                  nodes {
-                    id
-                    name
-                  }
                   pageInfo {
                     startCursor
                     endCursor

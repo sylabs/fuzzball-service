@@ -20,9 +20,6 @@ type WorkflowConnection {
   # A list of edges.
   edges: [WorkflowEdge]
 
-  # A list of nodes.
-  nodes: [Workflow]
-
   # Information to aid in pagination.
   pageInfo: PageInfo!
 
