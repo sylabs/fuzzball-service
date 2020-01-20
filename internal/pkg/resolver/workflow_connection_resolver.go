@@ -33,15 +33,6 @@ func (r *WorkflowConnectionResolver) Edges() *[]*WorkflowEdgeResolver {
 	return &wer
 }
 
-// Nodes resolves a list of nodes.
-func (r *WorkflowConnectionResolver) Nodes() *[]*WorkflowResolver {
-	wr := []*WorkflowResolver{}
-	for _, w := range r.p.Workflows {
-		wr = append(wr, &WorkflowResolver{w})
-	}
-	return &wr
-}
-
 // PageInfo resolves information to aid in pagination.
 func (r *WorkflowConnectionResolver) PageInfo() *PageInfoResolver {
 	return &PageInfoResolver{r.p.PageInfo}
