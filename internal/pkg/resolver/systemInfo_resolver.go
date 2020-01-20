@@ -15,7 +15,7 @@ type SystemInfo struct {
 }
 
 type SystemInfoResolver struct {
-	s *SystemInfo
+	s SystemInfo
 }
 
 func (s *SystemInfoResolver) HostName() string {
