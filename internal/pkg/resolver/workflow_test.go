@@ -36,7 +36,7 @@ func (p *mockPersister) GetWorkflow(ctx context.Context, id string) (model.Workf
 	return p.w, nil
 }
 
-func (p *mockPersister) GetWorkflows(ctx context.Context) (model.WorkflowsPage, error) {
+func (p *mockPersister) GetWorkflows(ctx context.Context, pa model.PageArgs) (model.WorkflowsPage, error) {
 	return p.wp, nil
 }
 

@@ -32,7 +32,13 @@ func (r *UserResolver) Workflows(ctx context.Context, args struct {
 	First  *int
 	Last   *int
 }) (*WorkflowConnectionResolver, error) {
-	p, err := r.wp.GetWorkflows(ctx)
+	pa := model.PageArgs{
+		After:  args.After,
+		Before: args.Before,
+		First:  args.First,
+		Last:   args.Last,
+	}
+	p, err := r.wp.GetWorkflows(ctx, pa)
 	if err != nil {
 		return nil, err
 	}

@@ -14,7 +14,7 @@ type WorkflowPersister interface {
 	CreateWorkflow(context.Context, model.Workflow) (model.Workflow, error)
 	DeleteWorkflow(context.Context, string) (model.Workflow, error)
 	GetWorkflow(context.Context, string) (model.Workflow, error)
-	GetWorkflows(context.Context) (model.WorkflowsPage, error)
+	GetWorkflows(context.Context, model.PageArgs) (model.WorkflowsPage, error)
 }
 
 // WorkflowResolver resolves a workflow.

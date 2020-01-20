@@ -57,7 +57,7 @@ func (c *Connection) GetWorkflow(ctx context.Context, id string) (w model.Workfl
 // GetWorkflows returns a list of all workflows.
 //
 // TODO: pagination
-func (c *Connection) GetWorkflows(ctx context.Context) (p model.WorkflowsPage, err error) {
+func (c *Connection) GetWorkflows(ctx context.Context, pa model.PageArgs) (p model.WorkflowsPage, err error) {
 	cur, err := c.db.Collection(workflowCollectionName).Find(ctx, bson.M{})
 	if err != nil {
 		return p, fmt.Errorf("failed to get workflow: %w", err)
