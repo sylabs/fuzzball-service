@@ -12,66 +12,78 @@ import (
 func TestViewer(t *testing.T) {
 	sc := "startCursor"
 	ec := "endCursor"
-	r := Resolver{
-		p: &mockPersister{
-			wp: model.WorkflowsPage{
-				Workflows: []model.Workflow{
-					{
-						ID:   "id1",
-						Name: "name1",
-					},
-					{
-						ID:   "id2",
-						Name: "name2",
-					},
-				},
-				PageInfo: model.PageInfo{
-					StartCursor:     &sc,
-					EndCursor:       &ec,
-					HasNextPage:     true,
-					HasPreviousPage: false,
-				},
-				TotalCount: 2,
+	wp := model.WorkflowsPage{
+		Workflows: []model.Workflow{
+			{
+				ID:   "id1",
+				Name: "name1",
+			},
+			{
+				ID:   "id2",
+				Name: "name2",
 			},
 		},
-	}
-	s, err := getSchema(&r)
-	if err != nil {
-		t.Fatal(err)
+		PageInfo: model.PageInfo{
+			StartCursor:     &sc,
+			EndCursor:       &ec,
+			HasNextPage:     true,
+			HasPreviousPage: false,
+		},
+		TotalCount: 2,
 	}
 
+	cursor := "cursorValue"
+	count := 2
+
 	tests := []struct {
-		name string
+		name   string
+		args   map[string]interface{}
+		wantPA model.PageArgs
 	}{
-		{"OK"},
+		{"NoArgs", nil, model.PageArgs{}},
+		{"After", map[string]interface{}{"after": cursor}, model.PageArgs{After: &cursor}},
+		{"Before", map[string]interface{}{"before": cursor}, model.PageArgs{Before: &cursor}},
+		{"First", map[string]interface{}{"first": count}, model.PageArgs{First: &count}},
+		{"Last", map[string]interface{}{"last": count}, model.PageArgs{Last: &count}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			q := `
-            query OpName {
-              viewer {
-                id
-                login
-                workflows {
-                  edges {
-                    cursor
-                    node {
-                      id
-                      name
-                    }
-                  }
-                  pageInfo {
-                    startCursor
-                    endCursor
-                    hasNextPage
-                    hasPreviousPage
-                  }
-                  totalCount
-                }
-              }
-            }`
+			r := Resolver{
+				p: &mockPersister{
+					wantPA: tt.wantPA,
+					wp:     wp,
+				},
+			}
+			s, err := getSchema(&r)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-			res := s.Exec(context.Background(), q, "", nil)
+			q := `
+			query OpName($after: String, $before: String, $first: Int, $last: Int) {
+			  viewer {
+			    id
+			    login
+			    workflows(after: $after, before: $before, first: $first, last: $last) {
+			      edges {
+			        cursor
+			        node {
+			          id
+			          name
+			        }
+			      }
+			      pageInfo {
+			        startCursor
+			        endCursor
+			        hasNextPage
+			        hasPreviousPage
+			      }
+			      totalCount
+			    }
+			  }
+			}`
+
+			res := s.Exec(context.Background(), q, "", tt.args)
 
 			if err := verifyGoldenJSON(t.Name(), res); err != nil {
 				t.Fatal(err)

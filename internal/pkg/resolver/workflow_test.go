@@ -5,14 +5,16 @@ package resolver
 import (
 	"context"
 	"fmt"
+	"reflect"
 	"testing"
 
 	"github.com/sylabs/compute-service/internal/pkg/model"
 )
 
 type mockPersister struct {
-	w  model.Workflow
-	wp model.WorkflowsPage
+	wantPA model.PageArgs
+	w      model.Workflow
+	wp     model.WorkflowsPage
 }
 
 func (p *mockPersister) CreateWorkflow(ctx context.Context, w model.Workflow) (model.Workflow, error) {
@@ -36,7 +38,10 @@ func (p *mockPersister) GetWorkflow(ctx context.Context, id string) (model.Workf
 	return p.w, nil
 }
 
-func (p *mockPersister) GetWorkflows(ctx context.Context) (model.WorkflowsPage, error) {
+func (p *mockPersister) GetWorkflows(ctx context.Context, pa model.PageArgs) (model.WorkflowsPage, error) {
+	if got, want := pa, p.wantPA; !reflect.DeepEqual(got, want) {
+		return model.WorkflowsPage{}, fmt.Errorf("got page args %v, want %v", got, want)
+	}
 	return p.wp, nil
 }
 

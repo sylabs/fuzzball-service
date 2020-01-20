@@ -1,0 +1,1 @@
+{"data":{"viewer":{"id":"507f1f77bcf86cd799439011","login":"jimbob","workflows":{"edges":[{"cursor":"id1","node":{"id":"id1","name":"name1"}},{"cursor":"id2","node":{"id":"id2","name":"name2"}}],"pageInfo":{"startCursor":"startCursor","endCursor":"endCursor","hasNextPage":true,"hasPreviousPage":false},"totalCount":2}}}}
