@@ -11,8 +11,8 @@ import (
 
 // UserResolver resolves a user.
 type UserResolver struct {
-	u  *model.User
-	wp WorkflowPersister
+	u *model.User
+	p Persister
 }
 
 // ID resolves the unique user ID.
@@ -38,9 +38,9 @@ func (r *UserResolver) Workflows(ctx context.Context, args struct {
 		First:  args.First,
 		Last:   args.Last,
 	}
-	p, err := r.wp.GetWorkflows(ctx, pa)
+	p, err := r.p.GetWorkflows(ctx, pa)
 	if err != nil {
 		return nil, err
 	}
-	return &WorkflowConnectionResolver{p}, nil
+	return &WorkflowConnectionResolver{p, r.p}, nil
 }
