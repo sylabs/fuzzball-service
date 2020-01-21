@@ -1,1 +1,1 @@
-{"data":{"workflow":{"id":"workflowID","name":"workflowName"}}}
+{"data":{"workflow":{"id":"workflowID","name":"workflowName","createdBy":{"id":"507f1f77bcf86cd799439011","login":"jimbob"},"createdAt":"2020-01-20T19:21:30Z","startedAt":null,"finishedAt":null}}}
