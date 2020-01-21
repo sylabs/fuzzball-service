@@ -4,6 +4,18 @@ type Workflow {
 
   # The name assigned to the workflow.
   name: String!
+
+  # User who created the workflow.
+  createdBy: User!
+
+  # When the workflow was created.
+  createdAt: Time!
+
+  # When the workflow started, if it has started.
+  startedAt: Time
+
+  # When the workflow finished, if it has finished.
+  finishedAt: Time
 }
 
 # An edge in a connection.

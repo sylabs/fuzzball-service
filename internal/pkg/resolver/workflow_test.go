@@ -72,8 +72,15 @@ func TestWorkflow(t *testing.T) {
 			query OpName($id: ID!)
 			{
 			  workflow(id: $id) {
-				id
-				name
+			    id
+			    name
+			    createdBy {
+			      id
+			      login
+			    }
+			    createdAt
+			    startedAt
+			    finishedAt
 			  }
 			}`
 			args := map[string]interface{}{
@@ -114,11 +121,18 @@ func TestCreateWorkflow(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			q := `
 			mutation OpName($name: String!) {
-				createWorkflow(name: $name) {
-				  id
-				  name
-				}
-			  }`
+			  createWorkflow(name: $name) {
+			    id
+			    name
+			    createdBy {
+			      id
+			      login
+			    }
+			    createdAt
+			    startedAt
+			    finishedAt
+			  }
+			}`
 			args := map[string]interface{}{
 				"name": tt.wfName,
 			}
@@ -157,11 +171,18 @@ func TestDeleteWorkflow(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			q := `
 			mutation OpName($id: ID!) {
-				deleteWorkflow(id: $id) {
-				  id
-				  name
-				}
-			  }`
+			  deleteWorkflow(id: $id) {
+			    id
+			    name
+			    createdBy {
+			      id
+			      login
+			    }
+			    createdAt
+			    startedAt
+			    finishedAt
+			  }
+			}`
 
 			args := map[string]interface{}{
 				"id": tt.id,
