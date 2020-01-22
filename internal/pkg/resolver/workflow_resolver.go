@@ -59,3 +59,24 @@ func (r *WorkflowResolver) StartedAt() *graphql.Time {
 func (r *WorkflowResolver) FinishedAt() *graphql.Time {
 	return nil // TODO
 }
+
+// Jobs looks up jobs associated with the workflow.
+func (r *WorkflowResolver) Jobs(ctx context.Context, args struct {
+	After  *string
+	Before *string
+	First  *int
+	Last   *int
+}) (*JobConnectionResolver, error) {
+	pa := model.PageArgs{
+		After:  args.After,
+		Before: args.Before,
+		First:  args.First,
+		Last:   args.Last,
+	}
+
+	p, err := r.p.GetJobsByWorkflowID(ctx, pa, r.w.ID)
+	if err != nil {
+		return nil, err
+	}
+	return &JobConnectionResolver{p, r.p}, nil
+}

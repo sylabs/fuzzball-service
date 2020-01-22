@@ -13,7 +13,7 @@ import (
 
 const workflowCollectionName = "workflows"
 
-// CreateWorkflow creates a new workflow. If an ID is provided in j, it is ignored and replaced
+// CreateWorkflow creates a new workflow. If an ID is provided in w, it is ignored and replaced
 // with a unique identifier in the returned workflow.
 func (c *Connection) CreateWorkflow(ctx context.Context, w model.Workflow) (model.Workflow, error) {
 	// We want the DB cluster to generate an ID, to ensure it's globally unique.
@@ -22,6 +22,8 @@ func (c *Connection) CreateWorkflow(ctx context.Context, w model.Workflow) (mode
 	if err != nil {
 		return model.Workflow{}, fmt.Errorf("failed to create workflow: %w", err)
 	}
+
+	// We want the DB cluster to generate an ID, to ensure it's globally unique.
 	w.ID = ir.InsertedID.(primitive.ObjectID).Hex()
 	return w, nil
 }

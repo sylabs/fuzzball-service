@@ -1,4 +1,4 @@
 type Mutation {
-  createWorkflow(name: String!): Workflow
+  createWorkflow(spec: WorkflowSpec!): Workflow
   deleteWorkflow(id: ID!): Workflow
 }

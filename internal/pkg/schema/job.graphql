@@ -1,0 +1,44 @@
+type Job {
+  # Unique job ID.
+  id: ID!
+
+  # The name assigned to the job.
+  name: String!
+
+  # The container image URI for the job.
+  image: String!
+
+  # The command and args to be executed in the container shell.
+  command: [String!]!
+}
+
+type JobEdge {
+    # A cursor for use in pagination
+    cursor: String!
+
+    # The item at the end of the edge.
+    node: Job
+}
+
+type JobConnection {
+    # A list of edges.
+    edges: [JobEdge]
+
+    # Information to aid in pagination.
+    pageInfo: PageInfo!
+
+    # Identifies the total count of items in the connection.
+    totalCount: Int!
+}
+
+# The input used to declare a job.
+input JobSpec {
+  # The name assigned to the job.
+  name: String!
+
+  # The container image URI for the job.
+  image: String!
+
+  # The command and args to be executed in the container shell.
+  command: [String!]!
+}

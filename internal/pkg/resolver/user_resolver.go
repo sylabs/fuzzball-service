@@ -50,3 +50,29 @@ func (r *UserResolver) Workflows(ctx context.Context, args struct {
 	}
 	return &WorkflowConnectionResolver{p, r.p}, nil
 }
+
+// Jobs looks up jobs associated with the user.
+func (r *UserResolver) Jobs(ctx context.Context, args struct {
+	After  *string
+	Before *string
+	First  *int32
+	Last   *int32
+}) (*JobConnectionResolver, error) {
+	pa := model.PageArgs{
+		After:  args.After,
+		Before: args.Before,
+	}
+	if args.First != nil {
+		first := int(*args.First)
+		pa.First = &first
+	}
+	if args.Last != nil {
+		last := int(*args.Last)
+		pa.Last = &last
+	}
+	p, err := r.p.GetJobs(ctx, pa)
+	if err != nil {
+		return nil, err
+	}
+	return &JobConnectionResolver{p, r.p}, nil
+}
