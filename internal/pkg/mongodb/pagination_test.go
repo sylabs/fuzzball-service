@@ -1,11 +1,15 @@
 // Copyright (c) 2020, Sylabs, Inc. All rights reserved.
 
+// +build integration
+
 package mongodb
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/sylabs/compute-service/internal/pkg/model"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -60,6 +64,49 @@ func TestParsePageOpts(t *testing.T) {
 			}
 			if got, want := b, tt.wantBefore; got != want {
 				t.Errorf("got before %v, want %v", got, want)
+			}
+		})
+	}
+}
+
+func TestUnmarshal(t *testing.T) {
+	// Generate some test data.
+	b, err := bson.Marshal(bson.D{{Key: "values", Value: []string{"one", "two"}}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	res := struct {
+		Values []bson.RawValue `bson:"values"`
+	}{}
+	if err := bson.Unmarshal(b, &res); err != nil {
+		t.Fatal(err)
+	}
+
+	var result string
+	var results []string
+
+	tests := []struct {
+		name        string
+		rvs         []bson.RawValue
+		results     interface{}
+		wantResults []string
+		wantErr     bool
+	}{
+		{"NilResult", res.Values, nil, nil, true},
+		{"NotPointer", res.Values, result, nil, true},
+		{"NotSlice", res.Values, &result, nil, true},
+		{"NotSlice", res.Values, &results, []string{"one", "two"}, false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := unmarshal(tt.rvs, tt.results)
+			if (err != nil) != tt.wantErr {
+				t.Fatalf("unmarshal() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if err == nil {
+				if got, want := results, tt.wantResults; !reflect.DeepEqual(got, want) {
+					t.Errorf("got results %v, want %v", got, want)
+				}
 			}
 		})
 	}
