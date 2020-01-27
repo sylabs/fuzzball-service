@@ -29,14 +29,20 @@ func (r *UserResolver) Login() string {
 func (r *UserResolver) Workflows(ctx context.Context, args struct {
 	After  *string
 	Before *string
-	First  *int
-	Last   *int
+	First  *int32
+	Last   *int32
 }) (*WorkflowConnectionResolver, error) {
 	pa := model.PageArgs{
 		After:  args.After,
 		Before: args.Before,
-		First:  args.First,
-		Last:   args.Last,
+	}
+	if args.First != nil {
+		first := int(*args.First)
+		pa.First = &first
+	}
+	if args.Last != nil {
+		last := int(*args.Last)
+		pa.Last = &last
 	}
 	p, err := r.p.GetWorkflows(ctx, pa)
 	if err != nil {
