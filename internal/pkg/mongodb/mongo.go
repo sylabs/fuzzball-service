@@ -9,6 +9,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+const maxPageSize = 100
+
 // Connection is an active connection to a MongoDB database.
 type Connection struct {
 	db *mongo.Database
