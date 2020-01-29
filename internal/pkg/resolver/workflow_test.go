@@ -47,6 +47,13 @@ func (p *mockPersister) GetWorkflows(ctx context.Context, pa model.PageArgs) (mo
 	return p.wp, nil
 }
 
+func (p *mockPersister) SetWorkflowStatus(ctx context.Context, id, status string) error {
+	if got, want := id, p.w.ID; got != want {
+		return fmt.Errorf("got id %v, want %v", got, want)
+	}
+	return nil
+}
+
 func (p *mockPersister) CreateJob(ctx context.Context, j model.Job) (model.Job, error) {
 	if got, want := j.Name, p.j.Name; got != want {
 		return model.Job{}, fmt.Errorf("got name %v, want %v", got, want)
@@ -80,6 +87,13 @@ func (p *mockPersister) GetJobsByWorkflowID(ctx context.Context, pa model.PageAr
 		return model.JobsPage{}, fmt.Errorf("got page args %v, want %v", got, want)
 	}
 	return p.jp, nil
+}
+
+func (p *mockPersister) SetJobStatus(ctx context.Context, id, status string, exitCode int) error {
+	if got, want := id, p.j.ID; got != want {
+		return fmt.Errorf("got id %v, want %v", got, want)
+	}
+	return nil
 }
 
 func TestWorkflow(t *testing.T) {

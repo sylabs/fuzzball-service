@@ -66,3 +66,20 @@ func (c *Connection) GetWorkflows(ctx context.Context, pa model.PageArgs) (p mod
 	p.TotalCount = tc
 	return p, nil
 }
+
+// SetWorkflowStatus updates a workflow's status.
+// If the supplied ID is not valid, or there there is
+// not a workflow with a matching ID in the database, an error is returned.
+func (c *Connection) SetWorkflowStatus(ctx context.Context, id, status string) (err error) {
+	oid, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return fmt.Errorf("failed to convert object ID: %w", err)
+	}
+
+	update := bson.M{"$set": bson.M{"status": status}}
+	err = c.db.Collection(workflowCollectionName).FindOneAndUpdate(ctx, bson.M{"_id": oid}, update).Err()
+	if err != nil {
+		return fmt.Errorf("failed to update workflow status: %w", err)
+	}
+	return nil
+}

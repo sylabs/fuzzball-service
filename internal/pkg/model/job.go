@@ -8,6 +8,8 @@ type Job struct {
 	Name       string   `bson:"name"`
 	Image      string   `bson:"image"`
 	Command    []string `bson:"command"`
+	Status     string   `bson:"status"`
+	ExitCode   int      `bson:"exitCode"`
 }
 
 // JobsPage represents a page of jobs resulting from a query, and associated metadata.

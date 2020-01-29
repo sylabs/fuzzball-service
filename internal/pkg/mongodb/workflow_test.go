@@ -135,3 +135,32 @@ func TestGetWorkflow(t *testing.T) {
 		})
 	}
 }
+
+func TestSetWorkflowStatus(t *testing.T) {
+	w := insertTestWorkflow(t, testConnection.db)
+	defer deleteTestWorkflow(t, testConnection.db, w.ID)
+
+	// Get should return an unfinished workflow.
+	w, err := testConnection.GetWorkflow(context.Background(), w.ID)
+	if err != nil {
+		t.Error("unexpected failure")
+	}
+
+	if w.Status != "" {
+		t.Errorf("unexpected status: got %q, want %q", w.Status, "")
+	}
+
+	if err := testConnection.SetWorkflowStatus(context.Background(), w.ID, "newStatus"); err != nil {
+		t.Error("unexpected failure")
+	}
+
+	// Get should return a finished workflow.
+	w, err = testConnection.GetWorkflow(context.Background(), w.ID)
+	if err != nil {
+		t.Error("unexpected failure")
+	}
+
+	if w.Status != "newStatus" {
+		t.Errorf("unexpected status: got %q, want %q", w.Status, "newStatus")
+	}
+}
