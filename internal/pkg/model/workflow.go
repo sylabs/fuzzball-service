@@ -14,3 +14,9 @@ type WorkflowsPage struct {
 	PageInfo   PageInfo   // Information to aid in pagination.
 	TotalCount int        // Identifies the total count of items in the connection.
 }
+
+// WorkflowSpec represents a workflow specification
+type WorkflowSpec struct {
+	Name string    `bson:"name"`
+	Jobs []JobSpec `bson:"jobs"`
+}

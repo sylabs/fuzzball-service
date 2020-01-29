@@ -12,6 +12,7 @@ import (
 // Persister is the interface by which all data is persisted.
 type Persister interface {
 	WorkflowPersister
+	JobPersister
 }
 
 // Resolver is the root type for resolving GraphQL queries.

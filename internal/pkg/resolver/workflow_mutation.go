@@ -10,25 +10,42 @@ import (
 
 // CreateWorkflow creates a new workflow.
 func (r Resolver) CreateWorkflow(ctx context.Context, args struct {
-	Name string
+	Spec model.WorkflowSpec
 }) (*WorkflowResolver, error) {
-	j := model.Workflow{
-		Name: args.Name,
-	}
-	j, err := r.p.CreateWorkflow(ctx, j)
+	// Create workflow document
+	w, err := r.p.CreateWorkflow(ctx, model.Workflow{Name: args.Spec.Name})
 	if err != nil {
 		return nil, err
 	}
-	return &WorkflowResolver{j, r.p}, nil
+
+	for _, js := range args.Spec.Jobs {
+		_, err := r.p.CreateJob(ctx, model.Job{
+			WorkflowID: w.ID,
+			Name:       js.Name,
+			Image:      js.Image,
+			Command:    js.Command,
+		})
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return &WorkflowResolver{w, r.p}, nil
 }
 
 // DeleteWorkflow deletes a workflow.
 func (r Resolver) DeleteWorkflow(ctx context.Context, args struct {
 	ID string
 }) (*WorkflowResolver, error) {
-	j, err := r.p.DeleteWorkflow(ctx, args.ID)
+	w, err := r.p.DeleteWorkflow(ctx, args.ID)
 	if err != nil {
 		return nil, err
 	}
-	return &WorkflowResolver{j, r.p}, nil
+
+	err = r.p.DeleteJobsByWorkflowID(ctx, w.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &WorkflowResolver{w, r.p}, nil
 }

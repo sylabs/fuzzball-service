@@ -61,48 +61,48 @@ func TestCreateWorkflow(t *testing.T) {
 	}
 
 	// Create should succeed.
-	j, err := testConnection.CreateWorkflow(context.Background(), orig)
+	w, err := testConnection.CreateWorkflow(context.Background(), orig)
 	if err != nil {
 		t.Fatalf("failed to create: %s", err)
 	}
-	defer deleteTestWorkflow(t, testConnection.db, j.ID)
+	defer deleteTestWorkflow(t, testConnection.db, w.ID)
 
 	// Verify returned workflow. Force ID since it is allocated by CreateWorkflow.
-	orig.ID = j.ID
-	if _, err := primitive.ObjectIDFromHex(j.ID); err != nil {
+	orig.ID = w.ID
+	if _, err := primitive.ObjectIDFromHex(w.ID); err != nil {
 		t.Fatalf("workflow has invalid ID")
 	}
-	if got, want := j, orig; !reflect.DeepEqual(got, want) {
+	if got, want := w, orig; !reflect.DeepEqual(got, want) {
 		t.Errorf("got %v, want %v", got, want)
 	}
 
 	// Get should succeed.
-	j, err = testConnection.GetWorkflow(context.Background(), j.ID)
+	w, err = testConnection.GetWorkflow(context.Background(), w.ID)
 	if err != nil {
 		t.Fatalf("failed to get: %s", err)
 	}
 
 	// Verify returned workflow.
-	if got, want := j, orig; !reflect.DeepEqual(got, want) {
+	if got, want := w, orig; !reflect.DeepEqual(got, want) {
 		t.Errorf("got %v, want %v", got, want)
 	}
 }
 
 func TestDeleteWorkflow(t *testing.T) {
-	j := insertTestWorkflow(t, testConnection.db)
+	w := insertTestWorkflow(t, testConnection.db)
 
 	// Delete should succeed.
-	if _, err := testConnection.DeleteWorkflow(context.Background(), j.ID); err != nil {
+	if _, err := testConnection.DeleteWorkflow(context.Background(), w.ID); err != nil {
 		t.Fatalf("failed to delete: %s", err)
 	}
 
 	// Get should fail.
-	if _, err := testConnection.GetWorkflow(context.Background(), j.ID); err == nil {
+	if _, err := testConnection.GetWorkflow(context.Background(), w.ID); err == nil {
 		t.Error("unexpected success")
 	}
 
 	// Delete should fail the second time.
-	if _, err := testConnection.DeleteWorkflow(context.Background(), j.ID); err == nil {
+	if _, err := testConnection.DeleteWorkflow(context.Background(), w.ID); err == nil {
 		t.Error("unexpected success")
 	}
 
@@ -113,15 +113,15 @@ func TestDeleteWorkflow(t *testing.T) {
 }
 
 func TestGetWorkflow(t *testing.T) {
-	j := insertTestWorkflow(t, testConnection.db)
-	defer deleteTestWorkflow(t, testConnection.db, j.ID)
+	w := insertTestWorkflow(t, testConnection.db)
+	defer deleteTestWorkflow(t, testConnection.db, w.ID)
 
 	tests := []struct {
 		name    string
 		id      string
 		wantErr bool
 	}{
-		{"Found", j.ID, false},
+		{"Found", w.ID, false},
 		{"NotFound", primitive.NewObjectID().Hex(), true},
 		{"BadID", "1234", true},
 	}
