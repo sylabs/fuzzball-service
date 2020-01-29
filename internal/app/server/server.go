@@ -10,7 +10,9 @@ import (
 
 	"github.com/graph-gophers/graphql-go"
 	"github.com/sirupsen/logrus"
+	"github.com/sylabs/compute-service/internal/pkg/mongodb"
 	"github.com/sylabs/compute-service/internal/pkg/resolver"
+	"github.com/sylabs/compute-service/internal/pkg/scheduler"
 	"github.com/sylabs/compute-service/internal/pkg/schema"
 )
 
@@ -20,7 +22,7 @@ type Config struct {
 	HTTPAddr           string
 	CORSAllowedOrigins []string
 	CORSDebug          bool
-	Persist            resolver.Persister
+	Persist            *mongodb.Connection
 }
 
 // Server contains the state of the server.
@@ -41,12 +43,18 @@ func New(ctx context.Context, c Config) (s Server, err error) {
 		corsDebug:          c.CORSDebug,
 	}
 
+	// Initialize scheduler.
+	sched, err := scheduler.New(c.Persist)
+	if err != nil {
+		return Server{}, err
+	}
+
 	// Initialize GraphQL.
 	sch, err := schema.String()
 	if err != nil {
 		return Server{}, fmt.Errorf("unable to init GraphQL schema: %w", err)
 	}
-	r, err := resolver.New(c.Persist)
+	r, err := resolver.New(c.Persist, sched)
 	if err != nil {
 		return Server{}, err
 	}
