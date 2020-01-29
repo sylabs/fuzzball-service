@@ -17,6 +17,9 @@ type Workflow {
   # When the workflow finished, if it has finished.
   finishedAt: Time
 
+  # Description of the state of the workflow.
+  status: String!
+
   # Look up jobs.
   jobs(
     # Returns the elements in the list that come after the specified cursor.

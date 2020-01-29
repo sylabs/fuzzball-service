@@ -10,6 +10,12 @@ type Job {
 
   # The command and args to be executed in the container shell.
   command: [String!]!
+
+  # Description of the state of the job.
+  status: String!
+
+  # Exit code of the Singularity command that executed the job.
+  exitCode: Int
 }
 
 type JobEdge {

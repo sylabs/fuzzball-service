@@ -60,6 +60,11 @@ func (r *WorkflowResolver) FinishedAt() *graphql.Time {
 	return nil // TODO
 }
 
+// Status resolves the state of the workflow.
+func (r *WorkflowResolver) Status() string {
+	return r.w.Status
+}
+
 // Jobs looks up jobs associated with the workflow.
 func (r *WorkflowResolver) Jobs(ctx context.Context, args struct {
 	After  *string
