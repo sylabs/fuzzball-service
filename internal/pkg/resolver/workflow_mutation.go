@@ -18,8 +18,9 @@ func (r Resolver) CreateWorkflow(ctx context.Context, args struct {
 		return nil, err
 	}
 
+	var jobs []model.Job
 	for _, js := range args.Spec.Jobs {
-		_, err := r.p.CreateJob(ctx, model.Job{
+		j, err := r.p.CreateJob(ctx, model.Job{
 			WorkflowID: w.ID,
 			Name:       js.Name,
 			Image:      js.Image,
@@ -28,6 +29,12 @@ func (r Resolver) CreateWorkflow(ctx context.Context, args struct {
 		if err != nil {
 			return nil, err
 		}
+		jobs = append(jobs, j)
+	}
+
+	// Schedule the workflow.
+	if err := r.s.AddWorkflow(ctx, w, jobs); err != nil {
+		return nil, err
 	}
 
 	return &WorkflowResolver{w, r.p}, nil

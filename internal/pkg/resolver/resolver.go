@@ -3,10 +3,12 @@
 package resolver
 
 import (
+	"context"
 	"os"
 	"runtime"
 
 	"github.com/pbnjay/memory"
+	"github.com/sylabs/compute-service/internal/pkg/model"
 )
 
 // Persister is the interface by which all data is persisted.
@@ -15,14 +17,20 @@ type Persister interface {
 	JobPersister
 }
 
+// Scheduler is the interface by which all workflows are scheduled.
+type Scheduler interface {
+	AddWorkflow(context.Context, model.Workflow, []model.Job) error
+}
+
 // Resolver is the root type for resolving GraphQL queries.
 type Resolver struct {
 	p  Persister
+	s  Scheduler
 	si SystemInfo
 }
 
 // New creates a new GraphQL resolver.
-func New(p Persister) (*Resolver, error) {
+func New(p Persister, s Scheduler) (*Resolver, error) {
 	hostName, err := os.Hostname()
 	if err != nil {
 		return nil, err
@@ -30,6 +38,7 @@ func New(p Persister) (*Resolver, error) {
 
 	return &Resolver{
 		p: p,
+		s: s,
 		si: SystemInfo{
 			HostName:        hostName,
 			CPUArchitecture: runtime.GOARCH,

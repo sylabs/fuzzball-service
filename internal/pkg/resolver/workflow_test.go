@@ -11,6 +11,12 @@ import (
 	"github.com/sylabs/compute-service/internal/pkg/model"
 )
 
+type mockScheduler struct{}
+
+func (s *mockScheduler) AddWorkflow(ctx context.Context, w model.Workflow, jobs []model.Job) error {
+	return nil
+}
+
 type mockPersister struct {
 	wantPA model.PageArgs
 	j      model.Job
@@ -149,6 +155,7 @@ func TestWorkflow(t *testing.T) {
 
 func TestCreateWorkflow(t *testing.T) {
 	r := Resolver{
+		s: &mockScheduler{},
 		p: &mockPersister{
 			w: model.Workflow{
 				ID:   "workflowID",
