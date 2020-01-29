@@ -4,8 +4,9 @@ package model
 
 // Workflow represents a workflow.
 type Workflow struct {
-	ID   string `bson:"_id,omitempty"`
-	Name string `bson:"name"`
+	ID     string `bson:"_id,omitempty"`
+	Name   string `bson:"name"`
+	Status string `bson:"status"`
 }
 
 // WorkflowsPage represents a page of workflows resulting from a query, and associated metadata.

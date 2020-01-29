@@ -162,3 +162,39 @@ func TestGetJob(t *testing.T) {
 		})
 	}
 }
+
+func TestSetJobStatus(t *testing.T) {
+	j := insertTestJob(t, testConnection.db)
+	defer deleteTestJob(t, testConnection.db, j.ID)
+
+	// Get should return an unfinished job.
+	j, err := testConnection.GetJob(context.Background(), j.ID)
+	if err != nil {
+		t.Error("unexpected failure")
+	}
+
+	if j.Status != "" {
+		t.Errorf("unexpected status: got %q, want %q", j.Status, "")
+	}
+	if j.ExitCode != 0 {
+		t.Errorf("unexpected exit code: got %d, want %d", j.ExitCode, 0)
+	}
+
+	if err := testConnection.SetJobStatus(context.Background(), j.ID, "newStatus", 1); err != nil {
+		t.Error("unexpected failure")
+	}
+
+	// Get should return a finished job.
+	j, err = testConnection.GetJob(context.Background(), j.ID)
+	if err != nil {
+		t.Error("unexpected failure")
+	}
+
+	if j.Status != "newStatus" {
+		t.Errorf("unexpected status: got %q, want %q", j.Status, "newStatus")
+	}
+	if j.ExitCode != 1 {
+		t.Errorf("unexpected exit code: got %d, want %d", j.ExitCode, 1)
+	}
+
+}
