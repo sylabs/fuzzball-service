@@ -70,3 +70,17 @@ func (r *JobResolver) StartedAt() *graphql.Time {
 func (r *JobResolver) FinishedAt() *graphql.Time {
 	return nil // TODO
 }
+
+// Status resolves the state of the job.
+func (r *JobResolver) Status() string {
+	return r.j.Status
+}
+
+// ExitCode resolves the exit status process that ran the job.
+func (r *JobResolver) ExitCode() *int32 {
+	if r.j.Status == "COMPLETED" {
+		i := int32(r.j.ExitCode)
+		return &i
+	}
+	return nil
+}
