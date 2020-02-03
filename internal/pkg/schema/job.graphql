@@ -16,6 +16,18 @@ type Job {
 
   # Exit code of the Singularity command that executed the job.
   exitCode: Int
+
+  # Look up jobs that need to be completed before this one can execute.
+  requires(
+    # Returns the elements in the list that come after the specified cursor.
+    after: String
+    # Returns the elements in the list that come before the specified cursor.
+    before: String
+    # Returns the first n elements from the list.
+    first: Int
+    # Returns the last n elements from the list.
+    last: Int
+  ): JobConnection!
 }
 
 type JobEdge {
@@ -47,4 +59,7 @@ input JobSpec {
 
   # The command and args to be executed in the container shell.
   command: [String!]!
+
+  # The list of jobs that must be executed before this one.
+  requires: [String!]
 }

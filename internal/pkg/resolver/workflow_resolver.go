@@ -18,6 +18,12 @@ type WorkflowPersister interface {
 	GetWorkflows(context.Context, model.PageArgs) (model.WorkflowsPage, error)
 }
 
+// workflowSpec represents a workflow specification
+type workflowSpec struct {
+	Name string    `bson:"name"`
+	Jobs []jobSpec `bson:"jobs"`
+}
+
 // WorkflowResolver resolves a workflow.
 type WorkflowResolver struct {
 	w model.Workflow

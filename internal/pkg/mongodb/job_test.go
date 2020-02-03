@@ -163,6 +163,38 @@ func TestGetJob(t *testing.T) {
 	}
 }
 
+func TestGetJobsByID(t *testing.T) {
+	j1 := insertTestJob(t, testConnection.db)
+	defer deleteTestJob(t, testConnection.db, j1.ID)
+	j2 := insertTestJob(t, testConnection.db)
+	defer deleteTestJob(t, testConnection.db, j2.ID)
+
+	tests := []struct {
+		name    string
+		jobs    []string
+		wantNum int
+	}{
+		{"FoundOne", []string{j1.ID}, 1},
+		{"FoundNone", []string{"000000000000000000000000"}, 0},
+		{"FoundTwo", []string{j1.ID, j2.ID}, 2},
+		{"Search3Find2", []string{j1.ID, j2.ID, "000000000000000000000000"}, 2},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			p, err := testConnection.GetJobsByID(context.Background(), model.PageArgs{}, testWorkflowID, tt.jobs)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if p.TotalCount != tt.wantNum {
+				t.Fatalf("want %d results, got %d", tt.wantNum, p.TotalCount)
+			}
+
+		})
+	}
+}
+
 func TestSetJobStatus(t *testing.T) {
 	j := insertTestJob(t, testConnection.db)
 	defer deleteTestJob(t, testConnection.db, j.ID)

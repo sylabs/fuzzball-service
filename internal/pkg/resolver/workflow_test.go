@@ -88,6 +88,13 @@ func (p *mockPersister) GetJobs(ctx context.Context, pa model.PageArgs) (model.J
 	return p.jp, nil
 }
 
+func (p *mockPersister) GetJobsByID(ctx context.Context, pa model.PageArgs, wid string, names []string) (model.JobsPage, error) {
+	if got, want := pa, p.wantPA; !reflect.DeepEqual(got, want) {
+		return model.JobsPage{}, fmt.Errorf("got page args %v, want %v", got, want)
+	}
+	return p.jp, nil
+}
+
 func (p *mockPersister) GetJobsByWorkflowID(ctx context.Context, pa model.PageArgs, id string) (model.JobsPage, error) {
 	if got, want := pa, p.wantPA; !reflect.DeepEqual(got, want) {
 		return model.JobsPage{}, fmt.Errorf("got page args %v, want %v", got, want)
