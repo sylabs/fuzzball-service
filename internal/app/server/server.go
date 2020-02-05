@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	"github.com/graph-gophers/graphql-go"
+	"github.com/nats-io/nats.go"
 	"github.com/sirupsen/logrus"
 	"github.com/sylabs/compute-service/internal/pkg/mongodb"
 	"github.com/sylabs/compute-service/internal/pkg/resolver"
@@ -23,6 +24,7 @@ type Config struct {
 	CORSAllowedOrigins []string
 	CORSDebug          bool
 	Persist            *mongodb.Connection
+	NATSConn           *nats.Conn
 }
 
 // Server contains the state of the server.
