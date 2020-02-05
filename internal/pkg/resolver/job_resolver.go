@@ -17,6 +17,14 @@ type JobPersister interface {
 	GetJob(context.Context, string) (model.Job, error)
 	GetJobs(context.Context, model.PageArgs) (model.JobsPage, error)
 	GetJobsByWorkflowID(context.Context, model.PageArgs, string) (model.JobsPage, error)
+	GetJobsByID(context.Context, model.PageArgs, string, []string) (model.JobsPage, error)
+}
+
+type jobSpec struct {
+	Name     string    `bson:"name"`
+	Image    string    `bson:"image"`
+	Command  []string  `bson:"command"`
+	Requires *[]string `bson:"requires"`
 }
 
 // JobResolver resolves a workflow.
@@ -83,4 +91,26 @@ func (r *JobResolver) ExitCode() *int32 {
 		return &i
 	}
 	return nil
+}
+
+// Requires looks up jobs that need to be executed before the current one.
+func (r *JobResolver) Requires(ctx context.Context, args struct {
+	After  *string
+	Before *string
+	First  *int
+	Last   *int
+}) (*JobConnectionResolver, error) {
+	pa := model.PageArgs{
+		After:  args.After,
+		Before: args.Before,
+		First:  args.First,
+		Last:   args.Last,
+	}
+
+	p, err := r.p.GetJobsByID(ctx, pa, r.j.WorkflowID, r.j.Requires)
+	if err != nil {
+		return nil, err
+	}
+
+	return &JobConnectionResolver{p, r.p}, nil
 }

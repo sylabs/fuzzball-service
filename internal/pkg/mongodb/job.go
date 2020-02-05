@@ -76,6 +76,34 @@ func (c *Connection) GetJobs(ctx context.Context, pa model.PageArgs) (p model.Jo
 	return p, nil
 }
 
+// GetJobsByID returns a list of jobs by name within a given workflow.
+func (c *Connection) GetJobsByID(ctx context.Context, pa model.PageArgs, wid string, ids []string) (p model.JobsPage, err error) {
+	// short circuit if we have no ids to look up
+	// mongo does not like an empty array passed
+	// with the $in parameter
+	if len(ids) == 0 {
+		return p, nil
+	}
+
+	var oids []primitive.ObjectID
+	for _, id := range ids {
+		oid, err := primitive.ObjectIDFromHex(id)
+		if err != nil {
+			return p, fmt.Errorf("failed to convert object ID: %w", err)
+		}
+		oids = append(oids, oid)
+	}
+
+	filter := bson.M{"workflowID": wid, "_id": bson.M{"$in": oids}}
+	pi, tc, err := findPageEx(ctx, c.db.Collection(jobCollectionName), maxPageSize, filter, pa, &p.Jobs)
+	if err != nil {
+		return p, err
+	}
+	p.PageInfo = pi
+	p.TotalCount = tc
+	return p, nil
+}
+
 // GetJobsByWorkflowID returns a list of all jobs for a given workflow.
 func (c *Connection) GetJobsByWorkflowID(ctx context.Context, pa model.PageArgs, wid string) (p model.JobsPage, err error) {
 	pi, tc, err := findPageEx(ctx, c.db.Collection(jobCollectionName), maxPageSize, bson.M{"workflowID": wid}, pa, &p.Jobs)
