@@ -4,12 +4,15 @@ package scheduler
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"github.com/nats-io/nats.go"
 	"github.com/sirupsen/logrus"
-	"github.com/sylabs/compute-service/internal/pkg/agent"
 	"github.com/sylabs/compute-service/internal/pkg/model"
 )
+
+const jobStartAckTimeout = time.Minute
 
 // runJob runs a job to completion.
 func (s *Scheduler) runJob(ctx context.Context, j model.Job) error {
@@ -22,15 +25,33 @@ func (s *Scheduler) runJob(ctx context.Context, j model.Job) error {
 		log.WithField("took", time.Since(t)).Print("job completed")
 	}(time.Now())
 
-	s.p.SetJobStatus(ctx, j.ID, "RUNNING", 0)
+	jobFinished := make(chan struct{})
 
-	rc, err := agent.RunJob(context.TODO(), j)
+	// TODO: this should be a persistent subscription elsewhere.
+	_, err := s.m.Subscribe(fmt.Sprintf("job.%v.finished", j.ID), func(msg struct {
+		Status string
+		RC     int
+	}) {
+		s.p.SetJobStatus(ctx, j.ID, msg.Status, msg.RC)
+		close(jobFinished)
+	})
 	if err != nil {
-		s.p.SetJobStatus(ctx, j.ID, "FAILED", rc)
 		return err
 	}
-	s.p.SetJobStatus(ctx, j.ID, "COMPLETED", rc)
-	return nil
+
+	var resp nats.Msg
+	if err := s.m.Request("node.1.job.start", j, &resp, jobStartAckTimeout); err != nil {
+		log.WithError(err).Print("failed to start job")
+		return err
+	}
+
+	// Wait for response or timeout.
+	select {
+	case <-jobFinished:
+		return nil
+	case <-ctx.Done():
+		return ctx.Err()
+	}
 }
 
 // runWorkflow runs a workflow to completion.
@@ -49,6 +70,9 @@ func (s *Scheduler) runWorkflow(w model.Workflow, jobs []model.Job) {
 	s.p.SetWorkflowStatus(ctx, w.ID, "RUNNING")
 
 	for _, j := range jobs {
+		ctx, cancel := context.WithTimeout(ctx, time.Minute) // TODO
+		defer cancel()
+
 		if err := s.runJob(ctx, j); err != nil {
 			break
 		}

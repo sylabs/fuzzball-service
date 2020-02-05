@@ -1,21 +1,34 @@
 // Copyright (c) 2020, Sylabs, Inc. All rights reserved.
 
+// +build integration
+
 package server
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"net/http"
+	"os"
 	"sync"
 	"testing"
+
+	"github.com/nats-io/nats.go"
+)
+
+var (
+	natsURIs = flag.String("nats_uris", nats.DefaultURL, "Comma-separated list of NATS server URIs")
 )
 
 func TestNewRunStop(t *testing.T) {
 	ctx := context.Background()
 
+	nc, err := nats.Connect(*natsURIs)
+
 	// Get a new server.
 	c := Config{
 		HTTPAddr: "localhost:",
+		NATSConn: nc,
 	}
 	s, err := New(ctx, c)
 	if err != nil {
@@ -45,4 +58,10 @@ func TestNewRunStop(t *testing.T) {
 
 	// Wait until the server goroutine stops.
 	wg.Wait()
+}
+
+func TestMain(m *testing.M) {
+	flag.Parse()
+
+	os.Exit(m.Run())
 }

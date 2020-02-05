@@ -36,8 +36,13 @@ type Server struct {
 
 // New returns a new Server.
 func New(ctx context.Context, c Config) (s Server, err error) {
+	ec, err := nats.NewEncodedConn(c.NATSConn, nats.JSON_ENCODER)
+	if err != nil {
+		return Server{}, err
+	}
+
 	// Initialize scheduler.
-	sched, err := scheduler.New(c.Persist)
+	sched, err := scheduler.New(ec, c.Persist)
 	if err != nil {
 		return Server{}, err
 	}
