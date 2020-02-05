@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	"github.com/graph-gophers/graphql-go"
+	"github.com/nats-io/nats.go"
 	"github.com/sirupsen/logrus"
 	"github.com/sylabs/compute-service/internal/pkg/mongodb"
 	"github.com/sylabs/compute-service/internal/pkg/resolver"
@@ -23,6 +24,7 @@ type Config struct {
 	CORSAllowedOrigins []string
 	CORSDebug          bool
 	Persist            *mongodb.Connection
+	NATSConn           *nats.Conn
 }
 
 // Server contains the state of the server.
@@ -34,8 +36,13 @@ type Server struct {
 
 // New returns a new Server.
 func New(ctx context.Context, c Config) (s Server, err error) {
+	ec, err := nats.NewEncodedConn(c.NATSConn, nats.JSON_ENCODER)
+	if err != nil {
+		return Server{}, err
+	}
+
 	// Initialize scheduler.
-	sched, err := scheduler.New(c.Persist)
+	sched, err := scheduler.New(ec, c.Persist)
 	if err != nil {
 		return Server{}, err
 	}

@@ -11,6 +11,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/nats-io/nats.go"
 	"github.com/sirupsen/logrus"
 	"github.com/sylabs/compute-service/internal/app/server"
 	"github.com/sylabs/compute-service/internal/pkg/mongodb"
@@ -33,6 +34,7 @@ var (
 	corsDebug          = flag.Bool("cors_debug", false, "Enable CORS debugging")
 	mongoURI           = flag.String("mongo_uri", "mongodb://localhost", "URI of MongoDB database")
 	startupTime        = flag.Duration("startup_time", time.Minute, "Amount of time to wait for dependent services to become ready on startup")
+	natsURIs           = flag.String("nats_uris", nats.DefaultURL, "Comma-separated list of NATS server URIs")
 )
 
 // signalHandler catches SIGINT/SIGTERM to perform an orderly shutdown.
@@ -59,6 +61,30 @@ func connectDB(ctx context.Context) (conn *mongodb.Connection, err error) {
 	}(time.Now())
 
 	return mongodb.NewConnection(ctx, *mongoURI, dbName)
+}
+
+// connectNATS attempts to connect to the NATS system.
+func connectNATS(ctx context.Context) (nc *nats.Conn, err error) {
+	logrus.Print("connecting to messaging system")
+	defer func(t time.Time) {
+		if err == nil {
+			log := logrus.WithFields(logrus.Fields{
+				"took":              time.Since(t),
+				"connectedAddr":     nc.ConnectedAddr(),
+				"connectedServerID": nc.ConnectedServerId(),
+				"maxPayload":        nc.MaxPayload(),
+			})
+			if id, err := nc.GetClientID(); err == nil {
+				// Log the client ID, if the server supports it.
+				log = log.WithField("clientID", id)
+			}
+			log.Print("messaging system ready")
+		}
+	}(time.Now())
+
+	o := nats.GetDefaultOptions()
+	o.Servers = strings.Split(*natsURIs, ",")
+	return o.Connect()
 }
 
 func main() {
@@ -91,13 +117,25 @@ func main() {
 		}
 	}()
 
-	// Spin up HTTP server.
+	// Connect to NATS.
+	nc, err := connectNATS(ctx)
+	if err != nil {
+		logrus.WithError(err).Error("failed to connect to messaging system")
+		return
+	}
+	defer func() {
+		logrus.Info("disconnecting from messaging system")
+		nc.Close()
+	}()
+
+	// Spin up server.
 	c := server.Config{
 		Version:            version,
 		HTTPAddr:           *httpAddr,
 		CORSAllowedOrigins: strings.Split(*corsAllowedOrigins, ","),
 		CORSDebug:          *corsDebug,
 		Persist:            conn,
+		NATSConn:           nc,
 	}
 	s, err := server.New(ctx, c)
 	if err != nil {

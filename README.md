@@ -24,10 +24,11 @@ go get -u github.com/jteeuwen/go-bindata/...
 
 In order for go to execute this binary the path in `go env GOPATH` needs to be included in your `PATH`.
 
-To run the server, you'll need a MongoDB endpoint to point it to. If you don't have one already, you can start one with Docker easy enough:
+To run the server, you'll need MongoDB and NATs endpoints to point it to. If you don't have these already, you can start them with Docker easy enough:
 
 ```sh
 docker run -d -p 27017:27017 mongo
+docker run -d -p 4222:4222 nats
 ```
 
 Finally, start the server:
@@ -37,6 +38,8 @@ $ go generate ./... && go run ./cmd/server/
 INFO[0000] starting                                      name="Compute Server" org=Sylabs
 INFO[0000] connecting to database
 INFO[0000] database ready                                took=7.375268ms
+INFO[0000] connecting to messaging system
+INFO[0000] messaging system ready                        took=5.21203ms
 INFO[0000] listening                                     addr="[::]:8080"
 ```
 
@@ -52,10 +55,11 @@ go test ./...
 
 ### Integration Tests
 
-To run integration tests, you'll need a MongoDB endpoint to point it to. If you don't have one already, you can start one with Docker easy enough:
+To run integration tests, you'll need MongoDB and NATs endpoints to point it to. If you don't have these already, you can start them with Docker easy enough:
 
 ```sh
 docker run -d -p 27017:27017 mongo
+docker run -d -p 4222:4222 nats
 ```
 
 Integration tests can then be run like so:
