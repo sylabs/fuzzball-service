@@ -23,11 +23,11 @@ func TestGetVersion(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := &Server{
-				version: tt.version,
+			s := Server{}
+			cfg := Config{
+				Version: tt.version,
 			}
-
-			h, err := s.getVersionHandler()
+			h, err := s.getVersionHandler(cfg)
 			if err != nil {
 				t.Fatalf("failed to get handler: %v", err)
 			}
@@ -70,7 +70,7 @@ func TestGetMetrics(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			s := &Server{}
 
-			h, err := s.getMetricsHandler()
+			h, err := s.getMetricsHandler(Config{})
 			if err != nil {
 				t.Fatalf("failed to get handler: %v", err)
 			}
