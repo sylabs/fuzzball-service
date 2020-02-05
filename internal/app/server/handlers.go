@@ -12,10 +12,10 @@ import (
 )
 
 // getVersionHandler returns a version info handler.
-func (s *Server) getVersionHandler() (http.Handler, error) {
+func (s *Server) getVersionHandler(c Config) (http.Handler, error) {
 	vr := struct {
 		Version string `json:"version"`
-	}{s.version}
+	}{c.Version}
 	b, err := json.Marshal(vr)
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func (s *Server) getVersionHandler() (http.Handler, error) {
 }
 
 // getMetricsHandler returns a Prometheus metrics handler.
-func (*Server) getMetricsHandler() (http.Handler, error) {
+func (*Server) getMetricsHandler(c Config) (http.Handler, error) {
 	ph := promhttp.Handler()
 
 	h := func(w http.ResponseWriter, r *http.Request) {
@@ -50,7 +50,7 @@ func (*Server) getMetricsHandler() (http.Handler, error) {
 }
 
 // getGraphQLHandler returns a GraphQL handler.
-func (s *Server) getGraphQLHandler() (http.Handler, error) {
+func (s *Server) getGraphQLHandler(c Config) (http.Handler, error) {
 	h := func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			http.Error(w, "405 method not allowed", http.StatusMethodNotAllowed)
@@ -78,6 +78,6 @@ func (s *Server) getGraphQLHandler() (http.Handler, error) {
 }
 
 // getGraphiQLHandler returns a GraphiQL handler.
-func (s *Server) getGraphiQLHandler() (http.Handler, error) {
+func (s *Server) getGraphiQLHandler(c Config) (http.Handler, error) {
 	return graphiql.NewGraphiqlHandler("/graphql")
 }

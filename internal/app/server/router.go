@@ -9,7 +9,7 @@ import (
 	"github.com/rs/cors"
 )
 
-type getHandlerFunc func(*Server) (http.Handler, error)
+type getHandlerFunc func(*Server, Config) (http.Handler, error)
 
 var routeConfigs = []struct {
 	pattern string
@@ -22,12 +22,12 @@ var routeConfigs = []struct {
 }
 
 // NewRouter configures router and returns it.
-func NewRouter(s *Server) (http.Handler, error) {
+func (s *Server) NewRouter(c Config) (http.Handler, error) {
 	mux := http.NewServeMux()
 
 	for _, routeConfig := range routeConfigs {
 		// Get handler.
-		h, err := routeConfig.getHandlerFunc(s)
+		h, err := routeConfig.getHandlerFunc(s, c)
 		if err != nil {
 			return nil, err
 		}
@@ -44,8 +44,8 @@ func NewRouter(s *Server) (http.Handler, error) {
 	}
 
 	// Implement CORS specification for all routes.
-	c := cors.New(cors.Options{
-		AllowedOrigins: s.corsAllowedOrigins,
+	cors := cors.New(cors.Options{
+		AllowedOrigins: c.CORSAllowedOrigins,
 		AllowedMethods: []string{
 			http.MethodDelete,
 			http.MethodGet,
@@ -60,7 +60,7 @@ func NewRouter(s *Server) (http.Handler, error) {
 			"Content-Type",
 		},
 		AllowCredentials: true,
-		Debug:            s.corsDebug,
+		Debug:            c.CORSDebug,
 	})
-	return c.Handler(mux), nil
+	return cors.Handler(mux), nil
 }

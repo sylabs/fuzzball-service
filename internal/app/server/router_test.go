@@ -35,7 +35,9 @@ func TestRouteConfigs(t *testing.T) {
 }
 
 func TestRouter(t *testing.T) {
-	h, err := NewRouter(&Server{})
+	sr := Server{}
+	cfg := Config{}
+	h, err := sr.NewRouter(cfg)
 	if err != nil {
 		t.Fatalf("failed to create router: %v", err)
 	}
@@ -85,9 +87,11 @@ func TestRouterCORS(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			h, err := NewRouter(&Server{
-				corsAllowedOrigins: tt.allowedOrigins,
-			})
+			sr := Server{}
+			cfg := Config{
+				CORSAllowedOrigins: tt.allowedOrigins,
+			}
+			h, err := sr.NewRouter(cfg)
 			if err != nil {
 				t.Fatalf("failed to create router: %v", err)
 			}
@@ -166,9 +170,11 @@ func TestRouterCORSPreflight(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			h, err := NewRouter(&Server{
-				corsAllowedOrigins: tt.allowedOrigins,
-			})
+			sr := Server{}
+			cfg := Config{
+				CORSAllowedOrigins: tt.allowedOrigins,
+			}
+			h, err := sr.NewRouter(cfg)
 			if err != nil {
 				t.Fatalf("failed to create router: %v", err)
 			}
@@ -233,7 +239,8 @@ func TestRouterCORSPreflight(t *testing.T) {
 }
 
 func TestRouterNotFound(t *testing.T) {
-	h, err := NewRouter(&Server{})
+	sr := Server{}
+	h, err := sr.NewRouter(Config{})
 	if err != nil {
 		t.Fatalf("failed to create router: %v", err)
 	}

@@ -27,22 +27,13 @@ type Config struct {
 
 // Server contains the state of the server.
 type Server struct {
-	version            string
-	corsAllowedOrigins []string
-	corsDebug          bool
-	httpSrv            *http.Server
-	httpLn             net.Listener
-	schema             *graphql.Schema
+	httpSrv *http.Server
+	httpLn  net.Listener
+	schema  *graphql.Schema
 }
 
 // New returns a new Server.
 func New(ctx context.Context, c Config) (s Server, err error) {
-	s = Server{
-		version:            c.Version,
-		corsAllowedOrigins: c.CORSAllowedOrigins,
-		corsDebug:          c.CORSDebug,
-	}
-
 	// Initialize scheduler.
 	sched, err := scheduler.New(c.Persist)
 	if err != nil {
@@ -65,7 +56,7 @@ func New(ctx context.Context, c Config) (s Server, err error) {
 	s.schema = schema
 
 	// Set up HTTP server.
-	h, err := NewRouter(&s)
+	h, err := s.NewRouter(c)
 	if err != nil {
 		return Server{}, err
 	}
