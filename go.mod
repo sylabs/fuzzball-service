@@ -7,6 +7,7 @@ require (
 	github.com/friendsofgo/graphiql v0.2.2
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/graph-gophers/graphql-go v0.0.0-20191115155744-f33e81362277
+	github.com/nats-io/nats-server/v2 v2.1.4 // indirect
 	github.com/nats-io/nats.go v1.9.1
 	github.com/pbnjay/memory v0.0.0-20190104145345-974d429e7ae4
 	github.com/prometheus/client_golang v1.3.0

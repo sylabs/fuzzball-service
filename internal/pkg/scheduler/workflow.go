@@ -12,7 +12,10 @@ import (
 	"github.com/sylabs/compute-service/internal/pkg/model"
 )
 
-const jobStartAckTimeout = time.Minute
+const (
+	jobStartAckTimeout = time.Minute
+	volumeOpAckTimeout = time.Minute
+)
 
 // runJob runs a job to completion.
 func (s *Scheduler) runJob(ctx context.Context, j model.Job) error {
@@ -54,8 +57,88 @@ func (s *Scheduler) runJob(ctx context.Context, j model.Job) error {
 	}
 }
 
+// createVolume sets up a volume on an agent.
+func (s *Scheduler) createVolume(ctx context.Context, v model.Volume) error {
+	log := logrus.WithFields(logrus.Fields{
+		"VolumeID":   v.ID,
+		"VolumeName": v.Name,
+		"VolumeType": v.Type,
+	})
+	log.Print("creating volume")
+	defer func(t time.Time) {
+		log.WithField("took", time.Since(t)).Print("creation completed")
+	}(time.Now())
+
+	createFinished := make(chan error)
+
+	// TODO: this should be a persistent subscription elsewhere.
+	_, err := s.m.Subscribe(fmt.Sprintf("volume.%v.create", v.ID), func(msg struct {
+		err error
+	}) {
+		createFinished <- msg.err
+		close(createFinished)
+	})
+	if err != nil {
+		return err
+	}
+
+	var resp nats.Msg
+	if err := s.m.Request("node.1.volume.create", v, &resp, volumeOpAckTimeout); err != nil {
+		log.WithError(err).Print("failed to create volume")
+		return err
+	}
+
+	// Wait for response or timeout.
+	select {
+	case err := <-createFinished:
+		return err
+	case <-ctx.Done():
+		return ctx.Err()
+	}
+}
+
+// deleteVolume tears down a volume on an agent.
+func (s *Scheduler) deleteVolume(ctx context.Context, v model.Volume) error {
+	log := logrus.WithFields(logrus.Fields{
+		"VolumeID":   v.ID,
+		"VolumeName": v.Name,
+		"VolumeType": v.Type,
+	})
+	log.Print("deleting volume")
+	defer func(t time.Time) {
+		log.WithField("took", time.Since(t)).Print("deletion completed")
+	}(time.Now())
+
+	deleteFinished := make(chan error)
+
+	// TODO: this should be a persistent subscription elsewhere.
+	_, err := s.m.Subscribe(fmt.Sprintf("volume.%v.delete", v.ID), func(msg struct {
+		err error
+	}) {
+		deleteFinished <- msg.err
+		close(deleteFinished)
+	})
+	if err != nil {
+		return err
+	}
+
+	var resp nats.Msg
+	if err := s.m.Request("node.1.volume.delete", v, &resp, volumeOpAckTimeout); err != nil {
+		log.WithError(err).Print("failed to delete volume")
+		return err
+	}
+
+	// Wait for response or timeout.
+	select {
+	case err := <-deleteFinished:
+		return err
+	case <-ctx.Done():
+		return ctx.Err()
+	}
+}
+
 // runWorkflow runs a workflow to completion.
-func (s *Scheduler) runWorkflow(w model.Workflow, jobs []model.Job) {
+func (s *Scheduler) runWorkflow(w model.Workflow, jobs []model.Job, volumes map[string]model.Volume) {
 	ctx := context.Background()
 
 	log := logrus.WithFields(logrus.Fields{
@@ -69,6 +152,17 @@ func (s *Scheduler) runWorkflow(w model.Workflow, jobs []model.Job) {
 
 	s.p.SetWorkflowStatus(ctx, w.ID, "RUNNING")
 
+	// Bring up volumes on agent.
+	for _, v := range volumes {
+		ctx, cancel := context.WithTimeout(ctx, time.Minute) // TODO
+		defer cancel()
+
+		if err := s.createVolume(ctx, v); err != nil {
+			break
+		}
+	}
+
+	// Run jobs.
 	for _, j := range jobs {
 		ctx, cancel := context.WithTimeout(ctx, time.Minute) // TODO
 		defer cancel()
@@ -78,14 +172,24 @@ func (s *Scheduler) runWorkflow(w model.Workflow, jobs []model.Job) {
 		}
 	}
 
+	// Tear down volumes on agent.
+	for _, v := range volumes {
+		ctx, cancel := context.WithTimeout(ctx, time.Minute) // TODO
+		defer cancel()
+
+		if err := s.deleteVolume(ctx, v); err != nil {
+			break
+		}
+	}
+
 	s.p.SetWorkflowStatus(ctx, w.ID, "COMPLETED")
 }
 
 // AddWorkflow schedules a workflow for execution.
-func (s *Scheduler) AddWorkflow(ctx context.Context, w model.Workflow, jobs []model.Job) error {
+func (s *Scheduler) AddWorkflow(ctx context.Context, w model.Workflow, jobs []model.Job, volumes map[string]model.Volume) error {
 	s.p.SetWorkflowStatus(ctx, w.ID, "SCHEDULED")
 
-	go s.runWorkflow(w, jobs)
+	go s.runWorkflow(w, jobs, volumes)
 
 	return nil
 }

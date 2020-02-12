@@ -76,3 +76,29 @@ func (r *UserResolver) Jobs(ctx context.Context, args struct {
 	}
 	return &JobConnectionResolver{p, r.p}, nil
 }
+
+// Volumes looks up volumes associated with the user.
+func (r *UserResolver) Volumes(ctx context.Context, args struct {
+	After  *string
+	Before *string
+	First  *int32
+	Last   *int32
+}) (*VolumeConnectionResolver, error) {
+	pa := model.PageArgs{
+		After:  args.After,
+		Before: args.Before,
+	}
+	if args.First != nil {
+		first := int(*args.First)
+		pa.First = &first
+	}
+	if args.Last != nil {
+		last := int(*args.Last)
+		pa.Last = &last
+	}
+	p, err := r.p.GetVolumes(ctx, pa)
+	if err != nil {
+		return nil, err
+	}
+	return &VolumeConnectionResolver{p, r.p}, nil
+}

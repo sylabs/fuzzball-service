@@ -13,15 +13,17 @@ import (
 
 type mockScheduler struct{}
 
-func (s *mockScheduler) AddWorkflow(ctx context.Context, w model.Workflow, jobs []model.Job) error {
+func (s *mockScheduler) AddWorkflow(ctx context.Context, w model.Workflow, jobs []model.Job, volumes map[string]model.Volume) error {
 	return nil
 }
 
 type mockPersister struct {
 	wantPA model.PageArgs
 	j      model.Job
+	v      model.Volume
 	w      model.Workflow
 	jp     model.JobsPage
+	vp     model.VolumesPage
 	wp     model.WorkflowsPage
 }
 
@@ -107,6 +109,34 @@ func (p *mockPersister) SetJobStatus(ctx context.Context, id, status string, exi
 		return fmt.Errorf("got id %v, want %v", got, want)
 	}
 	return nil
+}
+
+func (p *mockPersister) CreateVolume(ctx context.Context, v model.Volume) (model.Volume, error) {
+	if got, want := v.Name, p.v.Name; got != want {
+		return model.Volume{}, fmt.Errorf("got name %v, want %v", got, want)
+	}
+	return p.v, nil
+}
+
+func (p *mockPersister) DeleteVolumesByWorkflowID(ctx context.Context, id string) error {
+	if got, want := id, p.v.WorkflowID; got != want {
+		return fmt.Errorf("got ID %v, want %v", got, want)
+	}
+	return nil
+}
+
+func (p *mockPersister) GetVolumes(ctx context.Context, pa model.PageArgs) (model.VolumesPage, error) {
+	if got, want := pa, p.wantPA; !reflect.DeepEqual(got, want) {
+		return model.VolumesPage{}, fmt.Errorf("got page args %v, want %v", got, want)
+	}
+	return p.vp, nil
+}
+
+func (p *mockPersister) GetVolumesByWorkflowID(ctx context.Context, pa model.PageArgs, id string) (model.VolumesPage, error) {
+	if got, want := pa, p.wantPA; !reflect.DeepEqual(got, want) {
+		return model.VolumesPage{}, fmt.Errorf("got page args %v, want %v", got, want)
+	}
+	return p.vp, nil
 }
 
 func TestWorkflow(t *testing.T) {
@@ -250,6 +280,12 @@ func TestDeleteWorkflow(t *testing.T) {
 				Name:       "jobName",
 				Image:      "jobImage",
 				Command:    []string{"jobCommand"},
+			},
+			v: model.Volume{
+				ID:         "volumeID",
+				WorkflowID: "workflowID",
+				Name:       "volumeName",
+				Type:       "volumeType",
 			},
 		},
 	}

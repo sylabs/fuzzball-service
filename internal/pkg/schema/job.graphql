@@ -62,4 +62,7 @@ input JobSpec {
 
   # The list of jobs that must be executed before this one.
   requires: [String!]
+
+  # The list of volumes that must be available to the job.
+  volumes: [VolumeRequirementSpec!]
 }
