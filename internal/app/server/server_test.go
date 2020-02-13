@@ -17,7 +17,7 @@ import (
 )
 
 var (
-	natsURIs = flag.String("nats_uris", nats.DefaultURL, "Comma-separated list of NATS server URIs")
+	natsURIs = flag.String("nats-uris", nats.DefaultURL, "Comma-separated list of NATS server URIs")
 )
 
 func TestNewRunStop(t *testing.T) {
