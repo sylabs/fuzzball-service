@@ -15,11 +15,12 @@ import (
 type Persister interface {
 	WorkflowPersister
 	JobPersister
+	VolumePersister
 }
 
 // Scheduler is the interface by which all workflows are scheduled.
 type Scheduler interface {
-	AddWorkflow(context.Context, model.Workflow, []model.Job) error
+	AddWorkflow(context.Context, model.Workflow, []model.Job, map[string]model.Volume) error
 }
 
 // Resolver is the root type for resolving GraphQL queries.

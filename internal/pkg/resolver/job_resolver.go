@@ -21,10 +21,16 @@ type JobPersister interface {
 }
 
 type jobSpec struct {
-	Name     string    `bson:"name"`
-	Image    string    `bson:"image"`
-	Command  []string  `bson:"command"`
-	Requires *[]string `bson:"requires"`
+	Name     string                   `bson:"name"`
+	Image    string                   `bson:"image"`
+	Command  []string                 `bson:"command"`
+	Requires *[]string                `bson:"requires"`
+	Volumes  *[]volumeRequirementSpec `bson:"volumes"`
+}
+
+type volumeRequirementSpec struct {
+	Name     string
+	Location string
 }
 
 // JobResolver resolves a workflow.

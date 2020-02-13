@@ -20,8 +20,9 @@ type WorkflowPersister interface {
 
 // workflowSpec represents a workflow specification
 type workflowSpec struct {
-	Name string    `bson:"name"`
-	Jobs []jobSpec `bson:"jobs"`
+	Name    string        `bson:"name"`
+	Jobs    []jobSpec     `bson:"jobs"`
+	Volumes *[]volumeSpec `bson:"volumes"`
 }
 
 // WorkflowResolver resolves a workflow.
@@ -90,4 +91,25 @@ func (r *WorkflowResolver) Jobs(ctx context.Context, args struct {
 		return nil, err
 	}
 	return &JobConnectionResolver{p, r.p}, nil
+}
+
+// Volumes looks up volumes associated with the workflow.
+func (r *WorkflowResolver) Volumes(ctx context.Context, args struct {
+	After  *string
+	Before *string
+	First  *int
+	Last   *int
+}) (*VolumeConnectionResolver, error) {
+	pa := model.PageArgs{
+		After:  args.After,
+		Before: args.Before,
+		First:  args.First,
+		Last:   args.Last,
+	}
+
+	p, err := r.p.GetVolumesByWorkflowID(ctx, pa, r.w.ID)
+	if err != nil {
+		return nil, err
+	}
+	return &VolumeConnectionResolver{p, r.p}, nil
 }
