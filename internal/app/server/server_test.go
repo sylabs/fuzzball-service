@@ -6,18 +6,13 @@ package server
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"net/http"
-	"os"
+	"net/http/httptest"
 	"sync"
 	"testing"
 
 	"github.com/nats-io/nats.go"
-)
-
-var (
-	natsURIs = flag.String("nats-uris", nats.DefaultURL, "Comma-separated list of NATS server URIs")
 )
 
 func TestNewRunStop(t *testing.T) {
@@ -25,10 +20,22 @@ func TestNewRunStop(t *testing.T) {
 
 	nc, err := nats.Connect(*natsURIs)
 
+	// Mock key server.
+	jwks := mockJWKS{keys: testKeySet}
+	mks := httptest.NewServer(&jwks)
+	defer mks.Close()
+
+	// Mock discovery server.
+	md := testMetadata
+	md.JWKSURI = mks.URL
+	mds := httptest.NewServer(&mockOAuthDisco{md: md})
+	defer mds.Close()
+
 	// Get a new server.
 	c := Config{
-		HTTPAddr: "localhost:",
-		NATSConn: nc,
+		HTTPAddr:        "localhost:",
+		NATSConn:        nc,
+		OAuth2IssuerURI: mds.URL,
 	}
 	s, err := New(ctx, c)
 	if err != nil {
@@ -58,10 +65,4 @@ func TestNewRunStop(t *testing.T) {
 
 	// Wait until the server goroutine stops.
 	wg.Wait()
-}
-
-func TestMain(m *testing.M) {
-	flag.Parse()
-
-	os.Exit(m.Run())
 }

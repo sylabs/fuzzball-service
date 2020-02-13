@@ -11,10 +11,12 @@ import (
 	"github.com/graph-gophers/graphql-go"
 	"github.com/nats-io/nats.go"
 	"github.com/sirupsen/logrus"
+	"github.com/sylabs/compute-service/internal/pkg/model"
 	"github.com/sylabs/compute-service/internal/pkg/mongodb"
 	"github.com/sylabs/compute-service/internal/pkg/resolver"
 	"github.com/sylabs/compute-service/internal/pkg/scheduler"
 	"github.com/sylabs/compute-service/internal/pkg/schema"
+	"gopkg.in/square/go-jose.v2"
 )
 
 // Config describes server configuration.
@@ -25,17 +27,37 @@ type Config struct {
 	CORSDebug          bool
 	Persist            *mongodb.Connection
 	NATSConn           *nats.Conn
+	OAuth2IssuerURI    string
 }
 
 // Server contains the state of the server.
 type Server struct {
-	httpSrv *http.Server
-	httpLn  net.Listener
-	schema  *graphql.Schema
+	httpSrv  *http.Server
+	httpLn   net.Listener
+	schema   *graphql.Schema
+	authMeta model.AuthMetadata
+	authKeys jose.JSONWebKeySet
 }
 
 // New returns a new Server.
 func New(ctx context.Context, c Config) (s Server, err error) {
+	hc := &http.Client{}
+
+	// Discover OAuth 2.0 metadata.
+	md, err := discoverAuthMetadata(ctx, hc, c.OAuth2IssuerURI)
+	if err != nil {
+		return Server{}, err
+	}
+	s.authMeta = md
+
+	// Get OAuth key set.
+	ks, err := getKeySet(ctx, hc, md.JWKSURI)
+	if err != nil {
+		return Server{}, err
+	}
+	s.authKeys = ks
+
+	// Encoded NATS connection.
 	ec, err := nats.NewEncodedConn(c.NATSConn, nats.JSON_ENCODER)
 	if err != nil {
 		return Server{}, err

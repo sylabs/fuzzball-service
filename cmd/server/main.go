@@ -35,6 +35,7 @@ var (
 	mongoURI           = flag.String("mongo-uri", "mongodb://localhost", "URI of MongoDB database")
 	startupTime        = flag.Duration("startup-time", time.Minute, "Amount of time to wait for dependent services to become ready on startup")
 	natsURIs           = flag.String("nats-uris", nats.DefaultURL, "Comma-separated list of NATS server URIs")
+	oauth2IssuerURI    = flag.String("oauth2-issuer-uri", "https://dev-930666.okta.com/oauth2/default", "URI of OAuth 2.0 issuer")
 )
 
 // signalHandler catches SIGINT/SIGTERM to perform an orderly shutdown.
@@ -136,6 +137,7 @@ func main() {
 		CORSDebug:          *corsDebug,
 		Persist:            conn,
 		NATSConn:           nc,
+		OAuth2IssuerURI:    *oauth2IssuerURI,
 	}
 	s, err := server.New(ctx, c)
 	if err != nil {
