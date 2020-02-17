@@ -5,8 +5,11 @@ package server
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
+	"strings"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -14,16 +17,48 @@ import (
 	"gopkg.in/square/go-jose.v2"
 )
 
+const (
+	pathWellKnownOAuth = "/.well-known/oauth-authorization-server"
+	pathWellKnownOIDC  = "/.well-known/openid-configuration"
+)
+
+// getDiscoveryURIs returns a list of discovery URIs to try based on the supplied issuerURI.
+//
+// There are two specifications of concern here, OAuth 2.0 Authorization Server Metadata (RFC 8414)
+// and OpenID Connect Discovery (OpenID.Discovery). Unfortunately, the construction of the
+// discovery path varies when the issuer URI has a path component to it.
+func getDiscoveryURIs(issuerURI string) ([]string, error) {
+	issuerURI = strings.TrimSuffix(issuerURI, "/")
+	u, err := url.Parse(issuerURI)
+	if err != nil {
+		return nil, err
+	}
+
+	paths := []string{issuerURI + pathWellKnownOIDC}
+	if u.Path == "" {
+		paths = append(paths, issuerURI+pathWellKnownOAuth)
+	} else {
+		u.Path = pathWellKnownOAuth + u.Path
+		paths = append(paths, u.String())
+	}
+	return paths, nil
+}
+
 // discoverAuthMetadata attempts to discover metadata from an OAuth issuer using well-known URI
 // discovery for OAuth 2.0 (RFC 8414) and OpenID Connect (OpenID.Discovery).
-func discoverAuthMetadata(ctx context.Context, hc *http.Client, uri string) (model.AuthMetadata, error) {
-	md, err := getAuthMetadata(ctx, hc, uri+"/.well-known/oauth-authorization-server")
+func discoverAuthMetadata(ctx context.Context, hc *http.Client, issuerURI string) (model.AuthMetadata, error) {
+	uris, err := getDiscoveryURIs(issuerURI)
 	if err != nil {
-		if md, err = getAuthMetadata(ctx, hc, uri+"/.well-known/openid-configuration"); err != nil {
-			return model.AuthMetadata{}, err
+		return model.AuthMetadata{}, err
+	}
+
+	for _, uri := range uris {
+		md, err := getAuthMetadata(ctx, hc, uri)
+		if err == nil {
+			return md, nil
 		}
 	}
-	return md, nil
+	return model.AuthMetadata{}, errors.New("auth metadata discovery failed")
 }
 
 // getAuthMetadata gets metadata from uri as per the OAuth 2.0 Authorization Server Metadata

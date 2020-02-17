@@ -14,6 +14,41 @@ import (
 	"gopkg.in/square/go-jose.v2"
 )
 
+func TestGetDiscoveryURIs(t *testing.T) {
+	tests := []struct {
+		name      string
+		issuerURI string
+		wantError bool
+		wantURIs  []string
+	}{
+		{"BadURI", ":", true, nil},
+		{"HostOnly", "https://example.com", false, []string{
+			"https://example.com/.well-known/openid-configuration",
+			"https://example.com/.well-known/oauth-authorization-server",
+		}},
+		{"EmptyPath", "https://example.com/", false, []string{
+			"https://example.com/.well-known/openid-configuration",
+			"https://example.com/.well-known/oauth-authorization-server",
+		}},
+		{"Path", "https://example.com/path", false, []string{
+			"https://example.com/path/.well-known/openid-configuration",
+			"https://example.com/.well-known/oauth-authorization-server/path",
+		}},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := getDiscoveryURIs(tt.issuerURI)
+			if (err != nil) != tt.wantError {
+				t.Fatalf("got error %v, wantError %v", err, tt.wantError)
+			}
+			if !reflect.DeepEqual(got, tt.wantURIs) {
+				t.Errorf("got %v, want %v", got, tt.wantURIs)
+			}
+		})
+	}
+}
+
 type mockOAuthDisco struct {
 	md model.AuthMetadata
 }
