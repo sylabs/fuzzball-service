@@ -28,6 +28,7 @@ type Config struct {
 	Persist            *mongodb.Connection
 	NATSConn           *nats.Conn
 	OAuth2IssuerURI    string
+	OAuth2Audience     string
 }
 
 // Server contains the state of the server.

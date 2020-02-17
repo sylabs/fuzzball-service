@@ -32,6 +32,9 @@ func (s *Server) NewRouter(c Config) (http.Handler, error) {
 			return nil, err
 		}
 
+		// Add JWT middleware.
+		h = s.tokenHandler(c, h)
+
 		// Instrument with Prometheus.
 		h = promhttp.InstrumentHandlerInFlight(httpRequestsInFlight,
 			promhttp.InstrumentHandlerCounter(httpRequestsTotal,
