@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	mongoURI = flag.String("mongo_uri", "mongodb://localhost", "URI of MongoDB")
+	mongoURI = flag.String("mongo-uri", "mongodb://localhost", "URI of MongoDB database")
 
 	testDBName     string
 	testConnection *Connection

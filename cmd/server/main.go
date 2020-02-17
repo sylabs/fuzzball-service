@@ -29,12 +29,13 @@ var (
 )
 
 var (
-	httpAddr           = flag.String("http_addr", ":8080", "Address to bind HTTP")
-	corsAllowedOrigins = flag.String("cors_allowed_origins", "*", "Comma-separated list of CORS allowed origins")
-	corsDebug          = flag.Bool("cors_debug", false, "Enable CORS debugging")
-	mongoURI           = flag.String("mongo_uri", "mongodb://localhost", "URI of MongoDB database")
-	startupTime        = flag.Duration("startup_time", time.Minute, "Amount of time to wait for dependent services to become ready on startup")
-	natsURIs           = flag.String("nats_uris", nats.DefaultURL, "Comma-separated list of NATS server URIs")
+	httpAddr           = flag.String("http-addr", ":8080", "Address to bind HTTP")
+	corsAllowedOrigins = flag.String("cors-allowed-origins", "*", "Comma-separated list of CORS allowed origins")
+	corsDebug          = flag.Bool("cors-debug", false, "Enable CORS debugging")
+	mongoURI           = flag.String("mongo-uri", "mongodb://localhost", "URI of MongoDB database")
+	startupTime        = flag.Duration("startup-time", time.Minute, "Amount of time to wait for dependent services to become ready on startup")
+	natsURIs           = flag.String("nats-uris", nats.DefaultURL, "Comma-separated list of NATS server URIs")
+	oauth2IssuerURI    = flag.String("oauth2-issuer-uri", "https://dev-930666.okta.com/oauth2/default", "URI of OAuth 2.0 issuer")
 )
 
 // signalHandler catches SIGINT/SIGTERM to perform an orderly shutdown.
@@ -136,6 +137,7 @@ func main() {
 		CORSDebug:          *corsDebug,
 		Persist:            conn,
 		NATSConn:           nc,
+		OAuth2IssuerURI:    *oauth2IssuerURI,
 	}
 	s, err := server.New(ctx, c)
 	if err != nil {
