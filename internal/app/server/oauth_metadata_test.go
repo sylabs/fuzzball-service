@@ -50,7 +50,8 @@ func TestGetDiscoveryURIs(t *testing.T) {
 }
 
 type mockOAuthDisco struct {
-	md model.AuthMetadata
+	code int
+	md   model.AuthMetadata
 }
 
 var (
@@ -75,6 +76,9 @@ var (
 
 func (m *mockOAuthDisco) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	if m.code != 0 {
+		w.WriteHeader(m.code)
+	}
 	json.NewEncoder(w).Encode(m.md)
 }
 
@@ -82,23 +86,28 @@ func TestGetAuthMetadata(t *testing.T) {
 	expiredCtx, cancel := context.WithCancel(context.Background())
 	cancel()
 
-	ms := httptest.NewServer(&mockOAuthDisco{md: testMetadata})
+	m := mockOAuthDisco{md: testMetadata}
+	ms := httptest.NewServer(&m)
 	defer ms.Close()
 
 	tests := []struct {
 		name    string
 		ctx     context.Context
 		url     string
+		code    int
 		wantErr bool
 	}{
-		{"ContextNil", nil, ms.URL, true},
-		{"ContextExpired", expiredCtx, ms.URL, true},
-		{"BadURL", context.Background(), "#", true},
-		{"OK", context.Background(), ms.URL, false},
+		{"ContextNil", nil, ms.URL, http.StatusOK, true},
+		{"ContextExpired", expiredCtx, ms.URL, http.StatusOK, true},
+		{"BadURL", context.Background(), "#", http.StatusOK, true},
+		{"BadCode", context.Background(), ms.URL, http.StatusBadRequest, true},
+		{"OK", context.Background(), ms.URL, http.StatusOK, false},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			m.code = tt.code
+
 			got, err := getAuthMetadata(tt.ctx, &http.Client{}, tt.url)
 			if (err != nil) != tt.wantErr {
 				t.Fatalf("got err %v, wantErr %v", err, tt.wantErr)
@@ -113,11 +122,15 @@ func TestGetAuthMetadata(t *testing.T) {
 }
 
 type mockJWKS struct {
+	code int
 	keys jose.JSONWebKeySet
 }
 
 func (m *mockJWKS) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	if m.code != 0 {
+		w.WriteHeader(m.code)
+	}
 	json.NewEncoder(w).Encode(m.keys)
 }
 
@@ -125,23 +138,28 @@ func TestGetKeySet(t *testing.T) {
 	expiredCtx, cancel := context.WithCancel(context.Background())
 	cancel()
 
-	ms := httptest.NewServer(&mockJWKS{keys: testKeySet})
+	m := mockJWKS{keys: testKeySet}
+	ms := httptest.NewServer(&m)
 	defer ms.Close()
 
 	tests := []struct {
 		name    string
 		ctx     context.Context
 		url     string
+		code    int
 		wantErr bool
 	}{
-		{"ContextNil", nil, ms.URL, true},
-		{"ContextExpired", expiredCtx, ms.URL, true},
-		{"BadURL", context.Background(), "#", true},
-		{"OK", context.Background(), ms.URL, false},
+		{"ContextNil", nil, ms.URL, http.StatusOK, true},
+		{"ContextExpired", expiredCtx, ms.URL, http.StatusOK, true},
+		{"BadURL", context.Background(), "#", http.StatusOK, true},
+		{"BadCode", context.Background(), ms.URL, http.StatusBadRequest, true},
+		{"OK", context.Background(), ms.URL, http.StatusOK, false},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			m.code = tt.code
+
 			got, err := getKeySet(tt.ctx, &http.Client{}, tt.url)
 			if (err != nil) != tt.wantErr {
 				t.Fatalf("got err %v, wantErr %v", err, tt.wantErr)

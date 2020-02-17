@@ -64,7 +64,7 @@ func discoverAuthMetadata(ctx context.Context, hc *http.Client, issuerURI string
 // getAuthMetadata gets metadata from uri as per the OAuth 2.0 Authorization Server Metadata
 // specification (RFC 8414).
 func getAuthMetadata(ctx context.Context, hc *http.Client, uri string) (md model.AuthMetadata, err error) {
-	logrus.Info("getting auth metadata")
+	logrus.WithField("uri", uri).Info("getting auth metadata")
 	defer func(t time.Time) {
 		log := logrus.WithField("took", time.Since(t))
 		if err != nil {
@@ -84,6 +84,10 @@ func getAuthMetadata(ctx context.Context, hc *http.Client, uri string) (md model
 	}
 	defer res.Body.Close()
 
+	if code := res.StatusCode; (code / 100) != 2 {
+		return model.AuthMetadata{}, fmt.Errorf("%d %s", code, http.StatusText(code))
+	}
+
 	if err := json.NewDecoder(res.Body).Decode(&md); err != nil {
 		return model.AuthMetadata{}, err
 	}
@@ -92,7 +96,7 @@ func getAuthMetadata(ctx context.Context, hc *http.Client, uri string) (md model
 
 // getKeySet gets a JSON Web Key Set from uri as per the JSON Web Key specification (RFC 7515).
 func getKeySet(ctx context.Context, hc *http.Client, uri string) (ks jose.JSONWebKeySet, err error) {
-	logrus.Info("getting key set")
+	logrus.WithField("uri", uri).Info("getting key set")
 	defer func(t time.Time) {
 		log := logrus.WithField("took", time.Since(t))
 		if err != nil {
@@ -111,6 +115,10 @@ func getKeySet(ctx context.Context, hc *http.Client, uri string) (ks jose.JSONWe
 		return jose.JSONWebKeySet{}, err
 	}
 	defer res.Body.Close()
+
+	if code := res.StatusCode; (code / 100) != 2 {
+		return jose.JSONWebKeySet{}, fmt.Errorf("%d %s", code, http.StatusText(code))
+	}
 
 	if err := json.NewDecoder(res.Body).Decode(&ks); err != nil {
 		return jose.JSONWebKeySet{}, err
