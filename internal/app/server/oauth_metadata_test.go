@@ -82,6 +82,45 @@ func (m *mockOAuthDisco) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(m.md)
 }
 
+func TestDiscoverAuthMetadata(t *testing.T) {
+	expiredCtx, cancel := context.WithCancel(context.Background())
+	cancel()
+
+	m := mockOAuthDisco{md: testMetadata}
+	ms := httptest.NewServer(&m)
+	defer ms.Close()
+
+	// Issuer must match.
+	m.md.Issuer = ms.URL
+
+	tests := []struct {
+		name      string
+		ctx       context.Context
+		issuerURI string
+		wantErr   bool
+	}{
+		{"ContextNil", nil, ms.URL, true},
+		{"ContextExpired", expiredCtx, ms.URL, true},
+		{"BadURL", context.Background(), "#", true},
+		{"BadIssuer", context.Background(), ms.URL + "/extra", true},
+		{"OK", context.Background(), ms.URL, false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := discoverAuthMetadata(tt.ctx, &http.Client{}, tt.issuerURI)
+			if (err != nil) != tt.wantErr {
+				t.Fatalf("got err %v, wantErr %v", err, tt.wantErr)
+			}
+			if !tt.wantErr {
+				if want := m.md; !reflect.DeepEqual(got, want) {
+					t.Errorf("got metadata %v, want %v", got, want)
+				}
+			}
+		})
+	}
+}
+
 func TestGetAuthMetadata(t *testing.T) {
 	expiredCtx, cancel := context.WithCancel(context.Background())
 	cancel()

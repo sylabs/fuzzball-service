@@ -26,9 +26,10 @@ func TestNewRunStop(t *testing.T) {
 	defer mks.Close()
 
 	// Mock discovery server.
-	md := testMetadata
-	md.JWKSURI = mks.URL
-	mds := httptest.NewServer(&mockOAuthDisco{md: md})
+	m := mockOAuthDisco{md: testMetadata}
+	m.md.JWKSURI = mks.URL
+	mds := httptest.NewServer(&m)
+	m.md.Issuer = mds.URL
 	defer mds.Close()
 
 	// Get a new server.

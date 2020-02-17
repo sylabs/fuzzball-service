@@ -46,7 +46,17 @@ func getDiscoveryURIs(issuerURI string) ([]string, error) {
 
 // discoverAuthMetadata attempts to discover metadata from an OAuth issuer using well-known URI
 // discovery for OAuth 2.0 (RFC 8414) and OpenID Connect (OpenID.Discovery).
-func discoverAuthMetadata(ctx context.Context, hc *http.Client, issuerURI string) (model.AuthMetadata, error) {
+func discoverAuthMetadata(ctx context.Context, hc *http.Client, issuerURI string) (md model.AuthMetadata, err error) {
+	logrus.WithField("issuerURI", issuerURI).Info("discovering auth metadata")
+	defer func(t time.Time) {
+		log := logrus.WithField("took", time.Since(t))
+		if err != nil {
+			log.WithError(err).Warn("failed to discover auth metadata")
+		} else {
+			log.Info("discovered auth metadata")
+		}
+	}(time.Now())
+
 	uris, err := getDiscoveryURIs(issuerURI)
 	if err != nil {
 		return model.AuthMetadata{}, err
@@ -55,6 +65,10 @@ func discoverAuthMetadata(ctx context.Context, hc *http.Client, issuerURI string
 	for _, uri := range uris {
 		md, err := getAuthMetadata(ctx, hc, uri)
 		if err == nil {
+			if md.Issuer != issuerURI {
+				// As per RFC 8414 § 3.3, the returned issuer must match.
+				return model.AuthMetadata{}, fmt.Errorf("unexpected issuer (%s != %s)", md.Issuer, issuerURI)
+			}
 			return md, nil
 		}
 	}
