@@ -10,7 +10,7 @@ import (
 	"github.com/sylabs/compute-service/internal/pkg/model"
 )
 
-// JobPersister is the interface by which workflows are persisted.
+// JobPersister is the interface by which jobs are persisted.
 type JobPersister interface {
 	CreateJob(context.Context, model.Job) (model.Job, error)
 	DeleteJobsByWorkflowID(context.Context, string) error
