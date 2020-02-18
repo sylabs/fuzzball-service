@@ -80,7 +80,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestNew(t *testing.T) {
-	if _, err := New(&mockPersister{}, &mockScheduler{}); err != nil {
+	if _, err := New(&mockPersister{}, &mockFetcher{}, &mockScheduler{}); err != nil {
 		t.Fatal(err)
 	}
 }

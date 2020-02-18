@@ -34,8 +34,12 @@ func (s *Scheduler) runJob(ctx context.Context, j model.Job) error {
 	_, err := s.m.Subscribe(fmt.Sprintf("job.%v.finished", j.ID), func(msg struct {
 		Status string
 		RC     int
+		Out    string
 	}) {
 		s.p.SetJobStatus(ctx, j.ID, msg.Status, msg.RC)
+		if err := s.iop.Set(j.ID, msg.Out); err != nil {
+			log.Errorf("failed to record job output: %v", err)
+		}
 		close(jobFinished)
 	})
 	if err != nil {

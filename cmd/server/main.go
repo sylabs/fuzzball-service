@@ -15,6 +15,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/sylabs/compute-service/internal/app/server"
 	"github.com/sylabs/compute-service/internal/pkg/mongodb"
+	"github.com/sylabs/compute-service/internal/pkg/rediskv"
 )
 
 const (
@@ -35,6 +36,7 @@ var (
 	mongoURI           = flag.String("mongo-uri", "mongodb://localhost", "URI of MongoDB database")
 	startupTime        = flag.Duration("startup-time", time.Minute, "Amount of time to wait for dependent services to become ready on startup")
 	natsURIs           = flag.String("nats-uris", nats.DefaultURL, "Comma-separated list of NATS server URIs")
+	redisAddr          = flag.String("redis-addr", "localhost:6379", "Address of Redis")
 	oauth2IssuerURI    = flag.String("oauth2-issuer-uri", "https://dev-930666.okta.com/oauth2/default", "URI of OAuth 2.0 issuer")
 	oauth2Audience     = flag.String("oauth2-audience", "api://default", "OAuth 2.0 audience expected in tokens")
 )
@@ -89,6 +91,15 @@ func connectNATS(ctx context.Context) (nc *nats.Conn, err error) {
 	return o.Connect()
 }
 
+// connectRedis attempts to connect to redis.
+func connectRedis() (*rediskv.Connection, error) {
+	rc, err := rediskv.NewConnection(*redisAddr)
+	if err != nil {
+		return nil, err
+	}
+	return rc, nil
+}
+
 func main() {
 	flag.Parse()
 
@@ -130,6 +141,16 @@ func main() {
 		nc.Close()
 	}()
 
+	rc, err := connectRedis()
+	if err != nil {
+		logrus.WithError(err).Error("failed to connect to key value store")
+		return
+	}
+	defer func() {
+		logrus.Info("disconnecting from key value store")
+		rc.Disconnect()
+	}()
+
 	// Spin up server.
 	c := server.Config{
 		Version:            version,
@@ -138,6 +159,7 @@ func main() {
 		CORSDebug:          *corsDebug,
 		Persist:            conn,
 		NATSConn:           nc,
+		RedisConn:          rc,
 		OAuth2IssuerURI:    *oauth2IssuerURI,
 		OAuth2Audience:     *oauth2Audience,
 	}

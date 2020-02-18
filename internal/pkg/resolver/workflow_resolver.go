@@ -29,6 +29,7 @@ type workflowSpec struct {
 type WorkflowResolver struct {
 	w model.Workflow
 	p Persister
+	f IOFetcher
 }
 
 // ID resolves the workflow ID.
@@ -90,7 +91,7 @@ func (r *WorkflowResolver) Jobs(ctx context.Context, args struct {
 	if err != nil {
 		return nil, err
 	}
-	return &JobConnectionResolver{p, r.p}, nil
+	return &JobConnectionResolver{p, r.p, r.f}, nil
 }
 
 // Volumes looks up volumes associated with the workflow.

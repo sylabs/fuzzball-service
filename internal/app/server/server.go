@@ -13,6 +13,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/sylabs/compute-service/internal/pkg/model"
 	"github.com/sylabs/compute-service/internal/pkg/mongodb"
+	"github.com/sylabs/compute-service/internal/pkg/rediskv"
 	"github.com/sylabs/compute-service/internal/pkg/resolver"
 	"github.com/sylabs/compute-service/internal/pkg/scheduler"
 	"github.com/sylabs/compute-service/internal/pkg/schema"
@@ -27,6 +28,7 @@ type Config struct {
 	CORSDebug          bool
 	Persist            *mongodb.Connection
 	NATSConn           *nats.Conn
+	RedisConn          *rediskv.Connection
 	OAuth2IssuerURI    string
 	OAuth2Audience     string
 }
@@ -65,7 +67,7 @@ func New(ctx context.Context, c Config) (s Server, err error) {
 	}
 
 	// Initialize scheduler.
-	sched, err := scheduler.New(ec, c.Persist)
+	sched, err := scheduler.New(ec, c.Persist, c.RedisConn)
 	if err != nil {
 		return Server{}, err
 	}
@@ -75,7 +77,7 @@ func New(ctx context.Context, c Config) (s Server, err error) {
 	if err != nil {
 		return Server{}, fmt.Errorf("unable to init GraphQL schema: %w", err)
 	}
-	r, err := resolver.New(c.Persist, sched)
+	r, err := resolver.New(c.Persist, c.RedisConn, sched)
 	if err != nil {
 		return Server{}, err
 	}

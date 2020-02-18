@@ -16,5 +16,6 @@ func (r Resolver) Viewer(ctx context.Context) (*UserResolver, error) {
 			Login: "jimbob",
 		},
 		p: r.p,
+		f: r.f,
 	}, nil
 }

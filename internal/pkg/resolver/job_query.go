@@ -14,5 +14,5 @@ func (r Resolver) Job(ctx context.Context, args struct {
 	if err != nil {
 		return nil, err
 	}
-	return &JobResolver{j, r.p}, nil
+	return &JobResolver{j, r.p, r.f}, nil
 }

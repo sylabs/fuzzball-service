@@ -21,13 +21,20 @@ type Persister interface {
 	SetJobStatus(context.Context, string, string, int) error
 }
 
+// IOPersister is the interface that describes what is needed to persist Job IO data.
+type IOPersister interface {
+	Set(string, string) error
+	Get(string) (string, error)
+}
+
 // Scheduler represents an instance of the scheduler.
 type Scheduler struct {
-	m Messager
-	p Persister
+	m   Messager
+	p   Persister
+	iop IOPersister
 }
 
 // New creates a new scheduler.
-func New(m Messager, p Persister) (*Scheduler, error) {
-	return &Scheduler{m, p}, nil
+func New(m Messager, p Persister, iop IOPersister) (*Scheduler, error) {
+	return &Scheduler{m, p, iop}, nil
 }

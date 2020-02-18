@@ -139,6 +139,12 @@ func (p *mockPersister) GetVolumesByWorkflowID(ctx context.Context, pa model.Pag
 	return p.vp, nil
 }
 
+type mockFetcher struct{}
+
+func (p *mockFetcher) GetJobOutput(string) (s string, err error) {
+	return s, err
+}
+
 func TestWorkflow(t *testing.T) {
 	r := Resolver{
 		p: &mockPersister{
