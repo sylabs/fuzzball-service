@@ -20,6 +20,11 @@ type JobPersister interface {
 	GetJobsByID(context.Context, model.PageArgs, string, []string) (model.JobsPage, error)
 }
 
+// JobOutputFetcher is the interface to fetch job output.
+type JobOutputFetcher interface {
+	GetJobOutput(string) (string, error)
+}
+
 type jobSpec struct {
 	Name     string                   `bson:"name"`
 	Image    string                   `bson:"image"`
@@ -37,6 +42,7 @@ type volumeRequirementSpec struct {
 type JobResolver struct {
 	j model.Job
 	p Persister
+	f IOFetcher
 }
 
 // ID resolves the Job ID.
@@ -99,6 +105,15 @@ func (r *JobResolver) ExitCode() *int32 {
 	return nil
 }
 
+// Output resolves the captured Stdout/Stderr of the job.
+func (r *JobResolver) Output() (string, error) {
+	if r.j.Status != "COMPLETED" {
+		return "", nil
+	}
+
+	return r.f.GetJobOutput(r.j.ID)
+}
+
 // Requires looks up jobs that need to be executed before the current one.
 func (r *JobResolver) Requires(ctx context.Context, args struct {
 	After  *string
@@ -118,5 +133,5 @@ func (r *JobResolver) Requires(ctx context.Context, args struct {
 		return nil, err
 	}
 
-	return &JobConnectionResolver{p, r.p}, nil
+	return &JobConnectionResolver{p, r.p, r.f}, nil
 }

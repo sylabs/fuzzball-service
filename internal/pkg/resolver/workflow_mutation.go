@@ -37,7 +37,7 @@ func (r Resolver) CreateWorkflow(ctx context.Context, args struct {
 		return nil, err
 	}
 
-	return &WorkflowResolver{w, r.p}, nil
+	return &WorkflowResolver{w, r.p, r.f}, nil
 }
 
 // DeleteWorkflow deletes a workflow.
@@ -59,7 +59,7 @@ func (r Resolver) DeleteWorkflow(ctx context.Context, args struct {
 		return nil, err
 	}
 
-	return &WorkflowResolver{w, r.p}, nil
+	return &WorkflowResolver{w, r.p, r.f}, nil
 }
 
 func createVolumes(ctx context.Context, p Persister, w model.Workflow, specs *[]volumeSpec) (map[string]model.Volume, error) {

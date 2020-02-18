@@ -8,6 +8,7 @@ import "github.com/sylabs/compute-service/internal/pkg/model"
 type JobEdgeResolver struct {
 	j model.Job
 	p Persister
+	f IOFetcher
 }
 
 // Cursor resolves a cursor for use in pagination.
@@ -17,20 +18,21 @@ func (r *JobEdgeResolver) Cursor() string {
 
 // Node resolves the item at the end of the edge.
 func (r *JobEdgeResolver) Node() *JobResolver {
-	return &JobResolver{r.j, r.p}
+	return &JobResolver{r.j, r.p, r.f}
 }
 
 // JobConnectionResolver resolves a job connection.
 type JobConnectionResolver struct {
 	jp model.JobsPage
 	p  Persister
+	f  IOFetcher
 }
 
 // Edges resolves a list of edges.
 func (r *JobConnectionResolver) Edges() *[]*JobEdgeResolver {
 	wer := []*JobEdgeResolver{}
 	for _, w := range r.jp.Jobs {
-		wer = append(wer, &JobEdgeResolver{w, r.p})
+		wer = append(wer, &JobEdgeResolver{w, r.p, r.f})
 	}
 	return &wer
 }

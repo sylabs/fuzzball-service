@@ -29,6 +29,7 @@ To run the server, you'll need MongoDB and NATs endpoints to point it to. If you
 ```sh
 docker run -d -p 27017:27017 mongo
 docker run -d -p 4222:4222 nats
+docker run -d -p 6379:6379 redis
 ```
 
 Finally, start the server:

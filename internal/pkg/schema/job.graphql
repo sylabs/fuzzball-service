@@ -17,6 +17,9 @@ type Job {
   # Exit code of the Singularity command that executed the job.
   exitCode: Int
 
+  # Output contains the captured Stdout/Stderr of the job. 
+  output: String!
+  
   # Look up jobs that need to be completed before this one can execute.
   requires(
     # Returns the elements in the list that come after the specified cursor.
