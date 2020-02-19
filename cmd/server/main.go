@@ -13,6 +13,7 @@ import (
 
 	"github.com/nats-io/nats.go"
 	"github.com/sirupsen/logrus"
+	"github.com/sylabs/compute-service/internal/app/iomanager"
 	"github.com/sylabs/compute-service/internal/app/server"
 	"github.com/sylabs/compute-service/internal/pkg/mongodb"
 	"github.com/sylabs/compute-service/internal/pkg/rediskv"
@@ -42,7 +43,7 @@ var (
 )
 
 // signalHandler catches SIGINT/SIGTERM to perform an orderly shutdown.
-func signalHandler(s server.Server) {
+func signalHandler(nc *nats.Conn, s server.Server, m iomanager.IOManager) {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
 
@@ -51,7 +52,20 @@ func signalHandler(s server.Server) {
 	}).Info("shutting down due to signal")
 
 	if err := s.Stop(context.Background()); err != nil {
-		logrus.WithError(err).Warning("shutdown failed")
+		logrus.WithError(err).Warning("server shutdown failed")
+	}
+
+	if err := m.Stop(); err != nil {
+		logrus.WithError(err).Warning("IO manager shutdown failed")
+	}
+
+	// Drain nats connection before closing.
+	if err := nc.Drain(); err != nil {
+		logrus.WithError(err).Warning("starting nats connection draining failed")
+	}
+
+	// Wait for connection to drain and close.
+	for nc.IsDraining() {
 	}
 }
 
@@ -151,6 +165,20 @@ func main() {
 		rc.Disconnect()
 	}()
 
+	// Spin up IO Manager.
+	ioc := iomanager.Config{
+		Version:   version,
+		NATSConn:  nc,
+		RedisConn: rc,
+	}
+
+	m, err := iomanager.New(ioc)
+	if err != nil {
+		logrus.WithError(err).Error("failed to create IO manager")
+		return
+	}
+	m.Start()
+
 	// Spin up server.
 	c := server.Config{
 		Version:            version,
@@ -170,7 +198,7 @@ func main() {
 	}
 
 	// Spin off signal handler to do graceful shutdown.
-	go signalHandler(s)
+	go signalHandler(nc, s, m)
 
 	// Main server routine.
 	s.Run()
