@@ -2,11 +2,11 @@
 
 package resolver
 
-import "github.com/sylabs/compute-service/internal/pkg/model"
+import "github.com/sylabs/compute-service/internal/pkg/core"
 
 // VolumeEdgeResolver resolves a volume edge.
 type VolumeEdgeResolver struct {
-	v model.Volume
+	v core.Volume
 	p Persister
 }
 
@@ -22,7 +22,7 @@ func (r *VolumeEdgeResolver) Node() *VolumeResolver {
 
 // VolumeConnectionResolver resolves a volume connection.
 type VolumeConnectionResolver struct {
-	vp model.VolumesPage
+	vp core.VolumesPage
 	p  Persister
 }
 

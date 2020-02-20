@@ -3,12 +3,12 @@
 package resolver
 
 import (
-	"github.com/sylabs/compute-service/internal/pkg/model"
+	"github.com/sylabs/compute-service/internal/pkg/core"
 )
 
 // PageInfoResolver resolves information about pagination in a connection.
 type PageInfoResolver struct {
-	pi model.PageInfo
+	pi core.PageInfo
 }
 
 // StartCursor resolves the cursor to continue when paginating backwards.

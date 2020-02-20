@@ -4,8 +4,6 @@ package core
 
 import (
 	"context"
-
-	"github.com/sylabs/compute-service/internal/pkg/model"
 )
 
 // Persister is the interface by which all data is persisted.
@@ -22,7 +20,7 @@ type IOFetcher interface {
 
 // Scheduler is the interface by which all workflows are scheduled.
 type Scheduler interface {
-	AddWorkflow(context.Context, model.Workflow, []model.Job, map[string]model.Volume) error
+	AddWorkflow(context.Context, Workflow, []Job, map[string]Volume) error
 }
 
 // Core represents core business logic.

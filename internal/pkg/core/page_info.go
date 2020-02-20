@@ -1,6 +1,6 @@
 // Copyright (c) 2020, Sylabs, Inc. All rights reserved.
 
-package model
+package core
 
 // PageArgs contains criteria to select a page of results.
 type PageArgs struct {

@@ -8,20 +8,19 @@ import (
 
 	"github.com/graph-gophers/graphql-go"
 	"github.com/sylabs/compute-service/internal/pkg/core"
-	"github.com/sylabs/compute-service/internal/pkg/model"
 )
 
 // WorkflowPersister is the interface by which workflows are persisted.
 type WorkflowPersister interface {
-	CreateWorkflow(context.Context, core.WorkflowSpec) (model.Workflow, error)
-	DeleteWorkflow(context.Context, string) (model.Workflow, error)
-	GetWorkflow(context.Context, string) (model.Workflow, error)
-	GetWorkflows(context.Context, model.PageArgs) (model.WorkflowsPage, error)
+	CreateWorkflow(context.Context, core.WorkflowSpec) (core.Workflow, error)
+	DeleteWorkflow(context.Context, string) (core.Workflow, error)
+	GetWorkflow(context.Context, string) (core.Workflow, error)
+	GetWorkflows(context.Context, core.PageArgs) (core.WorkflowsPage, error)
 }
 
 // WorkflowResolver resolves a workflow.
 type WorkflowResolver struct {
-	w model.Workflow
+	w core.Workflow
 	p Persister
 	f IOFetcher
 }
@@ -39,7 +38,7 @@ func (r *WorkflowResolver) Name() string {
 // CreatedBy resolves the user who created the workflow.
 func (r *WorkflowResolver) CreatedBy() *UserResolver {
 	return &UserResolver{
-		u: &model.User{
+		u: &core.User{
 			ID:    "507f1f77bcf86cd799439011",
 			Login: "jimbob",
 		},
@@ -75,7 +74,7 @@ func (r *WorkflowResolver) Jobs(ctx context.Context, args struct {
 	First  *int
 	Last   *int
 }) (*JobConnectionResolver, error) {
-	pa := model.PageArgs{
+	pa := core.PageArgs{
 		After:  args.After,
 		Before: args.Before,
 		First:  args.First,
@@ -95,7 +94,7 @@ func (r *WorkflowResolver) Volumes(ctx context.Context, args struct {
 	First  *int
 	Last   *int
 }) (*VolumeConnectionResolver, error) {
-	pa := model.PageArgs{
+	pa := core.PageArgs{
 		After:  args.After,
 		Before: args.Before,
 		First:  args.First,

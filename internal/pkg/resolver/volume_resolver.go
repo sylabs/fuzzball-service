@@ -4,18 +4,18 @@ import (
 	"context"
 
 	"github.com/graph-gophers/graphql-go"
-	"github.com/sylabs/compute-service/internal/pkg/model"
+	"github.com/sylabs/compute-service/internal/pkg/core"
 )
 
 // VolumePersister is the interface by which workflows are persisted.
 type VolumePersister interface {
-	GetVolumes(context.Context, model.PageArgs) (model.VolumesPage, error)
-	GetVolumesByWorkflowID(context.Context, model.PageArgs, string) (model.VolumesPage, error)
+	GetVolumes(context.Context, core.PageArgs) (core.VolumesPage, error)
+	GetVolumesByWorkflowID(context.Context, core.PageArgs, string) (core.VolumesPage, error)
 }
 
 // VolumeResolver resolves a volume.
 type VolumeResolver struct {
-	v model.Volume
+	v core.Volume
 }
 
 // ID resolves the volume ID.

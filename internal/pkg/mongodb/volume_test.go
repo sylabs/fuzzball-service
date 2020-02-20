@@ -13,7 +13,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/sylabs/compute-service/internal/pkg/model"
+	"github.com/sylabs/compute-service/internal/pkg/core"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -21,15 +21,15 @@ import (
 
 // getTestVolume generates a volume for use in testing. The attributes of the volume are
 // varied based on the value of i.
-func getTestVolume(i int32) model.Volume {
-	return model.Volume{
+func getTestVolume(i int32) core.Volume {
+	return core.Volume{
 		Name:       fmt.Sprintf("volume-%02d", i),
 		WorkflowID: testWorkflowID,
 	}
 }
 
 // insertTestVolume inserts a volume into the DB.
-func insertTestVolume(t *testing.T, db *mongo.Database) model.Volume {
+func insertTestVolume(t *testing.T, db *mongo.Database) core.Volume {
 	n, err := rand.Int(rand.Reader, big.NewInt(int64(math.MaxInt32)))
 	if err != nil {
 		t.Fatalf("failed to generate random int: %v", err)
@@ -56,7 +56,7 @@ func deleteTestVolume(t *testing.T, db *mongo.Database, id string) {
 }
 
 func TestCreateVolume(t *testing.T) {
-	orig := model.Volume{
+	orig := core.Volume{
 		ID:         "blahblah",
 		WorkflowID: "workflowID",
 		Name:       "test",

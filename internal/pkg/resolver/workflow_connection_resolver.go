@@ -2,11 +2,11 @@
 
 package resolver
 
-import "github.com/sylabs/compute-service/internal/pkg/model"
+import "github.com/sylabs/compute-service/internal/pkg/core"
 
 // WorkflowEdgeResolver resolves a workflow edge.
 type WorkflowEdgeResolver struct {
-	w model.Workflow
+	w core.Workflow
 	p Persister
 	f IOFetcher
 }
@@ -23,7 +23,7 @@ func (r *WorkflowEdgeResolver) Node() *WorkflowResolver {
 
 // WorkflowConnectionResolver resolves a workflow connection.
 type WorkflowConnectionResolver struct {
-	wp model.WorkflowsPage
+	wp core.WorkflowsPage
 	p  Persister
 	f  IOFetcher
 }

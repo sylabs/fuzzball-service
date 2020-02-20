@@ -6,14 +6,14 @@ import (
 	"context"
 	"testing"
 
-	"github.com/sylabs/compute-service/internal/pkg/model"
+	"github.com/sylabs/compute-service/internal/pkg/core"
 )
 
 func TestViewer(t *testing.T) {
 	sc := "startCursor"
 	ec := "endCursor"
-	wp := model.WorkflowsPage{
-		Workflows: []model.Workflow{
+	wp := core.WorkflowsPage{
+		Workflows: []core.Workflow{
 			{
 				ID:   "id1",
 				Name: "name1",
@@ -23,7 +23,7 @@ func TestViewer(t *testing.T) {
 				Name: "name2",
 			},
 		},
-		PageInfo: model.PageInfo{
+		PageInfo: core.PageInfo{
 			StartCursor:     &sc,
 			EndCursor:       &ec,
 			HasNextPage:     true,
@@ -38,13 +38,13 @@ func TestViewer(t *testing.T) {
 	tests := []struct {
 		name   string
 		args   map[string]interface{}
-		wantPA model.PageArgs
+		wantPA core.PageArgs
 	}{
-		{"NoArgs", nil, model.PageArgs{}},
-		{"After", map[string]interface{}{"after": cursor}, model.PageArgs{After: &cursor}},
-		{"Before", map[string]interface{}{"before": cursor}, model.PageArgs{Before: &cursor}},
-		{"First", map[string]interface{}{"first": count}, model.PageArgs{First: &count}},
-		{"Last", map[string]interface{}{"last": count}, model.PageArgs{Last: &count}},
+		{"NoArgs", nil, core.PageArgs{}},
+		{"After", map[string]interface{}{"after": cursor}, core.PageArgs{After: &cursor}},
+		{"Before", map[string]interface{}{"before": cursor}, core.PageArgs{Before: &cursor}},
+		{"First", map[string]interface{}{"first": count}, core.PageArgs{First: &count}},
+		{"Last", map[string]interface{}{"last": count}, core.PageArgs{Last: &count}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/sylabs/compute-service/internal/pkg/model"
+	"github.com/sylabs/compute-service/internal/pkg/core"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -23,7 +23,7 @@ type pageInfo struct {
 }
 
 // parsePageOpts parses the page options, validating and converting fields as needed.
-func parsePageOpts(maxPageSize int, pa model.PageArgs) (first, last int, after, before primitive.ObjectID, err error) {
+func parsePageOpts(maxPageSize int, pa core.PageArgs) (first, last int, after, before primitive.ObjectID, err error) {
 	// Validate first.
 	if pa.First != nil {
 		if *pa.First < 0 {
@@ -229,9 +229,9 @@ func getCursor(rv bson.RawValue) (string, error) {
 }
 
 // getPageInfo transforms a given pageResult into a list of raw values and page info.
-func getPageInfo(first, last int, pr pageResult) ([]bson.RawValue, model.PageInfo, error) {
+func getPageInfo(first, last int, pr pageResult) ([]bson.RawValue, core.PageInfo, error) {
 	rvs := pr.Results
-	var pi model.PageInfo
+	var pi core.PageInfo
 
 	// Determine whether there is a next page.
 	if first != 0 && len(rvs) > first {
@@ -253,14 +253,14 @@ func getPageInfo(first, last int, pr pageResult) ([]bson.RawValue, model.PageInf
 		// Get cursor value of first result.
 		sc, err := getCursor(rvs[0])
 		if err != nil {
-			return nil, model.PageInfo{}, err
+			return nil, core.PageInfo{}, err
 		}
 		pi.StartCursor = &sc
 
 		// Get cursor value of last result.
 		ec, err := getCursor(rvs[len(rvs)-1])
 		if err != nil {
-			return nil, model.PageInfo{}, err
+			return nil, core.PageInfo{}, err
 		}
 		pi.EndCursor = &ec
 	}
@@ -271,40 +271,40 @@ func getPageInfo(first, last int, pr pageResult) ([]bson.RawValue, model.PageInf
 // findPageEx implements filtered pagination as described in the "Relay Cursor Connections
 // Specification" found at https://facebook.github.io/relay/graphql/connections.htm and "Complete
 // Connection Model" found at https://graphql.org/learn/pagination/.
-func findPageEx(ctx context.Context, col *mongo.Collection, maxPageSize int, filter bson.M, pa model.PageArgs, results interface{}) (model.PageInfo, int, error) {
+func findPageEx(ctx context.Context, col *mongo.Collection, maxPageSize int, filter bson.M, pa core.PageArgs, results interface{}) (core.PageInfo, int, error) {
 	// Ensure page options are valid.
 	f, l, a, b, err := parsePageOpts(maxPageSize, pa)
 	if err != nil {
-		return model.PageInfo{}, 0, err
+		return core.PageInfo{}, 0, err
 	}
 
 	// Run aggregation pipeline.
 	cur, err := col.Aggregate(ctx, getPipeline(filter, f, l, a, b))
 	if err != nil {
-		return model.PageInfo{}, 0, err
+		return core.PageInfo{}, 0, err
 	}
 	defer cur.Close(ctx)
 
 	// Advance cursor to first (only) document.
 	if ok := cur.Next(ctx); !ok {
-		return model.PageInfo{}, 0, cur.Err()
+		return core.PageInfo{}, 0, cur.Err()
 	}
 
 	// Unmarshal document.
 	pr := pageResult{}
 	if err := cur.Decode(&pr); err != nil {
-		return model.PageInfo{}, 0, err
+		return core.PageInfo{}, 0, err
 	}
 
 	// Populate page info.
 	rvs, pi, err := getPageInfo(f, l, pr)
 	if err != nil {
-		return model.PageInfo{}, 0, err
+		return core.PageInfo{}, 0, err
 	}
 
 	// Unmarshal results.
 	if err := unmarshal(rvs, results); err != nil {
-		return model.PageInfo{}, 0, err
+		return core.PageInfo{}, 0, err
 	}
 	return pi, pr.Count, nil
 }

@@ -9,7 +9,7 @@ import (
 
 	"github.com/nats-io/nats.go"
 	"github.com/sirupsen/logrus"
-	"github.com/sylabs/compute-service/internal/pkg/model"
+	"github.com/sylabs/compute-service/internal/pkg/core"
 )
 
 const (
@@ -18,7 +18,7 @@ const (
 )
 
 // runJob runs a job to completion.
-func (s *Scheduler) runJob(ctx context.Context, j model.Job) error {
+func (s *Scheduler) runJob(ctx context.Context, j core.Job) error {
 	log := logrus.WithFields(logrus.Fields{
 		"jobID":   j.ID,
 		"jobName": j.Name,
@@ -58,7 +58,7 @@ func (s *Scheduler) runJob(ctx context.Context, j model.Job) error {
 }
 
 // createVolume sets up a volume on an agent.
-func (s *Scheduler) createVolume(ctx context.Context, v model.Volume) error {
+func (s *Scheduler) createVolume(ctx context.Context, v core.Volume) error {
 	log := logrus.WithFields(logrus.Fields{
 		"VolumeID":   v.ID,
 		"VolumeName": v.Name,
@@ -98,7 +98,7 @@ func (s *Scheduler) createVolume(ctx context.Context, v model.Volume) error {
 }
 
 // deleteVolume tears down a volume on an agent.
-func (s *Scheduler) deleteVolume(ctx context.Context, v model.Volume) error {
+func (s *Scheduler) deleteVolume(ctx context.Context, v core.Volume) error {
 	log := logrus.WithFields(logrus.Fields{
 		"VolumeID":   v.ID,
 		"VolumeName": v.Name,
@@ -138,7 +138,7 @@ func (s *Scheduler) deleteVolume(ctx context.Context, v model.Volume) error {
 }
 
 // runWorkflow runs a workflow to completion.
-func (s *Scheduler) runWorkflow(w model.Workflow, jobs []model.Job, volumes map[string]model.Volume) {
+func (s *Scheduler) runWorkflow(w core.Workflow, jobs []core.Job, volumes map[string]core.Volume) {
 	ctx := context.Background()
 
 	log := logrus.WithFields(logrus.Fields{
@@ -186,7 +186,7 @@ func (s *Scheduler) runWorkflow(w model.Workflow, jobs []model.Job, volumes map[
 }
 
 // AddWorkflow schedules a workflow for execution.
-func (s *Scheduler) AddWorkflow(ctx context.Context, w model.Workflow, jobs []model.Job, volumes map[string]model.Volume) error {
+func (s *Scheduler) AddWorkflow(ctx context.Context, w core.Workflow, jobs []core.Job, volumes map[string]core.Volume) error {
 	s.p.SetWorkflowStatus(ctx, w.ID, "SCHEDULED")
 
 	go s.runWorkflow(w, jobs, volumes)
