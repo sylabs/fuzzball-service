@@ -10,18 +10,9 @@ import (
 	"github.com/sylabs/compute-service/internal/pkg/core"
 )
 
-// JobServicer is the interface by which jobs are serviced.
-type JobServicer interface {
-	GetJob(context.Context, string) (core.Job, error)
-	GetJobs(context.Context, core.PageArgs) (core.JobsPage, error)
-	GetJobsByWorkflowID(context.Context, core.PageArgs, string) (core.JobsPage, error)
-	GetJobsByID(context.Context, core.PageArgs, string, []string) (core.JobsPage, error)
-}
-
 // JobResolver resolves a job.
 type JobResolver struct {
 	j core.Job
-	s Servicer
 }
 
 // ID resolves the job ID.
@@ -45,14 +36,12 @@ func (r *JobResolver) Command() []string {
 }
 
 // CreatedBy resolves the user who created the job.
-func (r *JobResolver) CreatedBy() *UserResolver {
-	return &UserResolver{
-		u: &core.User{
-			ID:    "507f1f77bcf86cd799439011",
-			Login: "jimbob",
-		},
-		s: r.s,
+func (r *JobResolver) CreatedBy(ctx context.Context) (*UserResolver, error) {
+	u, err := r.j.CreatedBy(ctx)
+	if err != nil {
+		return nil, err
 	}
+	return &UserResolver{u: &u}, nil
 }
 
 // CreatedAt resolves when the job was created.
@@ -105,9 +94,9 @@ func (r *JobResolver) Requires(ctx context.Context, args struct {
 		First:  args.First,
 		Last:   args.Last,
 	}
-	p, err := r.s.GetJobsByID(ctx, pa, r.j.WorkflowID, r.j.Requires)
+	p, err := r.j.RequiredJobsPage(ctx, pa)
 	if err != nil {
 		return nil, err
 	}
-	return &JobConnectionResolver{p, r.s}, nil
+	return &JobConnectionResolver{p}, nil
 }

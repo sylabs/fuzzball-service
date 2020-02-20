@@ -80,7 +80,11 @@ func TestMain(m *testing.M) {
 }
 
 func TestNew(t *testing.T) {
-	if _, err := New(&mockServicer{}); err != nil {
+	mc, err := getMockCore(mockCore{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := New(mc); err != nil {
 		t.Fatal(err)
 	}
 }

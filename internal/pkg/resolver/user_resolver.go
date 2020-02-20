@@ -9,10 +9,14 @@ import (
 	"github.com/sylabs/compute-service/internal/pkg/core"
 )
 
+// UserServicer is the interface by which users are serviced.
+type UserServicer interface {
+	Viewer(ctx context.Context) (core.User, error)
+}
+
 // UserResolver resolves a user.
 type UserResolver struct {
 	u *core.User
-	s Servicer
 }
 
 // ID resolves the unique user ID.
@@ -44,11 +48,11 @@ func (r *UserResolver) Workflows(ctx context.Context, args struct {
 		last := int(*args.Last)
 		pa.Last = &last
 	}
-	p, err := r.s.GetWorkflows(ctx, pa)
+	p, err := r.u.WorkflowsPage(ctx, pa)
 	if err != nil {
 		return nil, err
 	}
-	return &WorkflowConnectionResolver{p, r.s}, nil
+	return &WorkflowConnectionResolver{p}, nil
 }
 
 // Jobs looks up jobs associated with the user.
@@ -70,11 +74,11 @@ func (r *UserResolver) Jobs(ctx context.Context, args struct {
 		last := int(*args.Last)
 		pa.Last = &last
 	}
-	p, err := r.s.GetJobs(ctx, pa)
+	p, err := r.u.JobsPage(ctx, pa)
 	if err != nil {
 		return nil, err
 	}
-	return &JobConnectionResolver{p, r.s}, nil
+	return &JobConnectionResolver{p}, nil
 }
 
 // Volumes looks up volumes associated with the user.
@@ -96,9 +100,9 @@ func (r *UserResolver) Volumes(ctx context.Context, args struct {
 		last := int(*args.Last)
 		pa.Last = &last
 	}
-	p, err := r.s.GetVolumes(ctx, pa)
+	p, err := r.u.VolumesPage(ctx, pa)
 	if err != nil {
 		return nil, err
 	}
-	return &VolumeConnectionResolver{p, r.s}, nil
+	return &VolumeConnectionResolver{p}, nil
 }

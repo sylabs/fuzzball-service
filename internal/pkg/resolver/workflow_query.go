@@ -14,5 +14,5 @@ func (r Resolver) Workflow(ctx context.Context, args struct {
 	if err != nil {
 		return nil, err
 	}
-	return &WorkflowResolver{j, r.s}, nil
+	return &WorkflowResolver{j}, nil
 }

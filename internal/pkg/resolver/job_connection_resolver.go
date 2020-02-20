@@ -7,7 +7,6 @@ import "github.com/sylabs/compute-service/internal/pkg/core"
 // JobEdgeResolver resolves a job edge.
 type JobEdgeResolver struct {
 	j core.Job
-	s Servicer
 }
 
 // Cursor resolves a cursor for use in pagination.
@@ -17,20 +16,19 @@ func (r *JobEdgeResolver) Cursor() string {
 
 // Node resolves the item at the end of the edge.
 func (r *JobEdgeResolver) Node() *JobResolver {
-	return &JobResolver{r.j, r.s}
+	return &JobResolver{r.j}
 }
 
 // JobConnectionResolver resolves a job connection.
 type JobConnectionResolver struct {
 	jp core.JobsPage
-	s  Servicer
 }
 
 // Edges resolves a list of edges.
 func (r *JobConnectionResolver) Edges() *[]*JobEdgeResolver {
 	wer := []*JobEdgeResolver{}
 	for _, w := range r.jp.Jobs {
-		wer = append(wer, &JobEdgeResolver{w, r.s})
+		wer = append(wer, &JobEdgeResolver{w})
 	}
 	return &wer
 }

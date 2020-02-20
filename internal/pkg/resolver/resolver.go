@@ -11,9 +11,8 @@ import (
 
 // Servicer is the interface required to service GraphQL queries.
 type Servicer interface {
+	UserServicer
 	WorkflowServicer
-	JobServicer
-	VolumeServicer
 }
 
 // Resolver is the root type for resolving GraphQL queries.

@@ -15,13 +15,11 @@ type WorkflowServicer interface {
 	CreateWorkflow(context.Context, core.WorkflowSpec) (core.Workflow, error)
 	DeleteWorkflow(context.Context, string) (core.Workflow, error)
 	GetWorkflow(context.Context, string) (core.Workflow, error)
-	GetWorkflows(context.Context, core.PageArgs) (core.WorkflowsPage, error)
 }
 
 // WorkflowResolver resolves a workflow.
 type WorkflowResolver struct {
 	w core.Workflow
-	s Servicer
 }
 
 // ID resolves the workflow ID.
@@ -35,14 +33,12 @@ func (r *WorkflowResolver) Name() string {
 }
 
 // CreatedBy resolves the user who created the workflow.
-func (r *WorkflowResolver) CreatedBy() *UserResolver {
-	return &UserResolver{
-		u: &core.User{
-			ID:    "507f1f77bcf86cd799439011",
-			Login: "jimbob",
-		},
-		s: r.s,
+func (r *WorkflowResolver) CreatedBy(ctx context.Context) (*UserResolver, error) {
+	u, err := r.w.CreatedBy(ctx)
+	if err != nil {
+		return nil, err
 	}
+	return &UserResolver{u: &u}, nil
 }
 
 // CreatedAt resolves when the workflow was created.
@@ -78,11 +74,11 @@ func (r *WorkflowResolver) Jobs(ctx context.Context, args struct {
 		First:  args.First,
 		Last:   args.Last,
 	}
-	p, err := r.s.GetJobsByWorkflowID(ctx, pa, r.w.ID)
+	p, err := r.w.JobsPage(ctx, pa)
 	if err != nil {
 		return nil, err
 	}
-	return &JobConnectionResolver{p, r.s}, nil
+	return &JobConnectionResolver{p}, nil
 }
 
 // Volumes looks up volumes associated with the workflow.
@@ -98,9 +94,9 @@ func (r *WorkflowResolver) Volumes(ctx context.Context, args struct {
 		First:  args.First,
 		Last:   args.Last,
 	}
-	p, err := r.s.GetVolumesByWorkflowID(ctx, pa, r.w.ID)
+	p, err := r.w.VolumesPage(ctx, pa)
 	if err != nil {
 		return nil, err
 	}
-	return &VolumeConnectionResolver{p, r.s}, nil
+	return &VolumeConnectionResolver{p}, nil
 }

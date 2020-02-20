@@ -16,7 +16,7 @@ func (r Resolver) CreateWorkflow(ctx context.Context, args struct {
 	if err != nil {
 		return nil, err
 	}
-	return &WorkflowResolver{w, r.s}, nil
+	return &WorkflowResolver{w}, nil
 }
 
 // DeleteWorkflow deletes a workflow.
@@ -27,5 +27,5 @@ func (r Resolver) DeleteWorkflow(ctx context.Context, args struct {
 	if err != nil {
 		return nil, err
 	}
-	return &WorkflowResolver{w, r.s}, nil
+	return &WorkflowResolver{w}, nil
 }

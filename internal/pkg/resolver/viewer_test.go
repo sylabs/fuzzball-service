@@ -48,12 +48,17 @@ func TestViewer(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			r := Resolver{
-				s: &mockServicer{
+			mc, err := getMockCore(mockCore{
+				p: mockPersister{
 					wantPA: tt.wantPA,
 					wp:     wp,
 				},
+			})
+			if err != nil {
+				t.Fatal(err)
 			}
+
+			r := Resolver{s: mc}
 			s, err := getSchema(&r)
 			if err != nil {
 				t.Fatal(err)
