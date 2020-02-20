@@ -34,7 +34,7 @@ func makeToken(c *Claims) string {
 func TestMain(m *testing.M) {
 	// Claims for testing.
 	testClaims = &Claims{
-		jwt.StandardClaims{
+		StandardClaims: jwt.StandardClaims{
 			Id:        "id",
 			Subject:   "subject",
 			Audience:  "api://default",
@@ -50,21 +50,21 @@ func TestMain(m *testing.M) {
 
 	// Bad audience value.
 	testTokenInvalidAudience = makeToken(&Claims{
-		jwt.StandardClaims{
+		StandardClaims: jwt.StandardClaims{
 			Audience: "bad",
 		},
 	})
 
 	// Bad issuer value.
 	testTokenInvalidIssuer = makeToken(&Claims{
-		jwt.StandardClaims{
+		StandardClaims: jwt.StandardClaims{
 			Issuer: "bad",
 		},
 	})
 
 	// Expired.
 	testTokenExpired = makeToken(&Claims{
-		jwt.StandardClaims{
+		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: 1000000000,
 		},
 	})

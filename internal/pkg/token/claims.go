@@ -7,6 +7,7 @@ import "github.com/dgrijalva/jwt-go"
 // Claims type.
 type Claims struct {
 	jwt.StandardClaims
+	UserID string `json:"uid,omitempty"`
 }
 
 // VerifyAudience compares the "aud" claim (if present) against cmp.
