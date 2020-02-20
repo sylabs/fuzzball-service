@@ -8,133 +8,85 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/sylabs/compute-service/internal/pkg/model"
+	"github.com/sylabs/compute-service/internal/pkg/core"
 )
 
-type mockScheduler struct{}
-
-func (s *mockScheduler) AddWorkflow(ctx context.Context, w model.Workflow, jobs []model.Job, volumes map[string]model.Volume) error {
-	return nil
-}
-
 type mockPersister struct {
-	wantPA model.PageArgs
-	j      model.Job
-	v      model.Volume
-	w      model.Workflow
-	jp     model.JobsPage
-	vp     model.VolumesPage
-	wp     model.WorkflowsPage
+	wantPA core.PageArgs
+	j      core.Job
+	v      core.Volume
+	w      core.Workflow
+	jp     core.JobsPage
+	vp     core.VolumesPage
+	wp     core.WorkflowsPage
 }
 
-func (p *mockPersister) CreateWorkflow(ctx context.Context, w model.Workflow) (model.Workflow, error) {
-	if got, want := w.Name, p.w.Name; got != want {
-		return model.Workflow{}, fmt.Errorf("got name %v, want %v", got, want)
+func (p *mockPersister) CreateWorkflow(ctx context.Context, s core.WorkflowSpec) (core.Workflow, error) {
+	if got, want := s.Name, p.w.Name; got != want {
+		return core.Workflow{}, fmt.Errorf("got name %v, want %v", got, want)
 	}
 	return p.w, nil
 }
 
-func (p *mockPersister) DeleteWorkflow(ctx context.Context, id string) (model.Workflow, error) {
+func (p *mockPersister) DeleteWorkflow(ctx context.Context, id string) (core.Workflow, error) {
 	if got, want := id, p.w.ID; got != want {
-		return model.Workflow{}, fmt.Errorf("got ID %v, want %v", got, want)
+		return core.Workflow{}, fmt.Errorf("got ID %v, want %v", got, want)
 	}
 	return p.w, nil
 }
 
-func (p *mockPersister) GetWorkflow(ctx context.Context, id string) (model.Workflow, error) {
+func (p *mockPersister) GetWorkflow(ctx context.Context, id string) (core.Workflow, error) {
 	if got, want := id, p.w.ID; got != want {
-		return model.Workflow{}, fmt.Errorf("got ID %v, want %v", got, want)
+		return core.Workflow{}, fmt.Errorf("got ID %v, want %v", got, want)
 	}
 	return p.w, nil
 }
 
-func (p *mockPersister) GetWorkflows(ctx context.Context, pa model.PageArgs) (model.WorkflowsPage, error) {
+func (p *mockPersister) GetWorkflows(ctx context.Context, pa core.PageArgs) (core.WorkflowsPage, error) {
 	if got, want := pa, p.wantPA; !reflect.DeepEqual(got, want) {
-		return model.WorkflowsPage{}, fmt.Errorf("got page args %v, want %v", got, want)
+		return core.WorkflowsPage{}, fmt.Errorf("got page args %v, want %v", got, want)
 	}
 	return p.wp, nil
 }
 
-func (p *mockPersister) SetWorkflowStatus(ctx context.Context, id, status string) error {
-	if got, want := id, p.w.ID; got != want {
-		return fmt.Errorf("got id %v, want %v", got, want)
-	}
-	return nil
-}
-
-func (p *mockPersister) CreateJob(ctx context.Context, j model.Job) (model.Job, error) {
-	if got, want := j.Name, p.j.Name; got != want {
-		return model.Job{}, fmt.Errorf("got name %v, want %v", got, want)
+func (p *mockPersister) GetJob(ctx context.Context, id string) (core.Job, error) {
+	if got, want := id, p.j.ID; got != want {
+		return core.Job{}, fmt.Errorf("got ID %v, want %v", got, want)
 	}
 	return p.j, nil
 }
 
-func (p *mockPersister) DeleteJobsByWorkflowID(ctx context.Context, id string) error {
-	if got, want := id, p.j.WorkflowID; got != want {
-		return fmt.Errorf("got ID %v, want %v", got, want)
-	}
-	return nil
-}
-
-func (p *mockPersister) GetJob(ctx context.Context, id string) (model.Job, error) {
-	if got, want := id, p.j.ID; got != want {
-		return model.Job{}, fmt.Errorf("got ID %v, want %v", got, want)
-	}
-	return p.j, nil
-}
-
-func (p *mockPersister) GetJobs(ctx context.Context, pa model.PageArgs) (model.JobsPage, error) {
+func (p *mockPersister) GetJobs(ctx context.Context, pa core.PageArgs) (core.JobsPage, error) {
 	if got, want := pa, p.wantPA; !reflect.DeepEqual(got, want) {
-		return model.JobsPage{}, fmt.Errorf("got page args %v, want %v", got, want)
+		return core.JobsPage{}, fmt.Errorf("got page args %v, want %v", got, want)
 	}
 	return p.jp, nil
 }
 
-func (p *mockPersister) GetJobsByID(ctx context.Context, pa model.PageArgs, wid string, names []string) (model.JobsPage, error) {
+func (p *mockPersister) GetJobsByID(ctx context.Context, pa core.PageArgs, wid string, names []string) (core.JobsPage, error) {
 	if got, want := pa, p.wantPA; !reflect.DeepEqual(got, want) {
-		return model.JobsPage{}, fmt.Errorf("got page args %v, want %v", got, want)
+		return core.JobsPage{}, fmt.Errorf("got page args %v, want %v", got, want)
 	}
 	return p.jp, nil
 }
 
-func (p *mockPersister) GetJobsByWorkflowID(ctx context.Context, pa model.PageArgs, id string) (model.JobsPage, error) {
+func (p *mockPersister) GetJobsByWorkflowID(ctx context.Context, pa core.PageArgs, id string) (core.JobsPage, error) {
 	if got, want := pa, p.wantPA; !reflect.DeepEqual(got, want) {
-		return model.JobsPage{}, fmt.Errorf("got page args %v, want %v", got, want)
+		return core.JobsPage{}, fmt.Errorf("got page args %v, want %v", got, want)
 	}
 	return p.jp, nil
 }
 
-func (p *mockPersister) SetJobStatus(ctx context.Context, id, status string, exitCode int) error {
-	if got, want := id, p.j.ID; got != want {
-		return fmt.Errorf("got id %v, want %v", got, want)
-	}
-	return nil
-}
-
-func (p *mockPersister) CreateVolume(ctx context.Context, v model.Volume) (model.Volume, error) {
-	if got, want := v.Name, p.v.Name; got != want {
-		return model.Volume{}, fmt.Errorf("got name %v, want %v", got, want)
-	}
-	return p.v, nil
-}
-
-func (p *mockPersister) DeleteVolumesByWorkflowID(ctx context.Context, id string) error {
-	if got, want := id, p.v.WorkflowID; got != want {
-		return fmt.Errorf("got ID %v, want %v", got, want)
-	}
-	return nil
-}
-
-func (p *mockPersister) GetVolumes(ctx context.Context, pa model.PageArgs) (model.VolumesPage, error) {
+func (p *mockPersister) GetVolumes(ctx context.Context, pa core.PageArgs) (core.VolumesPage, error) {
 	if got, want := pa, p.wantPA; !reflect.DeepEqual(got, want) {
-		return model.VolumesPage{}, fmt.Errorf("got page args %v, want %v", got, want)
+		return core.VolumesPage{}, fmt.Errorf("got page args %v, want %v", got, want)
 	}
 	return p.vp, nil
 }
 
-func (p *mockPersister) GetVolumesByWorkflowID(ctx context.Context, pa model.PageArgs, id string) (model.VolumesPage, error) {
+func (p *mockPersister) GetVolumesByWorkflowID(ctx context.Context, pa core.PageArgs, id string) (core.VolumesPage, error) {
 	if got, want := pa, p.wantPA; !reflect.DeepEqual(got, want) {
-		return model.VolumesPage{}, fmt.Errorf("got page args %v, want %v", got, want)
+		return core.VolumesPage{}, fmt.Errorf("got page args %v, want %v", got, want)
 	}
 	return p.vp, nil
 }
@@ -148,7 +100,7 @@ func (p *mockFetcher) GetJobOutput(string) (s string, err error) {
 func TestWorkflow(t *testing.T) {
 	r := Resolver{
 		p: &mockPersister{
-			w: model.Workflow{
+			w: core.Workflow{
 				ID:   "workflowID",
 				Name: "workflowName",
 			},
@@ -198,13 +150,12 @@ func TestWorkflow(t *testing.T) {
 
 func TestCreateWorkflow(t *testing.T) {
 	r := Resolver{
-		s: &mockScheduler{},
 		p: &mockPersister{
-			w: model.Workflow{
+			w: core.Workflow{
 				ID:   "workflowID",
 				Name: "workflowName",
 			},
-			j: model.Job{
+			j: core.Job{
 				ID:         "jobID",
 				WorkflowID: "workflowID",
 				Name:       "jobName",
@@ -276,18 +227,18 @@ func TestCreateWorkflow(t *testing.T) {
 func TestDeleteWorkflow(t *testing.T) {
 	r := Resolver{
 		p: &mockPersister{
-			w: model.Workflow{
+			w: core.Workflow{
 				ID:   "workflowID",
 				Name: "workflowName",
 			},
-			j: model.Job{
+			j: core.Job{
 				ID:         "jobID",
 				WorkflowID: "workflowID",
 				Name:       "jobName",
 				Image:      "jobImage",
 				Command:    []string{"jobCommand"},
 			},
-			v: model.Volume{
+			v: core.Volume{
 				ID:         "volumeID",
 				WorkflowID: "workflowID",
 				Name:       "volumeName",

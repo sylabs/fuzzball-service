@@ -1,6 +1,6 @@
 // Copyright (c) 2020, Sylabs, Inc. All rights reserved.
 
-package model
+package core
 
 // AuthMetadata contains metadata as defined in the OAuth 2.0 Authorization Server Metadata
 // proposed standard (RFC 8414).

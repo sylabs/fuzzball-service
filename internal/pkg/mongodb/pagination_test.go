@@ -8,7 +8,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/sylabs/compute-service/internal/pkg/model"
+	"github.com/sylabs/compute-service/internal/pkg/core"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -26,24 +26,24 @@ func TestParsePageOpts(t *testing.T) {
 	tests := []struct {
 		name        string
 		maxPageSize int
-		pa          model.PageArgs
+		pa          core.PageArgs
 		wantFirst   int
 		wantLast    int
 		wantAfter   primitive.ObjectID
 		wantBefore  primitive.ObjectID
 		wantErr     bool
 	}{
-		{"BadFirst", 10, model.PageArgs{First: &negativeOne}, 0, 0, primitive.NilObjectID, primitive.NilObjectID, true},
-		{"BadLast", 10, model.PageArgs{Last: &negativeOne}, 0, 0, primitive.NilObjectID, primitive.NilObjectID, true},
-		{"BadAfter", 10, model.PageArgs{After: &bad}, 0, 0, primitive.NilObjectID, primitive.NilObjectID, true},
-		{"BadBefore", 10, model.PageArgs{Before: &bad}, 0, 0, primitive.NilObjectID, primitive.NilObjectID, true},
-		{"ZeroValues", 10, model.PageArgs{}, 10, 0, primitive.NilObjectID, primitive.NilObjectID, false},
-		{"MaxPlusFirst", 10, model.PageArgs{First: &eleven}, 10, 0, primitive.NilObjectID, primitive.NilObjectID, false},
-		{"MaxPlusLast", 10, model.PageArgs{Last: &eleven}, 0, 10, primitive.NilObjectID, primitive.NilObjectID, false},
-		{"GoodFirst", 10, model.PageArgs{First: &five}, 5, 0, primitive.NilObjectID, primitive.NilObjectID, false},
-		{"GoodLast", 10, model.PageArgs{Last: &five}, 0, 5, primitive.NilObjectID, primitive.NilObjectID, false},
-		{"GoodAfter", 10, model.PageArgs{After: &idHex}, 10, 0, id, primitive.NilObjectID, false},
-		{"GoodBefore", 10, model.PageArgs{Before: &idHex}, 10, 0, primitive.NilObjectID, id, false},
+		{"BadFirst", 10, core.PageArgs{First: &negativeOne}, 0, 0, primitive.NilObjectID, primitive.NilObjectID, true},
+		{"BadLast", 10, core.PageArgs{Last: &negativeOne}, 0, 0, primitive.NilObjectID, primitive.NilObjectID, true},
+		{"BadAfter", 10, core.PageArgs{After: &bad}, 0, 0, primitive.NilObjectID, primitive.NilObjectID, true},
+		{"BadBefore", 10, core.PageArgs{Before: &bad}, 0, 0, primitive.NilObjectID, primitive.NilObjectID, true},
+		{"ZeroValues", 10, core.PageArgs{}, 10, 0, primitive.NilObjectID, primitive.NilObjectID, false},
+		{"MaxPlusFirst", 10, core.PageArgs{First: &eleven}, 10, 0, primitive.NilObjectID, primitive.NilObjectID, false},
+		{"MaxPlusLast", 10, core.PageArgs{Last: &eleven}, 0, 10, primitive.NilObjectID, primitive.NilObjectID, false},
+		{"GoodFirst", 10, core.PageArgs{First: &five}, 5, 0, primitive.NilObjectID, primitive.NilObjectID, false},
+		{"GoodLast", 10, core.PageArgs{Last: &five}, 0, 5, primitive.NilObjectID, primitive.NilObjectID, false},
+		{"GoodAfter", 10, core.PageArgs{After: &idHex}, 10, 0, id, primitive.NilObjectID, false},
+		{"GoodBefore", 10, core.PageArgs{Before: &idHex}, 10, 0, primitive.NilObjectID, id, false},
 	}
 
 	for _, tt := range tests {

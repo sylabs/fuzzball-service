@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/sirupsen/logrus"
-	"github.com/sylabs/compute-service/internal/pkg/model"
+	"github.com/sylabs/compute-service/internal/pkg/core"
 	"gopkg.in/square/go-jose.v2"
 )
 
@@ -46,7 +46,7 @@ func getDiscoveryURIs(issuerURI string) ([]string, error) {
 
 // discoverAuthMetadata attempts to discover metadata from an OAuth issuer using well-known URI
 // discovery for OAuth 2.0 (RFC 8414) and OpenID Connect (OpenID.Discovery).
-func discoverAuthMetadata(ctx context.Context, hc *http.Client, issuerURI string) (md model.AuthMetadata, err error) {
+func discoverAuthMetadata(ctx context.Context, hc *http.Client, issuerURI string) (md core.AuthMetadata, err error) {
 	logrus.WithField("issuerURI", issuerURI).Info("discovering auth metadata")
 	defer func(t time.Time) {
 		log := logrus.WithField("took", time.Since(t))
@@ -59,7 +59,7 @@ func discoverAuthMetadata(ctx context.Context, hc *http.Client, issuerURI string
 
 	uris, err := getDiscoveryURIs(issuerURI)
 	if err != nil {
-		return model.AuthMetadata{}, err
+		return core.AuthMetadata{}, err
 	}
 
 	for _, uri := range uris {
@@ -67,17 +67,17 @@ func discoverAuthMetadata(ctx context.Context, hc *http.Client, issuerURI string
 		if err == nil {
 			if md.Issuer != issuerURI {
 				// As per RFC 8414 § 3.3, the returned issuer must match.
-				return model.AuthMetadata{}, fmt.Errorf("unexpected issuer (%s != %s)", md.Issuer, issuerURI)
+				return core.AuthMetadata{}, fmt.Errorf("unexpected issuer (%s != %s)", md.Issuer, issuerURI)
 			}
 			return md, nil
 		}
 	}
-	return model.AuthMetadata{}, errors.New("auth metadata discovery failed")
+	return core.AuthMetadata{}, errors.New("auth metadata discovery failed")
 }
 
 // getAuthMetadata gets metadata from uri as per the OAuth 2.0 Authorization Server Metadata
 // specification (RFC 8414).
-func getAuthMetadata(ctx context.Context, hc *http.Client, uri string) (md model.AuthMetadata, err error) {
+func getAuthMetadata(ctx context.Context, hc *http.Client, uri string) (md core.AuthMetadata, err error) {
 	logrus.WithField("uri", uri).Info("getting auth metadata")
 	defer func(t time.Time) {
 		log := logrus.WithField("took", time.Since(t))
@@ -90,20 +90,20 @@ func getAuthMetadata(ctx context.Context, hc *http.Client, uri string) (md model
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return model.AuthMetadata{}, err
+		return core.AuthMetadata{}, err
 	}
 	res, err := hc.Do(req)
 	if err != nil {
-		return model.AuthMetadata{}, err
+		return core.AuthMetadata{}, err
 	}
 	defer res.Body.Close()
 
 	if code := res.StatusCode; (code / 100) != 2 {
-		return model.AuthMetadata{}, fmt.Errorf("%d %s", code, http.StatusText(code))
+		return core.AuthMetadata{}, fmt.Errorf("%d %s", code, http.StatusText(code))
 	}
 
 	if err := json.NewDecoder(res.Body).Decode(&md); err != nil {
-		return model.AuthMetadata{}, err
+		return core.AuthMetadata{}, err
 	}
 	return md, nil
 }

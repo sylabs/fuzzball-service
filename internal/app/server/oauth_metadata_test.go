@@ -10,7 +10,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/sylabs/compute-service/internal/pkg/model"
+	"github.com/sylabs/compute-service/internal/pkg/core"
 	"gopkg.in/square/go-jose.v2"
 )
 
@@ -51,11 +51,11 @@ func TestGetDiscoveryURIs(t *testing.T) {
 
 type mockOAuthDisco struct {
 	code int
-	md   model.AuthMetadata
+	md   core.AuthMetadata
 }
 
 var (
-	testMetadata = model.AuthMetadata{
+	testMetadata = core.AuthMetadata{
 		Issuer:                                    "https://example.com/oauth2/default",
 		AuthorizationEndpoint:                     "https://example.com/oauth2/default/v1/authorize",
 		TokenEndpoint:                             "https://example.com/oauth2/default/v1/token",

@@ -11,7 +11,7 @@ import (
 	"github.com/graph-gophers/graphql-go"
 	"github.com/nats-io/nats.go"
 	"github.com/sirupsen/logrus"
-	"github.com/sylabs/compute-service/internal/pkg/model"
+	"github.com/sylabs/compute-service/internal/pkg/core"
 	"github.com/sylabs/compute-service/internal/pkg/mongodb"
 	"github.com/sylabs/compute-service/internal/pkg/rediskv"
 	"github.com/sylabs/compute-service/internal/pkg/resolver"
@@ -38,7 +38,7 @@ type Server struct {
 	httpSrv  *http.Server
 	httpLn   net.Listener
 	schema   *graphql.Schema
-	authMeta model.AuthMetadata
+	authMeta core.AuthMetadata
 	authKeys jose.JSONWebKeySet
 }
 
@@ -72,12 +72,18 @@ func New(ctx context.Context, c Config) (s Server, err error) {
 		return Server{}, err
 	}
 
+	// Initialize core.
+	core, err := core.New(c.Persist, c.RedisConn, sched)
+	if err != nil {
+		return Server{}, err
+	}
+
 	// Initialize GraphQL.
 	sch, err := schema.String()
 	if err != nil {
 		return Server{}, fmt.Errorf("unable to init GraphQL schema: %w", err)
 	}
-	r, err := resolver.New(c.Persist, c.RedisConn, sched)
+	r, err := resolver.New(core, c.RedisConn)
 	if err != nil {
 		return Server{}, err
 	}

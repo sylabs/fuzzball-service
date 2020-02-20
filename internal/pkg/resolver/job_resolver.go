@@ -7,17 +7,15 @@ import (
 	"time"
 
 	"github.com/graph-gophers/graphql-go"
-	"github.com/sylabs/compute-service/internal/pkg/model"
+	"github.com/sylabs/compute-service/internal/pkg/core"
 )
 
-// JobPersister is the interface by which workflows are persisted.
+// JobPersister is the interface by which jobs are persisted.
 type JobPersister interface {
-	CreateJob(context.Context, model.Job) (model.Job, error)
-	DeleteJobsByWorkflowID(context.Context, string) error
-	GetJob(context.Context, string) (model.Job, error)
-	GetJobs(context.Context, model.PageArgs) (model.JobsPage, error)
-	GetJobsByWorkflowID(context.Context, model.PageArgs, string) (model.JobsPage, error)
-	GetJobsByID(context.Context, model.PageArgs, string, []string) (model.JobsPage, error)
+	GetJob(context.Context, string) (core.Job, error)
+	GetJobs(context.Context, core.PageArgs) (core.JobsPage, error)
+	GetJobsByWorkflowID(context.Context, core.PageArgs, string) (core.JobsPage, error)
+	GetJobsByID(context.Context, core.PageArgs, string, []string) (core.JobsPage, error)
 }
 
 // JobOutputFetcher is the interface to fetch job output.
@@ -25,22 +23,9 @@ type JobOutputFetcher interface {
 	GetJobOutput(string) (string, error)
 }
 
-type jobSpec struct {
-	Name     string                   `bson:"name"`
-	Image    string                   `bson:"image"`
-	Command  []string                 `bson:"command"`
-	Requires *[]string                `bson:"requires"`
-	Volumes  *[]volumeRequirementSpec `bson:"volumes"`
-}
-
-type volumeRequirementSpec struct {
-	Name     string
-	Location string
-}
-
 // JobResolver resolves a workflow.
 type JobResolver struct {
-	j model.Job
+	j core.Job
 	p Persister
 	f IOFetcher
 }
@@ -68,11 +53,12 @@ func (r *JobResolver) Command() []string {
 // CreatedBy resolves the user who created the job.
 func (r *JobResolver) CreatedBy() *UserResolver {
 	return &UserResolver{
-		u: &model.User{
+		u: &core.User{
 			ID:    "507f1f77bcf86cd799439011",
 			Login: "jimbob",
 		},
 		p: r.p,
+		f: r.f,
 	}
 }
 
@@ -110,7 +96,6 @@ func (r *JobResolver) Output() (string, error) {
 	if r.j.Status != "COMPLETED" {
 		return "", nil
 	}
-
 	return r.f.GetJobOutput(r.j.ID)
 }
 
@@ -121,17 +106,15 @@ func (r *JobResolver) Requires(ctx context.Context, args struct {
 	First  *int
 	Last   *int
 }) (*JobConnectionResolver, error) {
-	pa := model.PageArgs{
+	pa := core.PageArgs{
 		After:  args.After,
 		Before: args.Before,
 		First:  args.First,
 		Last:   args.Last,
 	}
-
 	p, err := r.p.GetJobsByID(ctx, pa, r.j.WorkflowID, r.j.Requires)
 	if err != nil {
 		return nil, err
 	}
-
 	return &JobConnectionResolver{p, r.p, r.f}, nil
 }

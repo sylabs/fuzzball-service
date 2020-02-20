@@ -1,6 +1,6 @@
 // Copyright (c) 2020, Sylabs, Inc. All rights reserved.
 
-package model
+package core
 
 // User represents a user.
 type User struct {

@@ -6,12 +6,12 @@ import (
 	"context"
 
 	"github.com/graph-gophers/graphql-go"
-	"github.com/sylabs/compute-service/internal/pkg/model"
+	"github.com/sylabs/compute-service/internal/pkg/core"
 )
 
 // UserResolver resolves a user.
 type UserResolver struct {
-	u *model.User
+	u *core.User
 	p Persister
 	f IOFetcher
 }
@@ -33,7 +33,7 @@ func (r *UserResolver) Workflows(ctx context.Context, args struct {
 	First  *int32
 	Last   *int32
 }) (*WorkflowConnectionResolver, error) {
-	pa := model.PageArgs{
+	pa := core.PageArgs{
 		After:  args.After,
 		Before: args.Before,
 	}
@@ -59,7 +59,7 @@ func (r *UserResolver) Jobs(ctx context.Context, args struct {
 	First  *int32
 	Last   *int32
 }) (*JobConnectionResolver, error) {
-	pa := model.PageArgs{
+	pa := core.PageArgs{
 		After:  args.After,
 		Before: args.Before,
 	}
@@ -85,7 +85,7 @@ func (r *UserResolver) Volumes(ctx context.Context, args struct {
 	First  *int32
 	Last   *int32
 }) (*VolumeConnectionResolver, error) {
-	pa := model.PageArgs{
+	pa := core.PageArgs{
 		After:  args.After,
 		Before: args.Before,
 	}

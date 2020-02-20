@@ -13,7 +13,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/sylabs/compute-service/internal/pkg/model"
+	"github.com/sylabs/compute-service/internal/pkg/core"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -23,15 +23,15 @@ var testWorkflowID = "testWorkflowID"
 
 // getTestJob generates a job for use in testing. The attributes of the job are
 // varied based on the value of i.
-func getTestJob(i int32) model.Job {
-	return model.Job{
+func getTestJob(i int32) core.Job {
+	return core.Job{
 		Name:       fmt.Sprintf("job-%02d", i),
 		WorkflowID: testWorkflowID,
 	}
 }
 
 // insertTestJob inserts a job into the DB.
-func insertTestJob(t *testing.T, db *mongo.Database) model.Job {
+func insertTestJob(t *testing.T, db *mongo.Database) core.Job {
 	n, err := rand.Int(rand.Reader, big.NewInt(int64(math.MaxInt32)))
 	if err != nil {
 		t.Fatalf("failed to generate random int: %v", err)
@@ -58,7 +58,7 @@ func deleteTestJob(t *testing.T, db *mongo.Database, id string) {
 }
 
 func TestCreateJob(t *testing.T) {
-	orig := model.Job{
+	orig := core.Job{
 		ID:         "blahblah",
 		WorkflowID: "workflowID",
 		Name:       "test",
@@ -182,7 +182,7 @@ func TestGetJobsByID(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p, err := testConnection.GetJobsByID(context.Background(), model.PageArgs{}, testWorkflowID, tt.jobs)
+			p, err := testConnection.GetJobsByID(context.Background(), core.PageArgs{}, testWorkflowID, tt.jobs)
 			if err != nil {
 				t.Fatal(err)
 			}

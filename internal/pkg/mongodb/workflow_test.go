@@ -13,7 +13,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/sylabs/compute-service/internal/pkg/model"
+	"github.com/sylabs/compute-service/internal/pkg/core"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -21,14 +21,14 @@ import (
 
 // getTestWorkflow generates a workflow for use in testing. The attributes of the workflow are
 // varied based on the value of i.
-func getTestWorkflow(i int32) model.Workflow {
-	return model.Workflow{
+func getTestWorkflow(i int32) core.Workflow {
+	return core.Workflow{
 		Name: fmt.Sprintf("workflow-%02d", i),
 	}
 }
 
 // insertTestWorkflow inserts a workflow into the DB.
-func insertTestWorkflow(t *testing.T, db *mongo.Database) model.Workflow {
+func insertTestWorkflow(t *testing.T, db *mongo.Database) core.Workflow {
 	n, err := rand.Int(rand.Reader, big.NewInt(int64(math.MaxInt32)))
 	if err != nil {
 		t.Fatalf("failed to generate random int: %v", err)
@@ -55,7 +55,7 @@ func deleteTestWorkflow(t *testing.T, db *mongo.Database, id string) {
 }
 
 func TestCreateWorkflow(t *testing.T) {
-	orig := model.Workflow{
+	orig := core.Workflow{
 		ID:   "blah",
 		Name: "test",
 	}

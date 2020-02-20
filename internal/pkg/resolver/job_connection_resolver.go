@@ -2,11 +2,11 @@
 
 package resolver
 
-import "github.com/sylabs/compute-service/internal/pkg/model"
+import "github.com/sylabs/compute-service/internal/pkg/core"
 
 // JobEdgeResolver resolves a job edge.
 type JobEdgeResolver struct {
-	j model.Job
+	j core.Job
 	p Persister
 	f IOFetcher
 }
@@ -23,7 +23,7 @@ func (r *JobEdgeResolver) Node() *JobResolver {
 
 // JobConnectionResolver resolves a job connection.
 type JobConnectionResolver struct {
-	jp model.JobsPage
+	jp core.JobsPage
 	p  Persister
 	f  IOFetcher
 }
