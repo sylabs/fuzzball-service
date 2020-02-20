@@ -17,7 +17,7 @@ func (r *VolumeEdgeResolver) Cursor() string {
 
 // Node resolves the item at the end of the edge.
 func (r *VolumeEdgeResolver) Node() *VolumeResolver {
-	return &VolumeResolver{r.v, r.p}
+	return &VolumeResolver{r.v}
 }
 
 // VolumeConnectionResolver resolves a volume connection.

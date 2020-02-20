@@ -4,9 +4,16 @@ package core
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/sylabs/compute-service/internal/pkg/model"
 )
+
+// volumeSpec represents a volume specification
+type volumeSpec struct {
+	Name string `bson:"name"`
+	Type string `bson:"type"`
+}
 
 // VolumePersister is the interface by which workflows are persisted.
 type VolumePersister interface {
@@ -35,4 +42,28 @@ func (c *Core) GetVolumes(ctx context.Context, pa model.PageArgs) (p model.Volum
 // GetVolumesByWorkflowID returns a list of all volumes required for a given workflow.
 func (c *Core) GetVolumesByWorkflowID(ctx context.Context, pa model.PageArgs, wid string) (p model.VolumesPage, err error) {
 	return c.p.GetVolumesByWorkflowID(ctx, pa, wid)
+}
+
+func createVolumes(ctx context.Context, p Persister, w model.Workflow, specs *[]volumeSpec) (map[string]model.Volume, error) {
+	volumes := make(map[string]model.Volume)
+	if specs != nil {
+		for _, vs := range *specs {
+			if _, ok := volumes[vs.Name]; ok {
+				return nil, fmt.Errorf("duplicate volume declarations")
+			}
+
+			v, err := p.CreateVolume(ctx, model.Volume{
+				WorkflowID: w.ID,
+				Name:       vs.Name,
+				Type:       vs.Type,
+			})
+			if err != nil {
+				return nil, err
+			}
+
+			volumes[v.Name] = v
+		}
+	}
+
+	return volumes, nil
 }

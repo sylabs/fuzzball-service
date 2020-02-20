@@ -7,22 +7,16 @@ import (
 	"time"
 
 	"github.com/graph-gophers/graphql-go"
+	"github.com/sylabs/compute-service/internal/pkg/core"
 	"github.com/sylabs/compute-service/internal/pkg/model"
 )
 
 // WorkflowPersister is the interface by which workflows are persisted.
 type WorkflowPersister interface {
-	CreateWorkflow(context.Context, model.Workflow) (model.Workflow, error)
+	CreateWorkflow(context.Context, core.WorkflowSpec) (model.Workflow, error)
 	DeleteWorkflow(context.Context, string) (model.Workflow, error)
 	GetWorkflow(context.Context, string) (model.Workflow, error)
 	GetWorkflows(context.Context, model.PageArgs) (model.WorkflowsPage, error)
-}
-
-// workflowSpec represents a workflow specification
-type workflowSpec struct {
-	Name    string        `bson:"name"`
-	Jobs    []jobSpec     `bson:"jobs"`
-	Volumes *[]volumeSpec `bson:"volumes"`
 }
 
 // WorkflowResolver resolves a workflow.
@@ -50,6 +44,7 @@ func (r *WorkflowResolver) CreatedBy() *UserResolver {
 			Login: "jimbob",
 		},
 		p: r.p,
+		f: r.f,
 	}
 }
 
@@ -86,7 +81,6 @@ func (r *WorkflowResolver) Jobs(ctx context.Context, args struct {
 		First:  args.First,
 		Last:   args.Last,
 	}
-
 	p, err := r.p.GetJobsByWorkflowID(ctx, pa, r.w.ID)
 	if err != nil {
 		return nil, err
@@ -107,7 +101,6 @@ func (r *WorkflowResolver) Volumes(ctx context.Context, args struct {
 		First:  args.First,
 		Last:   args.Last,
 	}
-
 	p, err := r.p.GetVolumesByWorkflowID(ctx, pa, r.w.ID)
 	if err != nil {
 		return nil, err

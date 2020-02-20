@@ -12,8 +12,6 @@ import (
 
 // JobPersister is the interface by which jobs are persisted.
 type JobPersister interface {
-	CreateJob(context.Context, model.Job) (model.Job, error)
-	DeleteJobsByWorkflowID(context.Context, string) error
 	GetJob(context.Context, string) (model.Job, error)
 	GetJobs(context.Context, model.PageArgs) (model.JobsPage, error)
 	GetJobsByWorkflowID(context.Context, model.PageArgs, string) (model.JobsPage, error)
@@ -23,19 +21,6 @@ type JobPersister interface {
 // JobOutputFetcher is the interface to fetch job output.
 type JobOutputFetcher interface {
 	GetJobOutput(string) (string, error)
-}
-
-type jobSpec struct {
-	Name     string                   `bson:"name"`
-	Image    string                   `bson:"image"`
-	Command  []string                 `bson:"command"`
-	Requires *[]string                `bson:"requires"`
-	Volumes  *[]volumeRequirementSpec `bson:"volumes"`
-}
-
-type volumeRequirementSpec struct {
-	Name     string
-	Location string
 }
 
 // JobResolver resolves a workflow.
@@ -73,6 +58,7 @@ func (r *JobResolver) CreatedBy() *UserResolver {
 			Login: "jimbob",
 		},
 		p: r.p,
+		f: r.f,
 	}
 }
 
@@ -110,7 +96,6 @@ func (r *JobResolver) Output() (string, error) {
 	if r.j.Status != "COMPLETED" {
 		return "", nil
 	}
-
 	return r.f.GetJobOutput(r.j.ID)
 }
 
@@ -127,11 +112,9 @@ func (r *JobResolver) Requires(ctx context.Context, args struct {
 		First:  args.First,
 		Last:   args.Last,
 	}
-
 	p, err := r.p.GetJobsByID(ctx, pa, r.j.WorkflowID, r.j.Requires)
 	if err != nil {
 		return nil, err
 	}
-
 	return &JobConnectionResolver{p, r.p, r.f}, nil
 }
