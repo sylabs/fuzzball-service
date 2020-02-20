@@ -13,6 +13,8 @@ type Volume struct {
 	WorkflowID string `bson:"workflowID"`
 	Name       string `bson:"name"`
 	Type       string `bson:"type"`
+
+	c *Core // Used internally for lazy loading.
 }
 
 // VolumesPage represents a page of Volumes resulting from a query, and associated metadata.
@@ -20,6 +22,18 @@ type VolumesPage struct {
 	Volumes    []Volume // Slice of results.
 	PageInfo   PageInfo // Information to aid in pagination.
 	TotalCount int      // Identifies the total count of items in the connection.
+}
+
+// setCore sets the core field of each volume in page p to c.
+func (p *VolumesPage) setCore(c *Core) {
+	for i := range p.Volumes {
+		p.Volumes[i].setCore(c)
+	}
+}
+
+// setCore sets the core of v to c.
+func (v *Volume) setCore(c *Core) {
+	v.c = c
 }
 
 // volumeSpec represents a volume specification
@@ -34,27 +48,6 @@ type VolumePersister interface {
 	DeleteVolumesByWorkflowID(context.Context, string) error
 	GetVolumes(context.Context, PageArgs) (VolumesPage, error)
 	GetVolumesByWorkflowID(context.Context, PageArgs, string) (VolumesPage, error)
-}
-
-// CreateVolume creates a new volume. If an ID is provided in v, it is ignored and replaced
-// with a unique identifier in the returned volume.
-func (c *Core) CreateVolume(ctx context.Context, v Volume) (Volume, error) {
-	return c.p.CreateVolume(ctx, v)
-}
-
-// DeleteVolumesByWorkflowID deletes volumes with the given workflow ID.
-func (c *Core) DeleteVolumesByWorkflowID(ctx context.Context, wid string) error {
-	return c.p.DeleteVolumesByWorkflowID(ctx, wid)
-}
-
-// GetVolumes returns a list of all volumes.
-func (c *Core) GetVolumes(ctx context.Context, pa PageArgs) (p VolumesPage, err error) {
-	return c.p.GetVolumes(ctx, pa)
-}
-
-// GetVolumesByWorkflowID returns a list of all volumes required for a given workflow.
-func (c *Core) GetVolumesByWorkflowID(ctx context.Context, pa PageArgs, wid string) (p VolumesPage, err error) {
-	return c.p.GetVolumesByWorkflowID(ctx, pa, wid)
 }
 
 func createVolumes(ctx context.Context, p Persister, w Workflow, specs *[]volumeSpec) (map[string]Volume, error) {

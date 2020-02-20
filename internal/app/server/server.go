@@ -83,7 +83,7 @@ func New(ctx context.Context, c Config) (s Server, err error) {
 	if err != nil {
 		return Server{}, fmt.Errorf("unable to init GraphQL schema: %w", err)
 	}
-	r, err := resolver.New(core, c.RedisConn)
+	r, err := resolver.New(core)
 	if err != nil {
 		return Server{}, err
 	}

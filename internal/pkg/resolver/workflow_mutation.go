@@ -12,20 +12,20 @@ import (
 func (r Resolver) CreateWorkflow(ctx context.Context, args struct {
 	Spec core.WorkflowSpec
 }) (*WorkflowResolver, error) {
-	w, err := r.p.CreateWorkflow(ctx, args.Spec)
+	w, err := r.s.CreateWorkflow(ctx, args.Spec)
 	if err != nil {
 		return nil, err
 	}
-	return &WorkflowResolver{w, r.p, r.f}, nil
+	return &WorkflowResolver{w}, nil
 }
 
 // DeleteWorkflow deletes a workflow.
 func (r Resolver) DeleteWorkflow(ctx context.Context, args struct {
 	ID string
 }) (*WorkflowResolver, error) {
-	w, err := r.p.DeleteWorkflow(ctx, args.ID)
+	w, err := r.s.DeleteWorkflow(ctx, args.ID)
 	if err != nil {
 		return nil, err
 	}
-	return &WorkflowResolver{w, r.p, r.f}, nil
+	return &WorkflowResolver{w}, nil
 }

@@ -10,27 +10,12 @@ import (
 	"github.com/sylabs/compute-service/internal/pkg/core"
 )
 
-// JobPersister is the interface by which jobs are persisted.
-type JobPersister interface {
-	GetJob(context.Context, string) (core.Job, error)
-	GetJobs(context.Context, core.PageArgs) (core.JobsPage, error)
-	GetJobsByWorkflowID(context.Context, core.PageArgs, string) (core.JobsPage, error)
-	GetJobsByID(context.Context, core.PageArgs, string, []string) (core.JobsPage, error)
-}
-
-// JobOutputFetcher is the interface to fetch job output.
-type JobOutputFetcher interface {
-	GetJobOutput(string) (string, error)
-}
-
-// JobResolver resolves a workflow.
+// JobResolver resolves a job.
 type JobResolver struct {
 	j core.Job
-	p Persister
-	f IOFetcher
 }
 
-// ID resolves the Job ID.
+// ID resolves the job ID.
 func (r *JobResolver) ID() graphql.ID {
 	return graphql.ID(r.j.ID)
 }
@@ -51,15 +36,12 @@ func (r *JobResolver) Command() []string {
 }
 
 // CreatedBy resolves the user who created the job.
-func (r *JobResolver) CreatedBy() *UserResolver {
-	return &UserResolver{
-		u: &core.User{
-			ID:    "507f1f77bcf86cd799439011",
-			Login: "jimbob",
-		},
-		p: r.p,
-		f: r.f,
+func (r *JobResolver) CreatedBy(ctx context.Context) (*UserResolver, error) {
+	u, err := r.j.CreatedBy(ctx)
+	if err != nil {
+		return nil, err
 	}
+	return &UserResolver{u: &u}, nil
 }
 
 // CreatedAt resolves when the job was created.
@@ -96,7 +78,7 @@ func (r *JobResolver) Output() (string, error) {
 	if r.j.Status != "COMPLETED" {
 		return "", nil
 	}
-	return r.f.GetJobOutput(r.j.ID)
+	return r.j.GetOutput()
 }
 
 // Requires looks up jobs that need to be executed before the current one.
@@ -112,9 +94,9 @@ func (r *JobResolver) Requires(ctx context.Context, args struct {
 		First:  args.First,
 		Last:   args.Last,
 	}
-	p, err := r.p.GetJobsByID(ctx, pa, r.j.WorkflowID, r.j.Requires)
+	p, err := r.j.RequiredJobsPage(ctx, pa)
 	if err != nil {
 		return nil, err
 	}
-	return &JobConnectionResolver{p, r.p, r.f}, nil
+	return &JobConnectionResolver{p}, nil
 }

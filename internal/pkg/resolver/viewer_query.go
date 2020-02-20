@@ -4,18 +4,13 @@ package resolver
 
 import (
 	"context"
-
-	"github.com/sylabs/compute-service/internal/pkg/core"
 )
 
 // Viewer returns the currently authenticated user.
 func (r Resolver) Viewer(ctx context.Context) (*UserResolver, error) {
-	return &UserResolver{
-		u: &core.User{
-			ID:    "507f1f77bcf86cd799439011",
-			Login: "jimbob",
-		},
-		p: r.p,
-		f: r.f,
-	}, nil
+	u, err := r.s.Viewer(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &UserResolver{&u}, nil
 }
