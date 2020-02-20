@@ -74,7 +74,7 @@ func New(ctx context.Context, c Config) (s Server, err error) {
 	}
 
 	// Initialize core.
-	core, err := core.New(c.Persist)
+	core, err := core.New(c.Persist, c.RedisConn, sched)
 	if err != nil {
 		return Server{}, err
 	}
