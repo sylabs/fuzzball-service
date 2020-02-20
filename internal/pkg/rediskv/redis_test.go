@@ -5,10 +5,12 @@
 package rediskv
 
 import (
+	"crypto/rand"
 	"flag"
 	"fmt"
 	"log"
-	"math/rand"
+	"math"
+	"math/big"
 	"os"
 	"testing"
 )
@@ -38,12 +40,19 @@ func TestMain(m *testing.M) {
 	os.Exit(run(m))
 }
 
-func TestGetSet(t *testing.T) {
-	i := rand.Int()
+func TestGetSetAppend(t *testing.T) {
+	n, err := rand.Int(rand.Reader, big.NewInt(int64(math.MaxInt32)))
+	if err != nil {
+		t.Fatalf("failed to generate random int: %v", err)
+	}
+	i := int32(n.Int64())
 	testkey, testvalue := fmt.Sprintf("testkey-%d", i), fmt.Sprintf("testvalue-%d", i)
-	_, err := testConnection.Get(testkey)
-	if err == nil {
-		t.Fatal("unexpected success")
+	val, err := testConnection.Get(testkey)
+	if err != nil {
+		t.Fatal("unexpected failure")
+	}
+	if val != "" {
+		t.Fatalf("want %q, got %q", "", val)
 	}
 
 	err = testConnection.Set(testkey, testvalue)
@@ -51,12 +60,27 @@ func TestGetSet(t *testing.T) {
 		t.Fatalf("unexpected failure: %v", err)
 	}
 
-	val, err := testConnection.Get(testkey)
+	val, err = testConnection.Get(testkey)
 	if err != nil {
 		t.Fatalf("unexpected failure: %v", err)
 	}
 
 	if testvalue != val {
-		t.Fatalf("want %s, got %s", string(testvalue), string(val))
+		t.Fatalf("want %s, got %s", testvalue, val)
+	}
+
+	err = testConnection.Append(testkey, testvalue)
+	if err != nil {
+		t.Fatalf("unexpected failure: %v", err)
+	}
+
+	val, err = testConnection.Get(testkey)
+	if err != nil {
+		t.Fatalf("unexpected failure: %v", err)
+	}
+
+	want := testvalue + testvalue
+	if want != val {
+		t.Fatalf("want %q, got %q", want, val)
 	}
 }

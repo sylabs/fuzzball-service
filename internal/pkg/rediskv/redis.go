@@ -32,12 +32,23 @@ func (c *Connection) Set(key, value string) error {
 
 }
 
+// Append will append the value to the existing entry for the
+// supplied key, or create a new one.
+func (c *Connection) Append(key, value string) error {
+	return c.rc.Append(key, value).Err()
+}
+
 // Get will retrieve the value at the supplied key.
+// If the key is not found, "" is returned without an error.
 func (c *Connection) Get(key string) (string, error) {
 	v, err := c.rc.Get(key).Result()
 	if err != nil {
+		if err == redis.Nil {
+			return "", nil
+		}
 		return "", err
 	}
+
 	return v, nil
 }
 
