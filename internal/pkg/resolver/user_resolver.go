@@ -13,7 +13,6 @@ import (
 type UserResolver struct {
 	u *core.User
 	p Persister
-	f IOFetcher
 }
 
 // ID resolves the unique user ID.
@@ -49,7 +48,7 @@ func (r *UserResolver) Workflows(ctx context.Context, args struct {
 	if err != nil {
 		return nil, err
 	}
-	return &WorkflowConnectionResolver{p, r.p, r.f}, nil
+	return &WorkflowConnectionResolver{p, r.p}, nil
 }
 
 // Jobs looks up jobs associated with the user.
@@ -75,7 +74,7 @@ func (r *UserResolver) Jobs(ctx context.Context, args struct {
 	if err != nil {
 		return nil, err
 	}
-	return &JobConnectionResolver{p, r.p, r.f}, nil
+	return &JobConnectionResolver{p, r.p}, nil
 }
 
 // Volumes looks up volumes associated with the user.

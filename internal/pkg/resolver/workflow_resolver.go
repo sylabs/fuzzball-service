@@ -22,7 +22,6 @@ type WorkflowPersister interface {
 type WorkflowResolver struct {
 	w core.Workflow
 	p Persister
-	f IOFetcher
 }
 
 // ID resolves the workflow ID.
@@ -43,7 +42,6 @@ func (r *WorkflowResolver) CreatedBy() *UserResolver {
 			Login: "jimbob",
 		},
 		p: r.p,
-		f: r.f,
 	}
 }
 
@@ -84,7 +82,7 @@ func (r *WorkflowResolver) Jobs(ctx context.Context, args struct {
 	if err != nil {
 		return nil, err
 	}
-	return &JobConnectionResolver{p, r.p, r.f}, nil
+	return &JobConnectionResolver{p, r.p}, nil
 }
 
 // Volumes looks up volumes associated with the workflow.

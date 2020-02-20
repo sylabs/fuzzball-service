@@ -18,16 +18,10 @@ type JobPersister interface {
 	GetJobsByID(context.Context, core.PageArgs, string, []string) (core.JobsPage, error)
 }
 
-// JobOutputFetcher is the interface to fetch job output.
-type JobOutputFetcher interface {
-	GetJobOutput(string) (string, error)
-}
-
 // JobResolver resolves a workflow.
 type JobResolver struct {
 	j core.Job
 	p Persister
-	f IOFetcher
 }
 
 // ID resolves the Job ID.
@@ -58,7 +52,6 @@ func (r *JobResolver) CreatedBy() *UserResolver {
 			Login: "jimbob",
 		},
 		p: r.p,
-		f: r.f,
 	}
 }
 
@@ -96,7 +89,7 @@ func (r *JobResolver) Output() (string, error) {
 	if r.j.Status != "COMPLETED" {
 		return "", nil
 	}
-	return r.f.GetJobOutput(r.j.ID)
+	return r.j.GetOutput()
 }
 
 // Requires looks up jobs that need to be executed before the current one.
@@ -116,5 +109,5 @@ func (r *JobResolver) Requires(ctx context.Context, args struct {
 	if err != nil {
 		return nil, err
 	}
-	return &JobConnectionResolver{p, r.p, r.f}, nil
+	return &JobConnectionResolver{p, r.p}, nil
 }
