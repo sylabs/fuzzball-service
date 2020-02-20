@@ -6,10 +6,23 @@ import (
 	"context"
 	"testing"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/sylabs/compute-service/internal/pkg/core"
+	"github.com/sylabs/compute-service/internal/pkg/token"
 )
 
 func TestViewer(t *testing.T) {
+	// User token to pass in context.
+	tok := token.Token{
+		Token: jwt.NewWithClaims(jwt.SigningMethodNone, &token.Claims{
+			StandardClaims: jwt.StandardClaims{
+				Subject: "jimbob",
+			},
+			UserID: "507f1f77bcf86cd799439011",
+		}),
+	}
+	ctx := token.NewContext(context.Background(), &tok)
+
 	sc := "startCursor"
 	ec := "endCursor"
 	wp := core.WorkflowsPage{
@@ -88,7 +101,7 @@ func TestViewer(t *testing.T) {
 			  }
 			}`
 
-			res := s.Exec(context.Background(), q, "", tt.args)
+			res := s.Exec(ctx, q, "", tt.args)
 
 			if err := verifyGoldenJSON(t.Name(), res); err != nil {
 				t.Fatal(err)

@@ -4,6 +4,9 @@ package core
 
 import (
 	"context"
+	"errors"
+
+	"github.com/sylabs/compute-service/internal/pkg/token"
 )
 
 // Persister is the interface by which all data is persisted.
@@ -37,10 +40,15 @@ func New(p Persister, f IOFetcher, s Scheduler) (*Core, error) {
 
 // Viewer returns the user associated with ctx.
 func (c *Core) Viewer(ctx context.Context) (User, error) {
-	// TODO: authorization
+	t, ok := token.FromContext(ctx)
+	if !ok {
+		return User{}, errors.New("viewer not logged in")
+	}
+	tc := t.Claims()
+
 	u := User{
-		ID:    "507f1f77bcf86cd799439011",
-		Login: "jimbob",
+		ID:    tc.UserID,
+		Login: tc.Subject,
 	}
 	u.setCore(c)
 	return u, nil
