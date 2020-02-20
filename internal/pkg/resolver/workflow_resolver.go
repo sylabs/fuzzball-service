@@ -10,8 +10,8 @@ import (
 	"github.com/sylabs/compute-service/internal/pkg/core"
 )
 
-// WorkflowPersister is the interface by which workflows are persisted.
-type WorkflowPersister interface {
+// WorkflowServicer is the interface by which workflows are serviced.
+type WorkflowServicer interface {
 	CreateWorkflow(context.Context, core.WorkflowSpec) (core.Workflow, error)
 	DeleteWorkflow(context.Context, string) (core.Workflow, error)
 	GetWorkflow(context.Context, string) (core.Workflow, error)
@@ -21,7 +21,7 @@ type WorkflowPersister interface {
 // WorkflowResolver resolves a workflow.
 type WorkflowResolver struct {
 	w core.Workflow
-	p Persister
+	s Servicer
 }
 
 // ID resolves the workflow ID.
@@ -41,7 +41,7 @@ func (r *WorkflowResolver) CreatedBy() *UserResolver {
 			ID:    "507f1f77bcf86cd799439011",
 			Login: "jimbob",
 		},
-		p: r.p,
+		s: r.s,
 	}
 }
 
@@ -78,11 +78,11 @@ func (r *WorkflowResolver) Jobs(ctx context.Context, args struct {
 		First:  args.First,
 		Last:   args.Last,
 	}
-	p, err := r.p.GetJobsByWorkflowID(ctx, pa, r.w.ID)
+	p, err := r.s.GetJobsByWorkflowID(ctx, pa, r.w.ID)
 	if err != nil {
 		return nil, err
 	}
-	return &JobConnectionResolver{p, r.p}, nil
+	return &JobConnectionResolver{p, r.s}, nil
 }
 
 // Volumes looks up volumes associated with the workflow.
@@ -98,9 +98,9 @@ func (r *WorkflowResolver) Volumes(ctx context.Context, args struct {
 		First:  args.First,
 		Last:   args.Last,
 	}
-	p, err := r.p.GetVolumesByWorkflowID(ctx, pa, r.w.ID)
+	p, err := r.s.GetVolumesByWorkflowID(ctx, pa, r.w.ID)
 	if err != nil {
 		return nil, err
 	}
-	return &VolumeConnectionResolver{p, r.p}, nil
+	return &VolumeConnectionResolver{p, r.s}, nil
 }

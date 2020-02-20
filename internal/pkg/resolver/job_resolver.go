@@ -10,21 +10,21 @@ import (
 	"github.com/sylabs/compute-service/internal/pkg/core"
 )
 
-// JobPersister is the interface by which jobs are persisted.
-type JobPersister interface {
+// JobServicer is the interface by which jobs are serviced.
+type JobServicer interface {
 	GetJob(context.Context, string) (core.Job, error)
 	GetJobs(context.Context, core.PageArgs) (core.JobsPage, error)
 	GetJobsByWorkflowID(context.Context, core.PageArgs, string) (core.JobsPage, error)
 	GetJobsByID(context.Context, core.PageArgs, string, []string) (core.JobsPage, error)
 }
 
-// JobResolver resolves a workflow.
+// JobResolver resolves a job.
 type JobResolver struct {
 	j core.Job
-	p Persister
+	s Servicer
 }
 
-// ID resolves the Job ID.
+// ID resolves the job ID.
 func (r *JobResolver) ID() graphql.ID {
 	return graphql.ID(r.j.ID)
 }
@@ -51,7 +51,7 @@ func (r *JobResolver) CreatedBy() *UserResolver {
 			ID:    "507f1f77bcf86cd799439011",
 			Login: "jimbob",
 		},
-		p: r.p,
+		s: r.s,
 	}
 }
 
@@ -105,9 +105,9 @@ func (r *JobResolver) Requires(ctx context.Context, args struct {
 		First:  args.First,
 		Last:   args.Last,
 	}
-	p, err := r.p.GetJobsByID(ctx, pa, r.j.WorkflowID, r.j.Requires)
+	p, err := r.s.GetJobsByID(ctx, pa, r.j.WorkflowID, r.j.Requires)
 	if err != nil {
 		return nil, err
 	}
-	return &JobConnectionResolver{p, r.p}, nil
+	return &JobConnectionResolver{p, r.s}, nil
 }

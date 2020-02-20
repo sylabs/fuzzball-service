@@ -12,7 +12,7 @@ import (
 // UserResolver resolves a user.
 type UserResolver struct {
 	u *core.User
-	p Persister
+	s Servicer
 }
 
 // ID resolves the unique user ID.
@@ -44,11 +44,11 @@ func (r *UserResolver) Workflows(ctx context.Context, args struct {
 		last := int(*args.Last)
 		pa.Last = &last
 	}
-	p, err := r.p.GetWorkflows(ctx, pa)
+	p, err := r.s.GetWorkflows(ctx, pa)
 	if err != nil {
 		return nil, err
 	}
-	return &WorkflowConnectionResolver{p, r.p}, nil
+	return &WorkflowConnectionResolver{p, r.s}, nil
 }
 
 // Jobs looks up jobs associated with the user.
@@ -70,11 +70,11 @@ func (r *UserResolver) Jobs(ctx context.Context, args struct {
 		last := int(*args.Last)
 		pa.Last = &last
 	}
-	p, err := r.p.GetJobs(ctx, pa)
+	p, err := r.s.GetJobs(ctx, pa)
 	if err != nil {
 		return nil, err
 	}
-	return &JobConnectionResolver{p, r.p}, nil
+	return &JobConnectionResolver{p, r.s}, nil
 }
 
 // Volumes looks up volumes associated with the user.
@@ -96,9 +96,9 @@ func (r *UserResolver) Volumes(ctx context.Context, args struct {
 		last := int(*args.Last)
 		pa.Last = &last
 	}
-	p, err := r.p.GetVolumes(ctx, pa)
+	p, err := r.s.GetVolumes(ctx, pa)
 	if err != nil {
 		return nil, err
 	}
-	return &VolumeConnectionResolver{p, r.p}, nil
+	return &VolumeConnectionResolver{p, r.s}, nil
 }

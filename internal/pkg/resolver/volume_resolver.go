@@ -7,8 +7,8 @@ import (
 	"github.com/sylabs/compute-service/internal/pkg/core"
 )
 
-// VolumePersister is the interface by which workflows are persisted.
-type VolumePersister interface {
+// VolumeServicer is the interface by which volumes are serviced.
+type VolumeServicer interface {
 	GetVolumes(context.Context, core.PageArgs) (core.VolumesPage, error)
 	GetVolumesByWorkflowID(context.Context, core.PageArgs, string) (core.VolumesPage, error)
 }

@@ -10,9 +10,9 @@ import (
 func (r Resolver) Workflow(ctx context.Context, args struct {
 	ID string
 }) (*WorkflowResolver, error) {
-	j, err := r.p.GetWorkflow(ctx, args.ID)
+	j, err := r.s.GetWorkflow(ctx, args.ID)
 	if err != nil {
 		return nil, err
 	}
-	return &WorkflowResolver{j, r.p}, nil
+	return &WorkflowResolver{j, r.s}, nil
 }

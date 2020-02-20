@@ -9,28 +9,28 @@ import (
 	"github.com/pbnjay/memory"
 )
 
-// Persister is the interface by which all data is persisted.
-type Persister interface {
-	WorkflowPersister
-	JobPersister
-	VolumePersister
+// Servicer is the interface required to service GraphQL queries.
+type Servicer interface {
+	WorkflowServicer
+	JobServicer
+	VolumeServicer
 }
 
 // Resolver is the root type for resolving GraphQL queries.
 type Resolver struct {
-	p  Persister
+	s  Servicer
 	si SystemInfo
 }
 
 // New creates a new GraphQL resolver.
-func New(p Persister) (*Resolver, error) {
+func New(s Servicer) (*Resolver, error) {
 	hostName, err := os.Hostname()
 	if err != nil {
 		return nil, err
 	}
 
 	return &Resolver{
-		p: p,
+		s: s,
 		si: SystemInfo{
 			HostName:        hostName,
 			CPUArchitecture: runtime.GOARCH,

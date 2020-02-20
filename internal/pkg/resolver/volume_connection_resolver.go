@@ -7,7 +7,7 @@ import "github.com/sylabs/compute-service/internal/pkg/core"
 // VolumeEdgeResolver resolves a volume edge.
 type VolumeEdgeResolver struct {
 	v core.Volume
-	p Persister
+	s Servicer
 }
 
 // Cursor resolves a cursor for use in pagination.
@@ -23,14 +23,14 @@ func (r *VolumeEdgeResolver) Node() *VolumeResolver {
 // VolumeConnectionResolver resolves a volume connection.
 type VolumeConnectionResolver struct {
 	vp core.VolumesPage
-	p  Persister
+	s  Servicer
 }
 
 // Edges resolves a list of edges.
 func (r *VolumeConnectionResolver) Edges() *[]*VolumeEdgeResolver {
 	wer := []*VolumeEdgeResolver{}
 	for _, w := range r.vp.Volumes {
-		wer = append(wer, &VolumeEdgeResolver{w, r.p})
+		wer = append(wer, &VolumeEdgeResolver{w, r.s})
 	}
 	return &wer
 }
