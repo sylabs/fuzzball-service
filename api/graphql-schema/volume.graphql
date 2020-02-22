@@ -1,3 +1,6 @@
+"""
+A `Volume` represents a location to store data.
+"""
 type Volume {
   "Unique volume ID."
   id: ID!
@@ -9,6 +12,9 @@ type Volume {
   type: String!
 }
 
+"""
+An edge in a `VolumeConnection`.
+"""
 type VolumeEdge {
     "A cursor for use in pagination."
     cursor: String!
@@ -17,6 +23,9 @@ type VolumeEdge {
     node: Volume
 }
 
+"""
+The connection type for `Volume`.
+"""
 type VolumeConnection {
     "A list of edges."
     edges: [VolumeEdge]
@@ -29,10 +38,10 @@ type VolumeConnection {
 }
 
 """
-The input used to declare a workflow.
+The input used to declare a `Volume`.
 """
 input VolumeSpec {
-  "The name assigned to the workflow."
+  "The name assigned to the volume."
   name: String!
 
   "The type of volume."

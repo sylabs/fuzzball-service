@@ -1,3 +1,6 @@
+"""
+A `Workflow` represents a directed acyclic graph of jobs, and associated volumes.
+"""
 type Workflow {
   "Unique workflow ID."
   id: ID!
@@ -21,7 +24,7 @@ type Workflow {
   status: String!
 
   """
-  Look up jobs.
+  Look up jobs associated with the workflow.
   """
   jobs(
     "Returns the elements in the list that come after the specified cursor."
@@ -38,7 +41,7 @@ type Workflow {
   ): JobConnection!
 
   """
-  Look up volumes.
+  Look up volumes associated with the workflow.
   """
   volumes(
     "Returns the elements in the list that come after the specified cursor."
@@ -56,7 +59,7 @@ type Workflow {
 }
 
 """
-An edge in a connection.
+An edge in a `WorkflowConnection`.
 """
 type WorkflowEdge {
   "A cursor for use in pagination."
@@ -67,7 +70,7 @@ type WorkflowEdge {
 }
 
 """
-The connection type for Workflow.
+The connection type for `Workflow`.
 """
 type WorkflowConnection {
   "A list of edges."
@@ -81,7 +84,7 @@ type WorkflowConnection {
 }
 
 """
-The input used to declare a workflow.
+The input used to declare a `Workflow`.
 """
 input WorkflowSpec {
   "The name assigned to the workflow."

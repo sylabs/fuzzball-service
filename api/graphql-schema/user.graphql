@@ -1,5 +1,5 @@
 """
-A user is an individual's account.
+A `User` is an individual's account.
 """
 type User {
   "Unique user ID."

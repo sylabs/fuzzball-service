@@ -1,3 +1,6 @@
+"""
+A `Job` represents a unit of work.
+"""
 type Job {
   "Unique job ID."
   id: ID!
@@ -38,6 +41,9 @@ type Job {
   ): JobConnection!
 }
 
+"""
+An edge in a `JobConnection`.
+"""
 type JobEdge {
   "A cursor for use in pagination."
   cursor: String!
@@ -46,6 +52,9 @@ type JobEdge {
   node: Job
 }
 
+"""
+The connection type for `Job`.
+"""
 type JobConnection {
   "A list of edges."
   edges: [JobEdge]
@@ -58,7 +67,7 @@ type JobConnection {
 }
 
 """
-The input used to declare a job.
+The input used to declare a `Job`.
 """
 input JobSpec {
   "The name assigned to the job."

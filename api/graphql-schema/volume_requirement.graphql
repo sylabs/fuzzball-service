@@ -1,5 +1,8 @@
+"""
+A volume requirement for a job.
+"""
 type VolumeRequirement {
-  "ID of required volume ID."
+  "Unique volume ID."
   volumeID: ID!
 
   "The name assigned to the volume requirement."

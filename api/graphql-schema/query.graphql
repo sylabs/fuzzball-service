@@ -1,4 +1,8 @@
+"""
+The query root of the GraphQL interface.
+"""
 type Query {
+  "Look up a workflow."
   workflow(id: ID!): Workflow
 
   "The currently authenticated user."
