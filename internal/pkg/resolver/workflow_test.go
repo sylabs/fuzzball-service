@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/sylabs/compute-service/internal/pkg/core"
+	"github.com/sylabs/compute-service/internal/pkg/schema"
 )
 
 func TestWorkflow(t *testing.T) {
@@ -22,8 +23,7 @@ func TestWorkflow(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	r := Resolver{s: mc}
-	s, err := getSchema(&r)
+	s, err := schema.Get(&Resolver{s: mc})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -85,8 +85,7 @@ func TestCreateWorkflow(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	r := Resolver{s: mc}
-	s, err := getSchema(&r)
+	s, err := schema.Get(&Resolver{s: mc})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -172,8 +171,7 @@ func TestDeleteWorkflow(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	r := Resolver{s: mc}
-	s, err := getSchema(&r)
+	s, err := schema.Get(&Resolver{s: mc})
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -1,6 +1,6 @@
 type Query {
   workflow(id: ID!): Workflow
 
-  # The currently authenticated user.
+  "The currently authenticated user."
   viewer: User!
 }

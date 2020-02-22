@@ -1,2 +1,4 @@
-# An instant in time.
+"""
+An instant in time.
+"""
 scalar Time

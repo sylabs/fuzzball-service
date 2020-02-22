@@ -79,17 +79,13 @@ func New(ctx context.Context, c Config) (s Server, err error) {
 	}
 
 	// Initialize GraphQL.
-	sch, err := schema.String()
-	if err != nil {
-		return Server{}, fmt.Errorf("unable to init GraphQL schema: %w", err)
-	}
 	r, err := resolver.New(core)
 	if err != nil {
 		return Server{}, err
 	}
-	schema, err := graphql.ParseSchema(sch, r)
+	schema, err := schema.Get(r)
 	if err != nil {
-		return Server{}, err
+		return Server{}, fmt.Errorf("unable to init GraphQL schema: %w", err)
 	}
 	s.schema = schema
 

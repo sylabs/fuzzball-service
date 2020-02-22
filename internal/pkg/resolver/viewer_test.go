@@ -8,6 +8,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/sylabs/compute-service/internal/pkg/core"
+	"github.com/sylabs/compute-service/internal/pkg/schema"
 	"github.com/sylabs/compute-service/internal/pkg/token"
 )
 
@@ -71,8 +72,7 @@ func TestViewer(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			r := Resolver{s: mc}
-			s, err := getSchema(&r)
+			s, err := schema.Get(&Resolver{s: mc})
 			if err != nil {
 				t.Fatal(err)
 			}

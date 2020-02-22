@@ -1,38 +1,40 @@
 type Volume {
-  # Unique volume ID.
+  "Unique volume ID."
   id: ID!
 
-  # The name assigned to the volume.
+  "The name assigned to the volume."
   name: String!
 
-  # The type of volume.
+  "The type of volume."
   type: String!
 }
 
 type VolumeEdge {
-    # A cursor for use in pagination
+    "A cursor for use in pagination."
     cursor: String!
 
-    # The item at the end of the edge.
+    "The item at the end of the edge."
     node: Volume
 }
 
 type VolumeConnection {
-    # A list of edges.
+    "A list of edges."
     edges: [VolumeEdge]
 
-    # Information to aid in pagination.
+    "Information to aid in pagination."
     pageInfo: PageInfo!
 
-    # Identifies the total count of items in the connection.
+    "Identifies the total count of items in the connection."
     totalCount: Int!
 }
 
-# The input used to declare a workflow.
+"""
+The input used to declare a workflow.
+"""
 input VolumeSpec {
-  # The name assigned to the workflow
+  "The name assigned to the workflow."
   name: String!
 
-  # The type of volume
+  "The type of volume."
   type: String!
 }

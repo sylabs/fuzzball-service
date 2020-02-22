@@ -1,79 +1,95 @@
 type Workflow {
-  # Unique workflow ID.
+  "Unique workflow ID."
   id: ID!
 
-  # The name assigned to the workflow.
+  "The name assigned to the workflow."
   name: String!
 
-  # User who created the workflow.
+  "User who created the workflow."
   createdBy: User!
 
-  # When the workflow was created.
+  "When the workflow was created."
   createdAt: Time!
 
-  # When the workflow started, if it has started.
+  "When the workflow started, if it has started."
   startedAt: Time
 
-  # When the workflow finished, if it has finished.
+  "When the workflow finished, if it has finished."
   finishedAt: Time
 
-  # Description of the state of the workflow.
+  "Description of the state of the workflow."
   status: String!
 
-  # Look up jobs.
+  """
+  Look up jobs.
+  """
   jobs(
-    # Returns the elements in the list that come after the specified cursor.
+    "Returns the elements in the list that come after the specified cursor."
     after: String
-    # Returns the elements in the list that come before the specified cursor.
+
+    "Returns the elements in the list that come before the specified cursor."
     before: String
-    # Returns the first n elements from the list.
+
+    "Returns the first n elements from the list."
     first: Int
-    # Returns the last n elements from the list.
+
+    "Returns the last n elements from the list."
     last: Int
   ): JobConnection!
 
-  # Look up volumes.
+  """
+  Look up volumes.
+  """
   volumes(
-    # Returns the elements in the list that come after the specified cursor.
+    "Returns the elements in the list that come after the specified cursor."
     after: String
-    # Returns the elements in the list that come before the specified cursor.
+
+    "Returns the elements in the list that come before the specified cursor."
     before: String
-    # Returns the first n elements from the list.
+
+    "Returns the first n elements from the list."
     first: Int
-    # Returns the last n elements from the list.
+
+    "Returns the last n elements from the list."
     last: Int
   ): VolumeConnection!
 }
 
-# An edge in a connection.
+"""
+An edge in a connection.
+"""
 type WorkflowEdge {
-  # A cursor for use in pagination.
+  "A cursor for use in pagination."
   cursor: String!
 
-  # The item at the end of the edge.
+  "The item at the end of the edge."
   node: Workflow
 }
 
-# The connection type for Workflow.
+"""
+The connection type for Workflow.
+"""
 type WorkflowConnection {
-  # A list of edges.
+  "A list of edges."
   edges: [WorkflowEdge]
 
-  # Information to aid in pagination.
+  "Information to aid in pagination."
   pageInfo: PageInfo!
 
-  # Identifies the total count of items in the connection.
+  "Identifies the total count of items in the connection."
   totalCount: Int!
 }
 
-# The input used to declare a workflow.
+"""
+The input used to declare a workflow.
+"""
 input WorkflowSpec {
-  # The name assigned to the workflow
+  "The name assigned to the workflow."
   name: String!
 
-  # A list of jobs to be defined
+  "A list of jobs to be defined."
   jobs: [JobSpec!]!
 
-  # A list of volumes to be defined
+  "A list of volumes to be defined."
   volumes: [VolumeSpec!]
 }
