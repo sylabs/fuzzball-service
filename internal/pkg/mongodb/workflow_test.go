@@ -67,8 +67,9 @@ func TestCreateWorkflow(t *testing.T) {
 	}
 	defer deleteTestWorkflow(t, testConnection.db, w.ID)
 
-	// Verify returned workflow. Force ID since it is allocated by CreateWorkflow.
+	// Verify returned workflow. Force ID and CreatedAt since they are set by CreateWorkflow.
 	orig.ID = w.ID
+	orig.CreatedAt = w.CreatedAt
 	if _, err := primitive.ObjectIDFromHex(w.ID); err != nil {
 		t.Fatalf("workflow has invalid ID")
 	}

@@ -5,6 +5,7 @@ package core
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/sylabs/compute-service/internal/pkg/graph"
 )
@@ -19,9 +20,10 @@ type WorkflowPersister interface {
 
 // Workflow represents a workflow.
 type Workflow struct {
-	ID     string `bson:"_id,omitempty"`
-	Name   string `bson:"name"`
-	Status string `bson:"status"`
+	ID        string    `bson:"_id,omitempty"`
+	CreatedAt time.Time `bson:"createdAt"`
+	Name      string    `bson:"name"`
+	Status    string    `bson:"status"`
 
 	c *Core // Used internally for lazy loading.
 }

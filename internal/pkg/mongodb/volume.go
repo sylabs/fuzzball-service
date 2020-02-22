@@ -5,6 +5,7 @@ package mongodb
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/sylabs/compute-service/internal/pkg/core"
 	"go.mongodb.org/mongo-driver/bson"
@@ -18,6 +19,9 @@ const volumeCollectionName = "volumes"
 func (c *Connection) CreateVolume(ctx context.Context, v core.Volume) (core.Volume, error) {
 	// We want the DB cluster to generate an ID, to ensure it's globally unique.
 	v.ID = ""
+	// Set the creation time, with the precision that MongoDB stores.
+	v.CreatedAt = time.Now().UTC().Round(time.Millisecond)
+
 	ir, err := c.db.Collection(volumeCollectionName).InsertOne(ctx, v)
 	if err != nil {
 		return core.Volume{}, fmt.Errorf("failed to create volume: %w", err)
