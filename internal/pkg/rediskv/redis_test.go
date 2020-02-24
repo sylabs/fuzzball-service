@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	redisURI = flag.String("redis-uri", "localhost:6379", "URI of Redis")
+	redisURI = flag.String("redis-uri", "redis://localhost", "URI of Redis")
 
 	testConnection *Connection
 )

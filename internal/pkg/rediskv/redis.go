@@ -3,7 +3,10 @@
 package rediskv
 
 import (
+	"time"
+
 	"github.com/go-redis/redis"
+	"github.com/sirupsen/logrus"
 )
 
 // Connection is an active connection to a Redis key value store.
@@ -12,13 +15,32 @@ type Connection struct {
 }
 
 // NewConnection opens a new connection to a Redis key value store.
-func NewConnection(a string) (c *Connection, err error) {
-	rc := redis.NewClient(&redis.Options{
-		Addr: a,
-	})
-	return &Connection{
-		rc,
-	}, nil
+func NewConnection(uri string) (c *Connection, err error) {
+	logrus.Print("connecting to redis")
+	defer func(t time.Time) {
+		if err == nil {
+			log := logrus.WithFields(logrus.Fields{
+				"took": time.Since(t),
+			})
+			if id, err := c.rc.ClientID().Result(); err == nil {
+				log = log.WithField("clientID", id)
+			}
+			log.Print("redis ready")
+		}
+	}(time.Now())
+
+	// Parse options from URI.
+	opts, err := redis.ParseURL(uri)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create new client, and ping to ensure connection is live.
+	rc := redis.NewClient(opts)
+	if err := rc.Ping().Err(); err != nil {
+		return nil, err
+	}
+	return &Connection{rc}, nil
 }
 
 // Disconnect disconnects from the Redis key value store.
