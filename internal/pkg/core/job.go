@@ -27,7 +27,7 @@ type Job struct {
 	Image      string              `bson:"image"`
 	Command    []string            `bson:"command"`
 	Status     string              `bson:"status"`
-	ExitCode   int                 `bson:"exitCode"`
+	ExitCode   *int                `bson:"exitCode,omitempty"`
 	Requires   []string            `bson:"requires"`
 	Volumes    []VolumeRequirement `bson:"volumes"`
 

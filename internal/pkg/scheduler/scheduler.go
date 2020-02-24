@@ -18,7 +18,8 @@ type Messager interface {
 // Persister is the interface that describes what is needed to persist scheduler data.
 type Persister interface {
 	SetWorkflowStatus(context.Context, string, string) error
-	SetJobStatus(context.Context, string, string, int) error
+	SetJobStatus(context.Context, string, string) error
+	SetJobExitCode(context.Context, string, int) error
 }
 
 // IOPersister is the interface that describes what is needed to persist Job IO data.

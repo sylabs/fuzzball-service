@@ -10,6 +10,7 @@ import (
 	"github.com/sylabs/compute-service/internal/pkg/core"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 const jobCollectionName = "jobs"
@@ -119,20 +120,30 @@ func (c *Connection) GetJobsByWorkflowID(ctx context.Context, pa core.PageArgs, 
 	return p, nil
 }
 
-// SetJobStatus updates a job's status and records the supplied
-// exit status. If the supplied ID is not valid, or there there is
-// not a job with a matching ID in the database, an error is returned.
-// TODO(ian): should probably have the exit status broken out into another method.
-func (c *Connection) SetJobStatus(ctx context.Context, id, status string, exitCode int) (err error) {
+// updateJob applies update to the job with ID id in collection col. If the supplied ID is not
+// valid, or there there is not a job with a matching ID in the database, an error is returned.
+func updateJob(ctx context.Context, col *mongo.Collection, id string, update bson.M) error {
 	oid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return fmt.Errorf("failed to convert object ID: %w", err)
 	}
-
-	update := bson.M{"$set": bson.M{"status": status, "exitCode": exitCode}}
-	err = c.db.Collection(jobCollectionName).FindOneAndUpdate(ctx, bson.M{"_id": oid}, update).Err()
+	err = col.FindOneAndUpdate(ctx, bson.M{"_id": oid}, update).Err()
 	if err != nil {
-		return fmt.Errorf("failed to update job status: %w", err)
+		return fmt.Errorf("failed to update job: %w", err)
 	}
 	return nil
+}
+
+// SetJobStatus updates a job's status. If the supplied ID is not valid, or there there is not a
+// job with a matching ID in the database, an error is returned.
+func (c *Connection) SetJobStatus(ctx context.Context, id, status string) error {
+	update := bson.M{"$set": bson.M{"status": status}}
+	return updateJob(ctx, c.db.Collection(jobCollectionName), id, update)
+}
+
+// SetJobExitCode updates a job's exit status. If the supplied ID is not valid, or there there is
+// not a job with a matching ID in the database, an error is returned.
+func (c *Connection) SetJobExitCode(ctx context.Context, id string, exitCode int) error {
+	update := bson.M{"$set": bson.M{"exitCode": exitCode}}
+	return updateJob(ctx, c.db.Collection(jobCollectionName), id, update)
 }

@@ -209,11 +209,14 @@ func TestSetJobStatus(t *testing.T) {
 	if j.Status != "" {
 		t.Errorf("unexpected status: got %q, want %q", j.Status, "")
 	}
-	if j.ExitCode != 0 {
-		t.Errorf("unexpected exit code: got %d, want %d", j.ExitCode, 0)
+	if j.ExitCode != nil {
+		t.Errorf("unexpected non-nil exit code: %+d", j.ExitCode)
 	}
 
-	if err := testConnection.SetJobStatus(context.Background(), j.ID, "newStatus", 1); err != nil {
+	if err := testConnection.SetJobStatus(context.Background(), j.ID, "newStatus"); err != nil {
+		t.Error("unexpected failure")
+	}
+	if err := testConnection.SetJobExitCode(context.Background(), j.ID, 1); err != nil {
 		t.Error("unexpected failure")
 	}
 
@@ -226,8 +229,7 @@ func TestSetJobStatus(t *testing.T) {
 	if j.Status != "newStatus" {
 		t.Errorf("unexpected status: got %q, want %q", j.Status, "newStatus")
 	}
-	if j.ExitCode != 1 {
-		t.Errorf("unexpected exit code: got %d, want %d", j.ExitCode, 1)
+	if got, want := j.ExitCode, 1; got == nil || *got != want {
+		t.Errorf("unexpected exit code: got %+v, want %d", got, want)
 	}
-
 }

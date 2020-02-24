@@ -35,7 +35,8 @@ func (s *Scheduler) runJob(ctx context.Context, j core.Job) error {
 		Status string
 		RC     int
 	}) {
-		s.p.SetJobStatus(ctx, j.ID, msg.Status, msg.RC)
+		s.p.SetJobStatus(ctx, j.ID, msg.Status)
+		s.p.SetJobExitCode(ctx, j.ID, msg.RC)
 		close(jobFinished)
 	})
 	if err != nil {
