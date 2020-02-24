@@ -5,6 +5,7 @@ package resolver
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/sylabs/compute-service/internal/pkg/core"
 	"github.com/sylabs/compute-service/internal/pkg/schema"
@@ -14,8 +15,9 @@ func TestWorkflow(t *testing.T) {
 	mc, err := getMockCore(mockCore{
 		p: mockPersister{
 			w: core.Workflow{
-				ID:   "workflowID",
-				Name: "workflowName",
+				ID:        "workflowID",
+				Name:      "workflowName",
+				CreatedAt: time.Date(2020, 01, 20, 19, 21, 30, 0, time.UTC),
 			},
 		},
 	})
@@ -69,8 +71,9 @@ func TestCreateWorkflow(t *testing.T) {
 	mc, err := getMockCore(mockCore{
 		p: mockPersister{
 			w: core.Workflow{
-				ID:   "workflowID",
-				Name: "workflowName",
+				ID:        "workflowID",
+				Name:      "workflowName",
+				CreatedAt: time.Date(2020, 01, 20, 19, 21, 30, 0, time.UTC),
 			},
 			j: core.Job{
 				ID:         "jobID",
@@ -149,8 +152,9 @@ func TestDeleteWorkflow(t *testing.T) {
 	mc, err := getMockCore(mockCore{
 		p: mockPersister{
 			w: core.Workflow{
-				ID:   "workflowID",
-				Name: "workflowName",
+				ID:        "workflowID",
+				Name:      "workflowName",
+				CreatedAt: time.Date(2020, 01, 20, 19, 21, 30, 0, time.UTC),
 			},
 			j: core.Job{
 				ID:         "jobID",

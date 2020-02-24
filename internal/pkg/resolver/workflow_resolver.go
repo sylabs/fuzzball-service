@@ -4,7 +4,6 @@ package resolver
 
 import (
 	"context"
-	"time"
 
 	"github.com/graph-gophers/graphql-go"
 	"github.com/sylabs/compute-service/internal/pkg/core"
@@ -42,18 +41,24 @@ func (r *WorkflowResolver) CreatedBy(ctx context.Context) (*UserResolver, error)
 }
 
 // CreatedAt resolves when the workflow was created.
-func (r *WorkflowResolver) CreatedAt() (graphql.Time, error) {
-	return graphql.Time{Time: time.Date(2020, 01, 20, 19, 21, 30, 0, time.UTC)}, nil // TODO
+func (r *WorkflowResolver) CreatedAt() graphql.Time {
+	return graphql.Time{Time: r.w.CreatedAt}
 }
 
 // StartedAt returns when the workflow started, if it has started.
 func (r *WorkflowResolver) StartedAt() *graphql.Time {
-	return nil // TODO
+	if t := r.w.StartedAt; t != nil {
+		return &graphql.Time{Time: *t}
+	}
+	return nil
 }
 
 // FinishedAt returns when the workflow finished, if it has finished.
 func (r *WorkflowResolver) FinishedAt() *graphql.Time {
-	return nil // TODO
+	if t := r.w.FinishedAt; t != nil {
+		return &graphql.Time{Time: *t}
+	}
+	return nil
 }
 
 // Status resolves the state of the workflow.
