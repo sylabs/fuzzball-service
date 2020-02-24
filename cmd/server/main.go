@@ -36,8 +36,8 @@ var (
 	corsDebug          = flag.Bool("cors-debug", false, "Enable CORS debugging")
 	mongoURI           = flag.String("mongo-uri", "mongodb://localhost", "URI of MongoDB database")
 	startupTime        = flag.Duration("startup-time", time.Minute, "Amount of time to wait for dependent services to become ready on startup")
-	natsURIs           = flag.String("nats-uris", nats.DefaultURL, "Comma-separated list of NATS server URIs")
-	redisAddr          = flag.String("redis-addr", "localhost:6379", "Address of Redis")
+	natsURIs           = flag.String("nats-uris", "nats://localhost", "Comma-separated list of NATS server URIs")
+	redisURI           = flag.String("redis-uri", "redis://localhost", "URI of Redis")
 	oauth2IssuerURI    = flag.String("oauth2-issuer-uri", "https://dev-930666.okta.com/oauth2/default", "URI of OAuth 2.0 issuer")
 	oauth2Audience     = flag.String("oauth2-audience", "api://default", "OAuth 2.0 audience expected in tokens")
 )
@@ -107,7 +107,7 @@ func connectNATS(ctx context.Context) (nc *nats.Conn, err error) {
 
 // connectRedis attempts to connect to redis.
 func connectRedis() (*rediskv.Connection, error) {
-	rc, err := rediskv.NewConnection(*redisAddr)
+	rc, err := rediskv.NewConnection(*redisURI)
 	if err != nil {
 		return nil, err
 	}
