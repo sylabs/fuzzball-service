@@ -75,8 +75,9 @@ func TestCreateJob(t *testing.T) {
 	}
 	defer deleteTestJob(t, testConnection.db, j.ID)
 
-	// Verify returned workflow. Force ID since it is allocated by CreateWorkflow.
+	// Verify returned workflow. Force ID and CreatedAt since they are set by CreateWorkflow.
 	orig.ID = j.ID
+	orig.CreatedAt = j.CreatedAt
 	if _, err := primitive.ObjectIDFromHex(j.ID); err != nil {
 		t.Fatalf("job has invalid ID")
 	}

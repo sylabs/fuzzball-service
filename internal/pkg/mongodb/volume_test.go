@@ -70,8 +70,9 @@ func TestCreateVolume(t *testing.T) {
 	}
 	defer deleteTestVolume(t, testConnection.db, v.ID)
 
-	// Verify returned volume. Force ID since it is allocated by CreateVolume.
+	// Verify returned volume. Force ID and CreatedAt since they are set by CreateVolume.
 	orig.ID = v.ID
+	orig.CreatedAt = v.CreatedAt
 	if _, err := primitive.ObjectIDFromHex(v.ID); err != nil {
 		t.Fatalf("volume has invalid ID")
 	}

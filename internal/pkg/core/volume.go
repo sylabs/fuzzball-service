@@ -5,14 +5,16 @@ package core
 import (
 	"context"
 	"fmt"
+	"time"
 )
 
 // Volume describes a storage volume.
 type Volume struct {
-	ID         string `bson:"_id,omitempty"`
-	WorkflowID string `bson:"workflowID"`
-	Name       string `bson:"name"`
-	Type       string `bson:"type"`
+	ID         string    `bson:"_id,omitempty"`
+	CreatedAt  time.Time `bson:"createdAt"`
+	WorkflowID string    `bson:"workflowID"`
+	Name       string    `bson:"name"`
+	Type       string    `bson:"type"`
 
 	c *Core // Used internally for lazy loading.
 }

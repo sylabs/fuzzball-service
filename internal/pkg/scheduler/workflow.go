@@ -60,9 +60,9 @@ func (s *Scheduler) runJob(ctx context.Context, j core.Job) error {
 // createVolume sets up a volume on an agent.
 func (s *Scheduler) createVolume(ctx context.Context, v core.Volume) error {
 	log := logrus.WithFields(logrus.Fields{
-		"VolumeID":   v.ID,
-		"VolumeName": v.Name,
-		"VolumeType": v.Type,
+		"volumeID":   v.ID,
+		"volumeName": v.Name,
+		"volumeType": v.Type,
 	})
 	log.Print("creating volume")
 	defer func(t time.Time) {
@@ -100,9 +100,9 @@ func (s *Scheduler) createVolume(ctx context.Context, v core.Volume) error {
 // deleteVolume tears down a volume on an agent.
 func (s *Scheduler) deleteVolume(ctx context.Context, v core.Volume) error {
 	log := logrus.WithFields(logrus.Fields{
-		"VolumeID":   v.ID,
-		"VolumeName": v.Name,
-		"VolumeType": v.Type,
+		"volumeID":   v.ID,
+		"volumeName": v.Name,
+		"volumeType": v.Type,
 	})
 	log.Print("deleting volume")
 	defer func(t time.Time) {

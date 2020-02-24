@@ -5,6 +5,7 @@ package mongodb
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/sylabs/compute-service/internal/pkg/core"
 	"go.mongodb.org/mongo-driver/bson"
@@ -18,6 +19,9 @@ const jobCollectionName = "jobs"
 func (c *Connection) CreateJob(ctx context.Context, j core.Job) (core.Job, error) {
 	// We want the DB cluster to generate an ID, to ensure it's globally unique.
 	j.ID = ""
+	// Set the creation time, with the precision that MongoDB stores.
+	j.CreatedAt = time.Now().UTC().Round(time.Millisecond)
+
 	ir, err := c.db.Collection(jobCollectionName).InsertOne(ctx, j)
 	if err != nil {
 		return core.Job{}, fmt.Errorf("failed to create job: %w", err)

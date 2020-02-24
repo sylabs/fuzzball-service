@@ -5,6 +5,7 @@ package mongodb
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/sylabs/compute-service/internal/pkg/core"
 	"go.mongodb.org/mongo-driver/bson"
@@ -18,6 +19,9 @@ const workflowCollectionName = "workflows"
 func (c *Connection) CreateWorkflow(ctx context.Context, w core.Workflow) (core.Workflow, error) {
 	// We want the DB cluster to generate an ID, to ensure it's globally unique.
 	w.ID = ""
+	// Set the creation time, with the precision that MongoDB stores.
+	w.CreatedAt = time.Now().UTC().Round(time.Millisecond)
+
 	ir, err := c.db.Collection(workflowCollectionName).InsertOne(ctx, w)
 	if err != nil {
 		return core.Workflow{}, fmt.Errorf("failed to create workflow: %w", err)

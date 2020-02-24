@@ -4,6 +4,7 @@ package core
 
 import (
 	"context"
+	"time"
 )
 
 // JobPersister is the interface by which jobs are persisted.
@@ -18,6 +19,9 @@ type JobPersister interface {
 // Job contains information about an indivisual job.
 type Job struct {
 	ID         string              `bson:"_id,omitempty"`
+	CreatedAt  time.Time           `bson:"createdAt"`
+	StartedAt  *time.Time          `bson:"startedAt,omitempty"`
+	FinishedAt *time.Time          `bson:"finishedAt,omitempty"`
 	WorkflowID string              `bson:"workflowID"`
 	Name       string              `bson:"name"`
 	Image      string              `bson:"image"`

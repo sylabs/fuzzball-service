@@ -4,7 +4,6 @@ package resolver
 
 import (
 	"context"
-	"time"
 
 	"github.com/graph-gophers/graphql-go"
 	"github.com/sylabs/compute-service/internal/pkg/core"
@@ -45,18 +44,24 @@ func (r *JobResolver) CreatedBy(ctx context.Context) (*UserResolver, error) {
 }
 
 // CreatedAt resolves when the job was created.
-func (r *JobResolver) CreatedAt() (graphql.Time, error) {
-	return graphql.Time{Time: time.Date(2020, 01, 20, 19, 21, 30, 0, time.UTC)}, nil // TODO
+func (r *JobResolver) CreatedAt() graphql.Time {
+	return graphql.Time{Time: r.j.CreatedAt}
 }
 
 // StartedAt returns when the job started, if it has started.
 func (r *JobResolver) StartedAt() *graphql.Time {
-	return nil // TODO
+	if t := r.j.StartedAt; t != nil {
+		return &graphql.Time{Time: *t}
+	}
+	return nil
 }
 
 // FinishedAt returns when the job finished, if it has finished.
 func (r *JobResolver) FinishedAt() *graphql.Time {
-	return nil // TODO
+	if t := r.j.FinishedAt; t != nil {
+		return &graphql.Time{Time: *t}
+	}
+	return nil
 }
 
 // Status resolves the state of the job.
@@ -82,19 +87,8 @@ func (r *JobResolver) Output() (string, error) {
 }
 
 // Requires looks up jobs that need to be executed before the current one.
-func (r *JobResolver) Requires(ctx context.Context, args struct {
-	After  *string
-	Before *string
-	First  *int
-	Last   *int
-}) (*JobConnectionResolver, error) {
-	pa := core.PageArgs{
-		After:  args.After,
-		Before: args.Before,
-		First:  args.First,
-		Last:   args.Last,
-	}
-	p, err := r.j.RequiredJobsPage(ctx, pa)
+func (r *JobResolver) Requires(ctx context.Context, args pageArgs) (*JobConnectionResolver, error) {
+	p, err := r.j.RequiredJobsPage(ctx, convertPageArgs(args))
 	if err != nil {
 		return nil, err
 	}
