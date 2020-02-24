@@ -67,19 +67,8 @@ func (r *WorkflowResolver) Status() string {
 }
 
 // Jobs looks up jobs associated with the workflow.
-func (r *WorkflowResolver) Jobs(ctx context.Context, args struct {
-	After  *string
-	Before *string
-	First  *int
-	Last   *int
-}) (*JobConnectionResolver, error) {
-	pa := core.PageArgs{
-		After:  args.After,
-		Before: args.Before,
-		First:  args.First,
-		Last:   args.Last,
-	}
-	p, err := r.w.JobsPage(ctx, pa)
+func (r *WorkflowResolver) Jobs(ctx context.Context, args pageArgs) (*JobConnectionResolver, error) {
+	p, err := r.w.JobsPage(ctx, convertPageArgs(args))
 	if err != nil {
 		return nil, err
 	}
@@ -87,19 +76,8 @@ func (r *WorkflowResolver) Jobs(ctx context.Context, args struct {
 }
 
 // Volumes looks up volumes associated with the workflow.
-func (r *WorkflowResolver) Volumes(ctx context.Context, args struct {
-	After  *string
-	Before *string
-	First  *int
-	Last   *int
-}) (*VolumeConnectionResolver, error) {
-	pa := core.PageArgs{
-		After:  args.After,
-		Before: args.Before,
-		First:  args.First,
-		Last:   args.Last,
-	}
-	p, err := r.w.VolumesPage(ctx, pa)
+func (r *WorkflowResolver) Volumes(ctx context.Context, args pageArgs) (*VolumeConnectionResolver, error) {
+	p, err := r.w.VolumesPage(ctx, convertPageArgs(args))
 	if err != nil {
 		return nil, err
 	}

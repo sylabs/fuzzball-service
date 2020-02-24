@@ -82,19 +82,8 @@ func (r *JobResolver) Output() (string, error) {
 }
 
 // Requires looks up jobs that need to be executed before the current one.
-func (r *JobResolver) Requires(ctx context.Context, args struct {
-	After  *string
-	Before *string
-	First  *int
-	Last   *int
-}) (*JobConnectionResolver, error) {
-	pa := core.PageArgs{
-		After:  args.After,
-		Before: args.Before,
-		First:  args.First,
-		Last:   args.Last,
-	}
-	p, err := r.j.RequiredJobsPage(ctx, pa)
+func (r *JobResolver) Requires(ctx context.Context, args pageArgs) (*JobConnectionResolver, error) {
+	p, err := r.j.RequiredJobsPage(ctx, convertPageArgs(args))
 	if err != nil {
 		return nil, err
 	}
