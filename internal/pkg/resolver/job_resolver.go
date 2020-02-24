@@ -4,7 +4,6 @@ package resolver
 
 import (
 	"context"
-	"time"
 
 	"github.com/graph-gophers/graphql-go"
 	"github.com/sylabs/compute-service/internal/pkg/core"
@@ -45,18 +44,24 @@ func (r *JobResolver) CreatedBy(ctx context.Context) (*UserResolver, error) {
 }
 
 // CreatedAt resolves when the job was created.
-func (r *JobResolver) CreatedAt() (graphql.Time, error) {
-	return graphql.Time{Time: time.Date(2020, 01, 20, 19, 21, 30, 0, time.UTC)}, nil // TODO
+func (r *JobResolver) CreatedAt() graphql.Time {
+	return graphql.Time{Time: r.j.CreatedAt}
 }
 
 // StartedAt returns when the job started, if it has started.
 func (r *JobResolver) StartedAt() *graphql.Time {
-	return nil // TODO
+	if t := r.j.StartedAt; t != nil {
+		return &graphql.Time{Time: *t}
+	}
+	return nil
 }
 
 // FinishedAt returns when the job finished, if it has finished.
 func (r *JobResolver) FinishedAt() *graphql.Time {
-	return nil // TODO
+	if t := r.j.FinishedAt; t != nil {
+		return &graphql.Time{Time: *t}
+	}
+	return nil
 }
 
 // Status resolves the state of the job.

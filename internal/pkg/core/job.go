@@ -20,6 +20,8 @@ type JobPersister interface {
 type Job struct {
 	ID         string              `bson:"_id,omitempty"`
 	CreatedAt  time.Time           `bson:"createdAt"`
+	StartedAt  *time.Time          `bson:"startedAt,omitempty"`
+	FinishedAt *time.Time          `bson:"finishedAt,omitempty"`
 	WorkflowID string              `bson:"workflowID"`
 	Name       string              `bson:"name"`
 	Image      string              `bson:"image"`
