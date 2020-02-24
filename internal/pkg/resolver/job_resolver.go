@@ -71,8 +71,8 @@ func (r *JobResolver) Status() string {
 
 // ExitCode resolves the exit status process that ran the job.
 func (r *JobResolver) ExitCode() *int32 {
-	if r.j.Status == "COMPLETED" {
-		i := int32(r.j.ExitCode)
+	if r.j.ExitCode != nil {
+		i := int32(*r.j.ExitCode)
 		return &i
 	}
 	return nil
@@ -80,9 +80,6 @@ func (r *JobResolver) ExitCode() *int32 {
 
 // Output resolves the captured Stdout/Stderr of the job.
 func (r *JobResolver) Output() (string, error) {
-	if r.j.Status != "COMPLETED" {
-		return "", nil
-	}
 	return r.j.GetOutput()
 }
 
