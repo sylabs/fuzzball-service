@@ -57,15 +57,24 @@ func (p mockPersister) DeleteJobsByWorkflowID(context.Context, string) error {
 	return p.err
 }
 
-func (p mockPersister) GetJobs(context.Context, core.PageArgs) (core.JobsPage, error) {
+func (p mockPersister) GetJobs(ctx context.Context, pa core.PageArgs) (core.JobsPage, error) {
+	if got, want := pa, p.wantPA; !reflect.DeepEqual(got, want) {
+		return core.JobsPage{}, fmt.Errorf("got page args %v, want %v", got, want)
+	}
 	return p.jp, p.err
 }
 
-func (p mockPersister) GetJobsByWorkflowID(context.Context, core.PageArgs, string) (core.JobsPage, error) {
+func (p mockPersister) GetJobsByWorkflowID(ctx context.Context, pa core.PageArgs, wid string) (core.JobsPage, error) {
+	if got, want := pa, p.wantPA; !reflect.DeepEqual(got, want) {
+		return core.JobsPage{}, fmt.Errorf("got page args %v, want %v", got, want)
+	}
 	return p.jp, p.err
 }
 
-func (p mockPersister) GetJobsByID(context.Context, core.PageArgs, string, []string) (core.JobsPage, error) {
+func (p mockPersister) GetJobsByID(ctx context.Context, pa core.PageArgs, wid string, ids []string) (core.JobsPage, error) {
+	if got, want := pa, p.wantPA; !reflect.DeepEqual(got, want) {
+		return core.JobsPage{}, fmt.Errorf("got page args %v, want %v", got, want)
+	}
 	return p.jp, p.err
 }
 
@@ -77,11 +86,17 @@ func (p mockPersister) DeleteVolumesByWorkflowID(context.Context, string) error 
 	return p.err
 }
 
-func (p mockPersister) GetVolumes(context.Context, core.PageArgs) (core.VolumesPage, error) {
+func (p mockPersister) GetVolumes(ctx context.Context, pa core.PageArgs) (core.VolumesPage, error) {
+	if got, want := pa, p.wantPA; !reflect.DeepEqual(got, want) {
+		return core.VolumesPage{}, fmt.Errorf("got page args %v, want %v", got, want)
+	}
 	return p.vp, p.err
 }
 
-func (p mockPersister) GetVolumesByWorkflowID(context.Context, core.PageArgs, string) (core.VolumesPage, error) {
+func (p mockPersister) GetVolumesByWorkflowID(ctx context.Context, pa core.PageArgs, wid string) (core.VolumesPage, error) {
+	if got, want := pa, p.wantPA; !reflect.DeepEqual(got, want) {
+		return core.VolumesPage{}, fmt.Errorf("got page args %v, want %v", got, want)
+	}
 	return p.vp, p.err
 }
 
