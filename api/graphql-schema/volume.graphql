@@ -1,0 +1,49 @@
+"""
+A `Volume` represents a location to store data.
+"""
+type Volume {
+  "Unique volume ID."
+  id: ID!
+
+  "The name assigned to the volume."
+  name: String!
+
+  "The type of volume."
+  type: String!
+}
+
+"""
+An edge in a `VolumeConnection`.
+"""
+type VolumeEdge {
+    "A cursor for use in pagination."
+    cursor: String!
+
+    "The item at the end of the edge."
+    node: Volume
+}
+
+"""
+The connection type for `Volume`.
+"""
+type VolumeConnection {
+    "A list of edges."
+    edges: [VolumeEdge]
+
+    "Information to aid in pagination."
+    pageInfo: PageInfo!
+
+    "Identifies the total count of items in the connection."
+    totalCount: Int!
+}
+
+"""
+The input used to declare a `Volume`.
+"""
+input VolumeSpec {
+  "The name assigned to the volume."
+  name: String!
+
+  "The type of volume."
+  type: String!
+}

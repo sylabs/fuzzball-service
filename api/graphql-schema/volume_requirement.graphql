@@ -1,0 +1,24 @@
+"""
+A volume requirement for a job.
+"""
+type VolumeRequirement {
+  "Unique volume ID."
+  volumeID: ID!
+
+  "The name assigned to the volume requirement."
+  name: String!
+
+  "The location the required volume will be exposed within the container."
+  location: String!
+}
+
+"""
+The input used to declare volume requirements for a job.
+"""
+input VolumeRequirementSpec {
+  "The name of the volume."
+  name: String!
+
+  "The filesystem location where the volume is exposed for the job."
+  location: String!
+}

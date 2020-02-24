@@ -12,23 +12,9 @@ import (
 	"path"
 	"strings"
 	"testing"
-
-	"github.com/graph-gophers/graphql-go"
-	"github.com/sylabs/compute-service/internal/pkg/schema"
 )
 
-var (
-	update = flag.Bool("update", false, "update .golden files")
-)
-
-// GetScheman returns a schema that uses r as a resolver.
-func getSchema(r *Resolver) (*graphql.Schema, error) {
-	s, err := schema.String()
-	if err != nil {
-		return nil, err
-	}
-	return graphql.ParseSchema(s, r)
-}
+var update = flag.Bool("update", false, "update .golden files")
 
 // goldenPath returns the path of the golden file corresponding to name.
 func goldenPath(name string) string {

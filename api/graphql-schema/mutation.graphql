@@ -1,4 +1,10 @@
+"""
+The mutation root of the GraphQL interface.
+"""
 type Mutation {
+  "Create a workflow."
   createWorkflow(spec: WorkflowSpec!): Workflow
+
+  "Delete a workflow."
   deleteWorkflow(id: ID!): Workflow
 }
