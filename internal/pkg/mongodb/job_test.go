@@ -213,7 +213,10 @@ func TestSetJobStatus(t *testing.T) {
 		t.Errorf("unexpected non-nil exit code: %+d", j.ExitCode)
 	}
 
-	if err := testConnection.SetJobStatus(context.Background(), j.ID, "newStatus", 1); err != nil {
+	if err := testConnection.SetJobStatus(context.Background(), j.ID, "newStatus"); err != nil {
+		t.Error("unexpected failure")
+	}
+	if err := testConnection.SetJobExitCode(context.Background(), j.ID, 1); err != nil {
 		t.Error("unexpected failure")
 	}
 
