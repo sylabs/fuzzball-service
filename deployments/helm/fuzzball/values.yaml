@@ -1,5 +1,12 @@
 # Default values for Fuzzball.
 
+replicaCount: 1
+
+image:
+  repository: server
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
@@ -11,6 +18,31 @@ serviceAccount:
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name:
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
 
 mongodb:
   enabled: true
