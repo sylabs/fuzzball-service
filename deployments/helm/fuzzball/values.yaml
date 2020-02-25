@@ -30,6 +30,10 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
+service:
+  type: ClusterIP
+  port: 8080
+
 resources: {}
   # limits:
   #   cpu: 100m

@@ -1,0 +1,115 @@
+should have name 'NameOverride':
+  1: |
+    apiVersion: v1
+    kind: Service
+    metadata:
+      labels:
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/managed-by: Tiller
+        app.kubernetes.io/name: fuzzball
+        app.kubernetes.io/version: 0.1.0
+        helm.sh/chart: fuzzball-0.1.0
+      name: NameOverride
+    spec:
+      ports:
+      - name: http
+        port: 8080
+        protocol: TCP
+        targetPort: http
+      selector:
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/managed-by: Tiller
+        app.kubernetes.io/name: fuzzball
+      type: ClusterIP
+should have name 'RELEASE-NAME-NameOverride':
+  1: |
+    apiVersion: v1
+    kind: Service
+    metadata:
+      labels:
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/managed-by: Tiller
+        app.kubernetes.io/name: NameOverride
+        app.kubernetes.io/version: 0.1.0
+        helm.sh/chart: fuzzball-0.1.0
+      name: RELEASE-NAME-NameOverride
+    spec:
+      ports:
+      - name: http
+        port: 8080
+        protocol: TCP
+        targetPort: http
+      selector:
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/managed-by: Tiller
+        app.kubernetes.io/name: NameOverride
+      type: ClusterIP
+should have type LoadBalancer:
+  1: |
+    apiVersion: v1
+    kind: Service
+    metadata:
+      labels:
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/managed-by: Tiller
+        app.kubernetes.io/name: fuzzball
+        app.kubernetes.io/version: 0.1.0
+        helm.sh/chart: fuzzball-0.1.0
+      name: RELEASE-NAME-fuzzball
+    spec:
+      ports:
+      - name: http
+        port: 8080
+        protocol: TCP
+        targetPort: http
+      selector:
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/managed-by: Tiller
+        app.kubernetes.io/name: fuzzball
+      type: LoadBalancer
+should have type NodePort:
+  1: |
+    apiVersion: v1
+    kind: Service
+    metadata:
+      labels:
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/managed-by: Tiller
+        app.kubernetes.io/name: fuzzball
+        app.kubernetes.io/version: 0.1.0
+        helm.sh/chart: fuzzball-0.1.0
+      name: RELEASE-NAME-fuzzball
+    spec:
+      ports:
+      - name: http
+        port: 8080
+        protocol: TCP
+        targetPort: http
+      selector:
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/managed-by: Tiller
+        app.kubernetes.io/name: fuzzball
+      type: NodePort
+should render by default:
+  1: |
+    apiVersion: v1
+    kind: Service
+    metadata:
+      labels:
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/managed-by: Tiller
+        app.kubernetes.io/name: fuzzball
+        app.kubernetes.io/version: 0.1.0
+        helm.sh/chart: fuzzball-0.1.0
+      name: RELEASE-NAME-fuzzball
+    spec:
+      ports:
+      - name: http
+        port: 8080
+        protocol: TCP
+        targetPort: http
+      selector:
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/managed-by: Tiller
+        app.kubernetes.io/name: fuzzball
+      type: ClusterIP
