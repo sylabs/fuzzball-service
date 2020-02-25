@@ -22,5 +22,5 @@ func (r *VolumeResolver) Name() string {
 
 // Type resolves the volume type.
 func (r *VolumeResolver) Type() string {
-	return r.v.Type
+	return r.v.Type.String()
 }

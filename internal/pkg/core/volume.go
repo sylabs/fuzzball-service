@@ -8,13 +8,35 @@ import (
 	"time"
 )
 
+const (
+	TypeEphemeral  = "EPHEMERAL"
+	TypePersistent = "PERSISTENT"
+)
+
+var validTypes = map[string]bool{
+	TypeEphemeral:  true,
+	TypePersistent: true,
+}
+
+type VolumeType string
+
+func (v VolumeType) String() string {
+	return string(v)
+}
+
+// Valid ensures that a volume type
+func (v VolumeType) Valid() bool {
+	_, ok := validTypes[string(v)]
+	return ok
+}
+
 // Volume describes a storage volume.
 type Volume struct {
-	ID         string    `bson:"_id,omitempty"`
-	CreatedAt  time.Time `bson:"createdAt"`
-	WorkflowID string    `bson:"workflowID"`
-	Name       string    `bson:"name"`
-	Type       string    `bson:"type"`
+	ID         string     `bson:"_id,omitempty"`
+	CreatedAt  time.Time  `bson:"createdAt"`
+	WorkflowID string     `bson:"workflowID"`
+	Name       string     `bson:"name"`
+	Type       VolumeType `bson:"type"`
 
 	c *Core // Used internally for lazy loading.
 }
@@ -40,8 +62,8 @@ func (v *Volume) setCore(c *Core) {
 
 // volumeSpec represents a volume specification
 type volumeSpec struct {
-	Name string `bson:"name"`
-	Type string `bson:"type"`
+	Name string     `bson:"name"`
+	Type VolumeType `bson:"type"`
 }
 
 // VolumePersister is the interface by which workflows are persisted.
@@ -56,6 +78,10 @@ func createVolumes(ctx context.Context, p Persister, w Workflow, specs *[]volume
 	volumes := make(map[string]Volume)
 	if specs != nil {
 		for _, vs := range *specs {
+			if !vs.Type.Valid() {
+				return nil, fmt.Errorf("unknown volume type: %s", vs.Type)
+			}
+
 			if _, ok := volumes[vs.Name]; ok {
 				return nil, fmt.Errorf("duplicate volume declarations")
 			}
