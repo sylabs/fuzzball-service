@@ -1,0 +1,25 @@
+apiVersion: v2
+name: fuzzball
+version: 0.1.0
+appVersion: 0.1.0
+kubeVersion: ^1.14.0
+description: Programmatic management of high performance compute resources.
+type: application
+sources:
+- https://github.com/sylabs/compute-service
+maintainers:
+- name: Sylabs Inc.
+  email: support@sylabs.io
+dependencies:
+- name: mongodb
+  version: 7.x.x
+  repository: https://kubernetes-charts.storage.googleapis.com/
+  condition: mongodb.enabled
+- name: nats
+  version: 4.x.x
+  repository: https://kubernetes-charts.storage.googleapis.com/
+  condition: nats.enabled
+- name: redis
+  version: 10.x.x
+  repository: https://kubernetes-charts.storage.googleapis.com/
+  condition: redis.enabled

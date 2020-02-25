@@ -1,0 +1,10 @@
+# Default values for Fuzzball.
+
+mongodb:
+  enabled: true
+
+nats:
+  enabled: true
+
+redis:
+  enabled: true
