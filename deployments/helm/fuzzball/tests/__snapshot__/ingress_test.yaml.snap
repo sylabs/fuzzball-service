@@ -1,0 +1,120 @@
+should have TLS:
+  1: |
+    apiVersion: networking.k8s.io/v1beta1
+    kind: Ingress
+    metadata:
+      labels:
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/managed-by: Tiller
+        app.kubernetes.io/name: fuzzball
+        app.kubernetes.io/version: 0.1.0
+        helm.sh/chart: fuzzball-0.1.0
+      name: RELEASE-NAME-fuzzball
+    spec:
+      rules:
+      - host: ssl.example.com
+        http:
+          paths:
+          - backend:
+              serviceName: RELEASE-NAME-fuzzball
+              servicePort: 8080
+            path: /path
+      tls:
+      - hosts:
+        - ssl.example.com
+        secretName: secret-tls
+should have annotations:
+  1: |
+    apiVersion: networking.k8s.io/v1beta1
+    kind: Ingress
+    metadata:
+      annotations:
+        foo: bar
+      labels:
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/managed-by: Tiller
+        app.kubernetes.io/name: fuzzball
+        app.kubernetes.io/version: 0.1.0
+        helm.sh/chart: fuzzball-0.1.0
+      name: RELEASE-NAME-fuzzball
+    spec:
+      rules:
+      - host: chart-example.local
+        http:
+          paths: null
+should have host 'example.com':
+  1: |
+    apiVersion: networking.k8s.io/v1beta1
+    kind: Ingress
+    metadata:
+      labels:
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/managed-by: Tiller
+        app.kubernetes.io/name: fuzzball
+        app.kubernetes.io/version: 0.1.0
+        helm.sh/chart: fuzzball-0.1.0
+      name: RELEASE-NAME-fuzzball
+    spec:
+      rules:
+      - host: example.com
+        http:
+          paths:
+          - backend:
+              serviceName: RELEASE-NAME-fuzzball
+              servicePort: 8080
+            path: /path
+should have host 'example.com' and servicePort '9999':
+  1: |
+    apiVersion: networking.k8s.io/v1beta1
+    kind: Ingress
+    metadata:
+      labels:
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/managed-by: Tiller
+        app.kubernetes.io/name: fuzzball
+        app.kubernetes.io/version: 0.1.0
+        helm.sh/chart: fuzzball-0.1.0
+      name: RELEASE-NAME-fuzzball
+    spec:
+      rules:
+      - host: example.com
+        http:
+          paths:
+          - backend:
+              serviceName: RELEASE-NAME-fuzzball
+              servicePort: 9999
+            path: /path
+should have name 'NameOverride':
+  1: |
+    apiVersion: networking.k8s.io/v1beta1
+    kind: Ingress
+    metadata:
+      labels:
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/managed-by: Tiller
+        app.kubernetes.io/name: fuzzball
+        app.kubernetes.io/version: 0.1.0
+        helm.sh/chart: fuzzball-0.1.0
+      name: NameOverride
+    spec:
+      rules:
+      - host: chart-example.local
+        http:
+          paths: null
+should have name 'RELEASE-NAME-NameOverride':
+  1: |
+    apiVersion: networking.k8s.io/v1beta1
+    kind: Ingress
+    metadata:
+      labels:
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/managed-by: Tiller
+        app.kubernetes.io/name: NameOverride
+        app.kubernetes.io/version: 0.1.0
+        helm.sh/chart: fuzzball-0.1.0
+      name: RELEASE-NAME-NameOverride
+    spec:
+      rules:
+      - host: chart-example.local
+        http:
+          paths: null

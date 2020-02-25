@@ -34,6 +34,17 @@ service:
   type: ClusterIP
   port: 8080
 
+ingress:
+  enabled: false
+  annotations: {}
+  hosts:
+  - host: chart-example.local
+    paths: []
+  tls: []
+  # - secretName: chart-example-tls
+  #   hosts:
+  #   - chart-example.local
+
 resources: {}
   # limits:
   #   cpu: 100m

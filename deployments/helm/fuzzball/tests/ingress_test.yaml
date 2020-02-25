@@ -1,0 +1,66 @@
+suite: Ingress
+templates:
+- ingress.yaml
+tests:
+- it: should not render by default
+  asserts:
+    - hasDocuments:
+      count: 0
+- it: "should have name 'RELEASE-NAME-NameOverride'"
+  set:
+    nameOverride: NameOverride
+    ingress:
+      enabled: true
+  asserts:
+  - matchSnapshot: {}
+- it: "should have name 'NameOverride'"
+  set:
+    fullnameOverride: NameOverride
+    ingress:
+      enabled: true
+  asserts:
+  - matchSnapshot: {}
+- it: should have annotations
+  set:
+    ingress:
+      enabled: true
+      annotations:
+        foo: bar
+  asserts:
+  - matchSnapshot: {}
+- it: "should have host 'example.com'"
+  set:
+    ingress:
+      enabled: true
+      hosts:
+      - host: example.com
+        paths:
+        - /path
+  asserts:
+  - matchSnapshot: {}
+- it: "should have host 'example.com' and servicePort '9999'"
+  set:
+    service:
+      port: 9999
+    ingress:
+      enabled: true
+      hosts:
+      - host: example.com
+        paths:
+        - /path
+  asserts:
+  - matchSnapshot: {}
+- it: should have TLS
+  set:
+    ingress:
+      enabled: true
+      hosts:
+      - host: ssl.example.com
+        paths:
+        - /path
+      tls:
+      - secretName: secret-tls
+        hosts:
+        - ssl.example.com
+  asserts:
+  - matchSnapshot: {}
