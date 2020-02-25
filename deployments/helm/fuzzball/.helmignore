@@ -14,3 +14,6 @@
 .idea/
 *.tmproj
 .vscode/
+# Helm Tests
+tests/__snapshot__
+tests/*_test.yaml
