@@ -8,6 +8,21 @@ env:
   GOPRIVATE: github.com/sylabs/compute-service
 
 jobs:
+  lint-and-test-helm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: azure/setup-helm@v1
+        with:
+          version: v3.1.1
+      - name: Install Helm Unit Test Plugin
+        run: helm plugin install https://github.com/rancher/helm-unittest
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Lint
+        run: helm lint deployments/helm/fuzzball/
+      - name: Unit Test
+        run: helm unittest deployments/helm/fuzzball/
+
   build-and-unit-test:
     strategy:
       matrix:
