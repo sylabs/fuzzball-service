@@ -1,5 +1,7 @@
 # Compute Service
 
+[![Dependabot](https://api.dependabot.com/badges/status?host=github&repo=sylabs/compute-service&identifier=232618704)](https://app.dependabot.com/accounts/sylabs/repos/232618704)
+
 The Sylabs Compute Service enables programmatic management of high performance compute resources.
 
 ## Quick Start
