@@ -1,4 +1,4 @@
-ARG GOLANG_TAG=1.13-alpine
+ARG GOLANG_TAG=1.14-alpine
 
 FROM golang:$GOLANG_TAG as build-stage
 RUN apk add --no-cache git ca-certificates && update-ca-certificates
