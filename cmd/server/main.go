@@ -26,9 +26,7 @@ const (
 	dbName = "server"
 )
 
-var (
-	version = "unknown"
-)
+var version = "unknown"
 
 var (
 	httpAddr           = flag.String("http-addr", ":8080", "Address to bind HTTP")
