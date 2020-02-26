@@ -18,7 +18,6 @@ should have name 'NameOverride':
         targetPort: http
       selector:
         app.kubernetes.io/instance: RELEASE-NAME
-        app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: fuzzball
       type: ClusterIP
 should have name 'RELEASE-NAME-NameOverride':
@@ -41,7 +40,6 @@ should have name 'RELEASE-NAME-NameOverride':
         targetPort: http
       selector:
         app.kubernetes.io/instance: RELEASE-NAME
-        app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: NameOverride
       type: ClusterIP
 should have type LoadBalancer:
@@ -64,7 +62,6 @@ should have type LoadBalancer:
         targetPort: http
       selector:
         app.kubernetes.io/instance: RELEASE-NAME
-        app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: fuzzball
       type: LoadBalancer
 should have type NodePort:
@@ -87,7 +84,6 @@ should have type NodePort:
         targetPort: http
       selector:
         app.kubernetes.io/instance: RELEASE-NAME
-        app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: fuzzball
       type: NodePort
 should render by default:
@@ -110,6 +106,5 @@ should render by default:
         targetPort: http
       selector:
         app.kubernetes.io/instance: RELEASE-NAME
-        app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: fuzzball
       type: ClusterIP

@@ -15,13 +15,11 @@ should have 10 replicas:
       selector:
         matchLabels:
           app.kubernetes.io/instance: RELEASE-NAME
-          app.kubernetes.io/managed-by: Tiller
           app.kubernetes.io/name: fuzzball
       template:
         metadata:
           labels:
             app.kubernetes.io/instance: RELEASE-NAME
-            app.kubernetes.io/managed-by: Tiller
             app.kubernetes.io/name: fuzzball
         spec:
           containers:
@@ -53,13 +51,11 @@ should have affinity:
       selector:
         matchLabels:
           app.kubernetes.io/instance: RELEASE-NAME
-          app.kubernetes.io/managed-by: Tiller
           app.kubernetes.io/name: fuzzball
       template:
         metadata:
           labels:
             app.kubernetes.io/instance: RELEASE-NAME
-            app.kubernetes.io/managed-by: Tiller
             app.kubernetes.io/name: fuzzball
         spec:
           affinity:
@@ -101,13 +97,11 @@ should have image 'repo':
       selector:
         matchLabels:
           app.kubernetes.io/instance: RELEASE-NAME
-          app.kubernetes.io/managed-by: Tiller
           app.kubernetes.io/name: fuzzball
       template:
         metadata:
           labels:
             app.kubernetes.io/instance: RELEASE-NAME
-            app.kubernetes.io/managed-by: Tiller
             app.kubernetes.io/name: fuzzball
         spec:
           containers:
@@ -139,13 +133,11 @@ should have imagePullPolicy 'Always':
       selector:
         matchLabels:
           app.kubernetes.io/instance: RELEASE-NAME
-          app.kubernetes.io/managed-by: Tiller
           app.kubernetes.io/name: fuzzball
       template:
         metadata:
           labels:
             app.kubernetes.io/instance: RELEASE-NAME
-            app.kubernetes.io/managed-by: Tiller
             app.kubernetes.io/name: fuzzball
         spec:
           containers:
@@ -177,13 +169,11 @@ should have imagePullSecrets:
       selector:
         matchLabels:
           app.kubernetes.io/instance: RELEASE-NAME
-          app.kubernetes.io/managed-by: Tiller
           app.kubernetes.io/name: fuzzball
       template:
         metadata:
           labels:
             app.kubernetes.io/instance: RELEASE-NAME
-            app.kubernetes.io/managed-by: Tiller
             app.kubernetes.io/name: fuzzball
         spec:
           containers:
@@ -217,13 +207,11 @@ should have name 'NameOverride':
       selector:
         matchLabels:
           app.kubernetes.io/instance: RELEASE-NAME
-          app.kubernetes.io/managed-by: Tiller
           app.kubernetes.io/name: fuzzball
       template:
         metadata:
           labels:
             app.kubernetes.io/instance: RELEASE-NAME
-            app.kubernetes.io/managed-by: Tiller
             app.kubernetes.io/name: fuzzball
         spec:
           containers:
@@ -255,13 +243,11 @@ should have name 'RELEASE-NAME-NameOverride':
       selector:
         matchLabels:
           app.kubernetes.io/instance: RELEASE-NAME
-          app.kubernetes.io/managed-by: Tiller
           app.kubernetes.io/name: NameOverride
       template:
         metadata:
           labels:
             app.kubernetes.io/instance: RELEASE-NAME
-            app.kubernetes.io/managed-by: Tiller
             app.kubernetes.io/name: NameOverride
         spec:
           containers:
@@ -293,13 +279,11 @@ should have nodeSelector:
       selector:
         matchLabels:
           app.kubernetes.io/instance: RELEASE-NAME
-          app.kubernetes.io/managed-by: Tiller
           app.kubernetes.io/name: fuzzball
       template:
         metadata:
           labels:
             app.kubernetes.io/instance: RELEASE-NAME
-            app.kubernetes.io/managed-by: Tiller
             app.kubernetes.io/name: fuzzball
         spec:
           containers:
@@ -333,13 +317,11 @@ should have podSecurityContext:
       selector:
         matchLabels:
           app.kubernetes.io/instance: RELEASE-NAME
-          app.kubernetes.io/managed-by: Tiller
           app.kubernetes.io/name: fuzzball
       template:
         metadata:
           labels:
             app.kubernetes.io/instance: RELEASE-NAME
-            app.kubernetes.io/managed-by: Tiller
             app.kubernetes.io/name: fuzzball
         spec:
           containers:
@@ -372,13 +354,11 @@ should have resource limits:
       selector:
         matchLabels:
           app.kubernetes.io/instance: RELEASE-NAME
-          app.kubernetes.io/managed-by: Tiller
           app.kubernetes.io/name: fuzzball
       template:
         metadata:
           labels:
             app.kubernetes.io/instance: RELEASE-NAME
-            app.kubernetes.io/managed-by: Tiller
             app.kubernetes.io/name: fuzzball
         spec:
           containers:
@@ -412,13 +392,11 @@ should have securityContext:
       selector:
         matchLabels:
           app.kubernetes.io/instance: RELEASE-NAME
-          app.kubernetes.io/managed-by: Tiller
           app.kubernetes.io/name: fuzzball
       template:
         metadata:
           labels:
             app.kubernetes.io/instance: RELEASE-NAME
-            app.kubernetes.io/managed-by: Tiller
             app.kubernetes.io/name: fuzzball
         spec:
           containers:
@@ -452,13 +430,11 @@ should have serviceAccount 'SvcAcctName':
       selector:
         matchLabels:
           app.kubernetes.io/instance: RELEASE-NAME
-          app.kubernetes.io/managed-by: Tiller
           app.kubernetes.io/name: fuzzball
       template:
         metadata:
           labels:
             app.kubernetes.io/instance: RELEASE-NAME
-            app.kubernetes.io/managed-by: Tiller
             app.kubernetes.io/name: fuzzball
         spec:
           containers:
@@ -490,13 +466,11 @@ should have serviceAccount 'default':
       selector:
         matchLabels:
           app.kubernetes.io/instance: RELEASE-NAME
-          app.kubernetes.io/managed-by: Tiller
           app.kubernetes.io/name: fuzzball
       template:
         metadata:
           labels:
             app.kubernetes.io/instance: RELEASE-NAME
-            app.kubernetes.io/managed-by: Tiller
             app.kubernetes.io/name: fuzzball
         spec:
           containers:
@@ -528,13 +502,11 @@ should have tolerations:
       selector:
         matchLabels:
           app.kubernetes.io/instance: RELEASE-NAME
-          app.kubernetes.io/managed-by: Tiller
           app.kubernetes.io/name: fuzzball
       template:
         metadata:
           labels:
             app.kubernetes.io/instance: RELEASE-NAME
-            app.kubernetes.io/managed-by: Tiller
             app.kubernetes.io/name: fuzzball
         spec:
           containers:
@@ -570,13 +542,11 @@ should render by default:
       selector:
         matchLabels:
           app.kubernetes.io/instance: RELEASE-NAME
-          app.kubernetes.io/managed-by: Tiller
           app.kubernetes.io/name: fuzzball
       template:
         metadata:
           labels:
             app.kubernetes.io/instance: RELEASE-NAME
-            app.kubernetes.io/managed-by: Tiller
             app.kubernetes.io/name: fuzzball
         spec:
           containers:

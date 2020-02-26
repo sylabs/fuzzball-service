@@ -39,6 +39,7 @@ helm.sh/chart: {{ include "fuzzball.chart" . }}
 {{ include "fuzzball.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 {{- end -}}
 
@@ -48,7 +49,6 @@ Selector labels
 {{- define "fuzzball.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "fuzzball.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end -}}
 
 {{/*
