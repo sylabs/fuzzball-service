@@ -27,7 +27,7 @@ jobs:
     strategy:
       matrix:
         platform: [macos-latest, ubuntu-latest, windows-latest]
-        go: ['1.13.x']
+        go: ['1.13.x','1.14.x']
     runs-on: ${{ matrix.platform }}
     steps:
       - name: Set up Go
@@ -50,7 +50,7 @@ jobs:
   integration-test:
     strategy:
       matrix:
-        go: ['1.13.x']
+        go: ['1.13.x','1.14.x']
     services:
       mongo:
         image: mongo
