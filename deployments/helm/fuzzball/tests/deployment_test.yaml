@@ -1,0 +1,98 @@
+suite: Deployment
+templates:
+- deployment.yaml
+tests:
+- it: should render by default
+  asserts:
+  - matchSnapshot: {}
+- it: "should have name 'RELEASE-NAME-NameOverride'"
+  set:
+    nameOverride: NameOverride
+  asserts:
+  - matchSnapshot: {}
+- it: "should have name 'NameOverride'"
+  set:
+    fullnameOverride: NameOverride
+  asserts:
+  - matchSnapshot: {}
+- it: "should have serviceAccount 'default'"
+  set:
+    serviceAccount.create: false
+  asserts:
+  - matchSnapshot: {}
+- it: "should have serviceAccount 'SvcAcctName'"
+  set:
+    serviceAccount.name: SvcAcctName
+  asserts:
+  - matchSnapshot: {}
+- it: "should have 10 replicas"
+  set:
+    replicaCount: 10
+  asserts:
+  - matchSnapshot: {}
+- it: "should have imagePullSecrets"
+  set:
+    imagePullSecrets:
+    - name: regcred
+  asserts:
+  - matchSnapshot: {}
+- it: "should have podSecurityContext"
+  set:
+    podSecurityContext:
+      fsGroup: 2000
+  asserts:
+  - matchSnapshot: {}
+- it: "should have securityContext"
+  set:
+    securityContext:
+      readOnlyRootFilesystem: true  
+      runAsNonRoot: true
+  asserts:
+  - matchSnapshot: {}
+- it: "should have image 'repo'"
+  set:
+    image:
+      repository: repo
+  asserts:
+  - matchSnapshot: {}
+- it: "should have imagePullPolicy 'Always'"
+  set:
+    image:
+      pullPolicy: Always
+  asserts:
+  - matchSnapshot: {}
+- it: "should have resource limits"
+  set:
+    resources:
+      limits:
+        cpu: 100m
+  asserts:
+  - matchSnapshot: {}
+- it: "should have nodeSelector"
+  set:
+    nodeSelector:
+      disktype: ssd
+  asserts:
+  - matchSnapshot: {}
+- it: "should have tolerations"
+  set:
+    tolerations:
+    - key: "example-key"
+      operator: "Exists"
+      effect: "NoSchedule"
+  asserts:
+  - matchSnapshot: {}
+- it: "should have affinity"
+  set:
+    affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+            - key: app
+              operator: In
+              values:
+              - store
+          topologyKey: "kubernetes.io/hostname"
+  asserts:
+  - matchSnapshot: {}

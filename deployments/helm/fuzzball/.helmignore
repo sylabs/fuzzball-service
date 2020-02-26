@@ -1,0 +1,19 @@
+# macOS attributes file
+.DS_Store
+# Version control
+.git/
+.gitignore
+# Backup files
+*.swp
+*.bak
+*.tmp
+*.orig
+*~
+# IDEs
+.project
+.idea/
+*.tmproj
+.vscode/
+# Helm Tests
+tests/__snapshot__
+tests/*_test.yaml

@@ -1,0 +1,29 @@
+suite: Service
+templates:
+- service.yaml
+tests:
+- it: should render by default
+  asserts:
+  - matchSnapshot: {}
+- it: "should have name 'RELEASE-NAME-NameOverride'"
+  set:
+    nameOverride: NameOverride
+  asserts:
+  - matchSnapshot: {}
+- it: "should have name 'NameOverride'"
+  set:
+    fullnameOverride: NameOverride
+  asserts:
+  - matchSnapshot: {}
+- it: should have type NodePort
+  set:
+    service:
+      type: NodePort
+  asserts:
+  - matchSnapshot: {}
+- it: should have type LoadBalancer
+  set:
+    service:
+      type: LoadBalancer
+  asserts:
+  - matchSnapshot: {}
