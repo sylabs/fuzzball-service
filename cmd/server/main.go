@@ -4,15 +4,14 @@ package main
 
 import (
 	"context"
-	"flag"
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
 	"time"
 
 	"github.com/nats-io/nats.go"
 	"github.com/sirupsen/logrus"
+	"github.com/spf13/pflag"
 	"github.com/sylabs/compute-service/internal/app/iomanager"
 	"github.com/sylabs/compute-service/internal/app/server"
 	"github.com/sylabs/compute-service/internal/pkg/mongodb"
@@ -26,21 +25,7 @@ const (
 	dbName = "server"
 )
 
-var (
-	version = "unknown"
-)
-
-var (
-	httpAddr           = flag.String("http-addr", ":8080", "Address to bind HTTP")
-	corsAllowedOrigins = flag.String("cors-allowed-origins", "*", "Comma-separated list of CORS allowed origins")
-	corsDebug          = flag.Bool("cors-debug", false, "Enable CORS debugging")
-	mongoURI           = flag.String("mongo-uri", "mongodb://localhost", "URI of MongoDB database")
-	startupTime        = flag.Duration("startup-time", time.Minute, "Amount of time to wait for dependent services to become ready on startup")
-	natsURIs           = flag.String("nats-uris", "nats://localhost", "Comma-separated list of NATS server URIs")
-	redisURI           = flag.String("redis-uri", "redis://localhost", "URI of Redis")
-	oauth2IssuerURI    = flag.String("oauth2-issuer-uri", "https://dev-930666.okta.com/oauth2/default", "URI of OAuth 2.0 issuer")
-	oauth2Audience     = flag.String("oauth2-audience", "api://default", "OAuth 2.0 audience expected in tokens")
-)
+var version = "unknown"
 
 // signalHandler catches SIGINT/SIGTERM to perform an orderly shutdown.
 func signalHandler(nc *nats.Conn, s server.Server, m iomanager.IOManager) {
@@ -70,7 +55,7 @@ func signalHandler(nc *nats.Conn, s server.Server, m iomanager.IOManager) {
 }
 
 // connectDB attempts to connect to the database.
-func connectDB(ctx context.Context) (conn *mongodb.Connection, err error) {
+func connectDB(ctx context.Context, uri string) (mc *mongodb.Connection, err error) {
 	logrus.Info("connecting to database")
 	defer func(t time.Time) {
 		if err == nil {
@@ -78,11 +63,11 @@ func connectDB(ctx context.Context) (conn *mongodb.Connection, err error) {
 		}
 	}(time.Now())
 
-	return mongodb.NewConnection(ctx, *mongoURI, dbName)
+	return mongodb.NewConnection(ctx, uri, dbName)
 }
 
 // connectNATS attempts to connect to the NATS system.
-func connectNATS(ctx context.Context) (nc *nats.Conn, err error) {
+func connectNATS(ctx context.Context, uris []string) (nc *nats.Conn, err error) {
 	logrus.Print("connecting to messaging system")
 	defer func(t time.Time) {
 		if err == nil {
@@ -101,13 +86,13 @@ func connectNATS(ctx context.Context) (nc *nats.Conn, err error) {
 	}(time.Now())
 
 	o := nats.GetDefaultOptions()
-	o.Servers = strings.Split(*natsURIs, ",")
+	o.Servers = uris
 	return o.Connect()
 }
 
 // connectRedis attempts to connect to redis.
-func connectRedis() (*rediskv.Connection, error) {
-	rc, err := rediskv.NewConnection(*redisURI)
+func connectRedis(uri string) (*rediskv.Connection, error) {
+	rc, err := rediskv.NewConnection(uri)
 	if err != nil {
 		return nil, err
 	}
@@ -115,8 +100,6 @@ func connectRedis() (*rediskv.Connection, error) {
 }
 
 func main() {
-	flag.Parse()
-
 	log := logrus.WithFields(logrus.Fields{
 		"org":  org,
 		"name": name,
@@ -127,25 +110,40 @@ func main() {
 	log.Info("starting")
 	defer log.Info("stopped")
 
+	// Parse command line flags.
+	fs := pflag.CommandLine
+	var (
+		httpAddr           = fs.String("http-addr", ":8080", "Address to bind HTTP")
+		corsAllowedOrigins = fs.StringSlice("cors-allowed-origins", []string{"*"}, "Comma-separated list of CORS allowed origins")
+		corsDebug          = fs.Bool("cors-debug", false, "Enable CORS debugging")
+		mongoURI           = fs.String("mongo-uri", "mongodb://localhost", "URI of MongoDB database")
+		startupTime        = fs.Duration("startup-time", time.Minute, "Amount of time to wait for dependent services to become ready on startup")
+		natsURIs           = fs.StringSlice("nats-uris", []string{"nats://localhost"}, "Comma-separated list of NATS server URIs")
+		redisURI           = fs.String("redis-uri", "redis://localhost", "URI of Redis")
+		oauth2IssuerURI    = fs.String("oauth2-issuer-uri", "https://dev-930666.okta.com/oauth2/default", "URI of OAuth 2.0 issuer")
+		oauth2Audience     = fs.String("oauth2-audience", "api://default", "OAuth 2.0 audience expected in tokens")
+	)
+	fs.Parse(os.Args[1:])
+
 	// Context to control startup timeout.
 	ctx, cancel := context.WithTimeout(context.Background(), *startupTime)
 	defer cancel()
 
 	// Connect to MongoDB.
-	conn, err := connectDB(ctx)
+	mc, err := connectDB(ctx, *mongoURI)
 	if err != nil {
 		logrus.WithError(err).Error("failed to connect to database")
 		return
 	}
 	defer func() {
 		logrus.Info("disconnecting from database")
-		if err := conn.Disconnect(context.Background()); err != nil {
+		if err := mc.Disconnect(context.Background()); err != nil {
 			logrus.WithError(err).Warning("failed to disconnect from database")
 		}
 	}()
 
 	// Connect to NATS.
-	nc, err := connectNATS(ctx)
+	nc, err := connectNATS(ctx, *natsURIs)
 	if err != nil {
 		logrus.WithError(err).Error("failed to connect to messaging system")
 		return
@@ -155,7 +153,7 @@ func main() {
 		nc.Close()
 	}()
 
-	rc, err := connectRedis()
+	rc, err := connectRedis(*redisURI)
 	if err != nil {
 		logrus.WithError(err).Error("failed to connect to key value store")
 		return
@@ -183,13 +181,13 @@ func main() {
 	c := server.Config{
 		Version:            version,
 		HTTPAddr:           *httpAddr,
-		CORSAllowedOrigins: strings.Split(*corsAllowedOrigins, ","),
+		CORSAllowedOrigins: *corsAllowedOrigins,
 		CORSDebug:          *corsDebug,
-		Persist:            conn,
-		NATSConn:           nc,
-		RedisConn:          rc,
 		OAuth2IssuerURI:    *oauth2IssuerURI,
 		OAuth2Audience:     *oauth2Audience,
+		Persist:            mc,
+		NATSConn:           nc,
+		RedisConn:          rc,
 	}
 	s, err := server.New(ctx, c)
 	if err != nil {
