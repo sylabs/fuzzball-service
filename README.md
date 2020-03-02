@@ -24,7 +24,7 @@ go env -w GOPRIVATE=github.com/sylabs
 Install `go-bindata` to help generate the GraphQL schema later:
 
 ```sh
-go get -u github.com/jteeuwen/go-bindata/...
+go get -u github.com/go-bindata/go-bindata/...
 ```
 
 In order for Go to execute this binary the path in `go env GOPATH` needs to be included in your `PATH`.

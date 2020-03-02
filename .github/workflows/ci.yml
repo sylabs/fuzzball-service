@@ -33,7 +33,7 @@ jobs:
       - name: Add Go Bin to Path
         run: echo "::add-path::$(go env GOPATH)/bin"
       - name: Install go-bindata
-        run: go get -u github.com/jteeuwen/go-bindata/...
+        run: go get -u github.com/go-bindata/go-bindata/...
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Generate
@@ -69,7 +69,7 @@ jobs:
       - name: Add Go Bin to Path
         run: echo "::add-path::$(go env GOPATH)/bin"
       - name: Install go-bindata
-        run: go get -u github.com/jteeuwen/go-bindata/...
+        run: go get -u github.com/go-bindata/go-bindata/...
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Generate
