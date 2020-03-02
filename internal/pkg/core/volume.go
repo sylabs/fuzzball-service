@@ -83,7 +83,7 @@ func createVolumes(ctx context.Context, p Persister, w Workflow, specs *[]volume
 			}
 
 			if _, ok := volumes[vs.Name]; ok {
-				return nil, fmt.Errorf("duplicate volume declarations")
+				return nil, fmt.Errorf("multiple volumes with same name: %s", vs.Name)
 			}
 
 			v, err := p.CreateVolume(ctx, Volume{
