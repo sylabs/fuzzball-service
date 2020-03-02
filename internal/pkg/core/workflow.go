@@ -93,6 +93,11 @@ func (c *Core) createJobs(ctx context.Context, w Workflow, volumes map[string]Vo
 			}
 		}
 
+		if _, ok := jobNameMapping[js.Name]; ok {
+			return nil, fmt.Errorf("multiple jobs with same name: %s", js.Name)
+		}
+		jobNameMapping[js.Name] = i
+
 		requires := make([]string, 0)
 		if js.Requires != nil {
 			requires = *js.Requires
@@ -100,8 +105,6 @@ func (c *Core) createJobs(ctx context.Context, w Workflow, volumes map[string]Vo
 		if err := g.AddVertex(js.Name, requires); err != nil {
 			return nil, err
 		}
-
-		jobNameMapping[js.Name] = i
 	}
 
 	// ensure jobs are correctly referencing eachother semantically
