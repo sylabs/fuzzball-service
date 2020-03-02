@@ -6,12 +6,14 @@ import (
 	"context"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
 	"github.com/nats-io/nats.go"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
 	"github.com/sylabs/compute-service/internal/app/iomanager"
 	"github.com/sylabs/compute-service/internal/app/server"
 	"github.com/sylabs/compute-service/internal/pkg/mongodb"
@@ -23,6 +25,16 @@ const (
 	name = "Compute Server"
 
 	dbName = "server"
+
+	keyStartupTime        = "startup-time"
+	keyHTTPAddr           = "http-addr"
+	keyCORSAllowedOrigins = "cors-allowed-origins"
+	keyCORSDebug          = "cors-debug"
+	keyMongoURI           = "mongo-uri"
+	keyNatsURIs           = "nats-uris"
+	keyRedisURI           = "redis-uri"
+	keyOAuth2IssuerURI    = "oauth2-issuer-uri"
+	keyOAuth2Audience     = "oauth2-audience"
 )
 
 var version = "unknown"
@@ -99,6 +111,40 @@ func connectRedis(uri string) (*rediskv.Connection, error) {
 	return rc, nil
 }
 
+// getFlagSet declares and parses the command line flags.
+func getFlagSet() *pflag.FlagSet {
+	fs := pflag.CommandLine
+	fs.Duration(keyStartupTime, time.Minute, "Amount of time to wait for dependent services to become ready on startup")
+	fs.String(keyHTTPAddr, ":8080", "Address to bind HTTP")
+	fs.StringSlice(keyCORSAllowedOrigins, []string{"*"}, "Comma-separated list of CORS allowed origins")
+	fs.Bool(keyCORSDebug, false, "Enable CORS debugging")
+	fs.String(keyMongoURI, "mongodb://localhost", "URI of MongoDB database")
+	fs.StringSlice(keyNatsURIs, []string{"nats://localhost"}, "Comma-separated list of NATS server URIs")
+	fs.String(keyRedisURI, "redis://localhost", "URI of Redis")
+	fs.String(keyOAuth2IssuerURI, "https://dev-930666.okta.com/oauth2/default", "URI of OAuth 2.0 issuer")
+	fs.String(keyOAuth2Audience, "api://default", "OAuth 2.0 audience expected in tokens")
+
+	fs.Parse(os.Args[1:])
+
+	return fs
+}
+
+// getConfig gets a Viper instance to retrieve configuration.
+func getConfig() (*viper.Viper, error) {
+	v := viper.New()
+
+	// Bind command line flags.
+	if err := v.BindPFlags(getFlagSet()); err != nil {
+		return nil, err
+	}
+
+	// Set up to use environment.
+	v.AutomaticEnv()
+	v.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
+
+	return v, nil
+}
+
 func main() {
 	log := logrus.WithFields(logrus.Fields{
 		"org":  org,
@@ -110,27 +156,19 @@ func main() {
 	log.Info("starting")
 	defer log.Info("stopped")
 
-	// Parse command line flags.
-	fs := pflag.CommandLine
-	var (
-		httpAddr           = fs.String("http-addr", ":8080", "Address to bind HTTP")
-		corsAllowedOrigins = fs.StringSlice("cors-allowed-origins", []string{"*"}, "Comma-separated list of CORS allowed origins")
-		corsDebug          = fs.Bool("cors-debug", false, "Enable CORS debugging")
-		mongoURI           = fs.String("mongo-uri", "mongodb://localhost", "URI of MongoDB database")
-		startupTime        = fs.Duration("startup-time", time.Minute, "Amount of time to wait for dependent services to become ready on startup")
-		natsURIs           = fs.StringSlice("nats-uris", []string{"nats://localhost"}, "Comma-separated list of NATS server URIs")
-		redisURI           = fs.String("redis-uri", "redis://localhost", "URI of Redis")
-		oauth2IssuerURI    = fs.String("oauth2-issuer-uri", "https://dev-930666.okta.com/oauth2/default", "URI of OAuth 2.0 issuer")
-		oauth2Audience     = fs.String("oauth2-audience", "api://default", "OAuth 2.0 audience expected in tokens")
-	)
-	fs.Parse(os.Args[1:])
+	// Create viper instance, which holds configuration.
+	cfg, err := getConfig()
+	if err != nil {
+		logrus.WithError(err).Error("failed to get configuration")
+		return
+	}
 
 	// Context to control startup timeout.
-	ctx, cancel := context.WithTimeout(context.Background(), *startupTime)
+	ctx, cancel := context.WithTimeout(context.Background(), cfg.GetDuration(keyStartupTime))
 	defer cancel()
 
 	// Connect to MongoDB.
-	mc, err := connectDB(ctx, *mongoURI)
+	mc, err := connectDB(ctx, cfg.GetString(keyMongoURI))
 	if err != nil {
 		logrus.WithError(err).Error("failed to connect to database")
 		return
@@ -143,7 +181,7 @@ func main() {
 	}()
 
 	// Connect to NATS.
-	nc, err := connectNATS(ctx, *natsURIs)
+	nc, err := connectNATS(ctx, cfg.GetStringSlice(keyNatsURIs))
 	if err != nil {
 		logrus.WithError(err).Error("failed to connect to messaging system")
 		return
@@ -153,7 +191,8 @@ func main() {
 		nc.Close()
 	}()
 
-	rc, err := connectRedis(*redisURI)
+	// Connect to Redis.
+	rc, err := connectRedis(cfg.GetString(keyRedisURI))
 	if err != nil {
 		logrus.WithError(err).Error("failed to connect to key value store")
 		return
@@ -169,7 +208,6 @@ func main() {
 		NATSConn:  nc,
 		RedisConn: rc,
 	}
-
 	m, err := iomanager.New(ioc)
 	if err != nil {
 		logrus.WithError(err).Error("failed to create IO manager")
@@ -180,11 +218,11 @@ func main() {
 	// Spin up server.
 	c := server.Config{
 		Version:            version,
-		HTTPAddr:           *httpAddr,
-		CORSAllowedOrigins: *corsAllowedOrigins,
-		CORSDebug:          *corsDebug,
-		OAuth2IssuerURI:    *oauth2IssuerURI,
-		OAuth2Audience:     *oauth2Audience,
+		HTTPAddr:           cfg.GetString(keyHTTPAddr),
+		CORSAllowedOrigins: cfg.GetStringSlice(keyCORSAllowedOrigins),
+		CORSDebug:          cfg.GetBool(keyCORSDebug),
+		OAuth2IssuerURI:    cfg.GetString(keyOAuth2IssuerURI),
+		OAuth2Audience:     cfg.GetString(keyOAuth2Audience),
 		Persist:            mc,
 		NATSConn:           nc,
 		RedisConn:          rc,
