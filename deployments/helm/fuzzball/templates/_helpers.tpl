@@ -61,3 +61,24 @@ Create the name of the service account to use
     {{ default "default" .Values.serviceAccount.name }}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Create the MongoDB URI to use
+*/}}
+{{- define "fuzzball.mongoURI" -}}
+mongodb://{{ .Values.mongodb.mongodbUsername }}:{{ .Values.mongodb.mongodbPassword }}@{{ .Release.Name }}-mongodb/{{ .Values.mongodb.mongodbDatabase }}
+{{- end -}}
+
+{{/*
+Create the NATS URI to use
+*/}}
+{{- define "fuzzball.natsURI" -}}
+nats://{{ .Values.nats.auth.user }}:{{ .Values.nats.auth.password }}@{{ .Release.Name }}-nats-client
+{{- end -}}
+
+{{/*
+Create the Redis URI to use
+*/}}
+{{- define "fuzzball.redisURI" -}}
+redis://:{{ .Values.redis.password }}@{{ .Release.Name }}-redis-master
+{{- end -}}

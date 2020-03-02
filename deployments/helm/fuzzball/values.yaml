@@ -62,8 +62,18 @@ affinity: {}
 mongodb:
   enabled: true
 
+  mongodbUsername: "changeme"
+  mongodbPassword: "changeme"
+  mongodbDatabase: "server"
+
 nats:
   enabled: true
 
+  auth:
+    user: "server"
+    password: "changeme"
+
 redis:
   enabled: true
+
+  password: "changeme"
