@@ -27,6 +27,13 @@ spec:
           {{- toYaml .Values.securityContext | nindent 12 }}
         image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+        - name: MONGO_URI
+          value: {{ include "fuzzball.mongoURI" . }}
+        - name: NATS_URIS
+          value: {{ include "fuzzball.natsURI" . }}
+        - name: REDIS_URI
+          value: {{ include "fuzzball.redisURI" . }}
         ports:
         - name: http
           containerPort: 8080
