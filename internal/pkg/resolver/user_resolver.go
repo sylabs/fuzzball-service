@@ -6,7 +6,7 @@ import (
 	"context"
 
 	"github.com/graph-gophers/graphql-go"
-	"github.com/sylabs/compute-service/internal/pkg/core"
+	"github.com/sylabs/fuzzball-service/internal/pkg/core"
 )
 
 // UserServicer is the interface by which users are serviced.

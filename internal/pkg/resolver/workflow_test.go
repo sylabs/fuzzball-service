@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sylabs/compute-service/internal/pkg/core"
-	"github.com/sylabs/compute-service/internal/pkg/schema"
+	"github.com/sylabs/fuzzball-service/internal/pkg/core"
+	"github.com/sylabs/fuzzball-service/internal/pkg/schema"
 )
 
 func TestWorkflowJobs(t *testing.T) {

@@ -6,7 +6,7 @@ kubeVersion: ^1.14.0-0
 description: Programmatic management of high performance compute resources.
 type: application
 sources:
-- https://github.com/sylabs/compute-service
+- https://github.com/sylabs/fuzzball-service
 maintainers:
 - name: Sylabs Inc.
   email: support@sylabs.io

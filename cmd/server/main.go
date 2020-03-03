@@ -14,15 +14,15 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
-	"github.com/sylabs/compute-service/internal/app/iomanager"
-	"github.com/sylabs/compute-service/internal/app/server"
-	"github.com/sylabs/compute-service/internal/pkg/mongodb"
-	"github.com/sylabs/compute-service/internal/pkg/rediskv"
+	"github.com/sylabs/fuzzball-service/internal/app/iomanager"
+	"github.com/sylabs/fuzzball-service/internal/app/server"
+	"github.com/sylabs/fuzzball-service/internal/pkg/mongodb"
+	"github.com/sylabs/fuzzball-service/internal/pkg/rediskv"
 )
 
 const (
 	org  = "Sylabs"
-	name = "Compute Server"
+	name = "Fuzzball Server"
 
 	dbName = "server"
 

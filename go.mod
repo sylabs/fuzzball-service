@@ -1,4 +1,4 @@
-module github.com/sylabs/compute-service
+module github.com/sylabs/fuzzball-service
 
 go 1.13
 

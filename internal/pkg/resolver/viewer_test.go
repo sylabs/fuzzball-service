@@ -7,9 +7,9 @@ import (
 	"testing"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/sylabs/compute-service/internal/pkg/core"
-	"github.com/sylabs/compute-service/internal/pkg/schema"
-	"github.com/sylabs/compute-service/internal/pkg/token"
+	"github.com/sylabs/fuzzball-service/internal/pkg/core"
+	"github.com/sylabs/fuzzball-service/internal/pkg/schema"
+	"github.com/sylabs/fuzzball-service/internal/pkg/token"
 )
 
 func TestViewerWorkflows(t *testing.T) {

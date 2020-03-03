@@ -1,9 +1,9 @@
-# Compute Service
+# Fuzzball Service
 
-[![CI Workflow](https://github.com/sylabs/compute-service/workflows/ci/badge.svg)](https://github.com/sylabs/compute-service/actions)
-[![Dependabot](https://api.dependabot.com/badges/status?host=github&repo=sylabs/compute-service&identifier=232618704)](https://app.dependabot.com/accounts/sylabs/repos/232618704)
+[![CI Workflow](https://github.com/sylabs/fuzzball-service/workflows/ci/badge.svg)](https://github.com/sylabs/fuzzball-service/actions)
+[![Dependabot](https://api.dependabot.com/badges/status?host=github&repo=sylabs/fuzzball-service&identifier=232618704)](https://app.dependabot.com/accounts/sylabs/repos/232618704)
 
-The Sylabs Compute Service enables programmatic management of high performance compute resources.
+Fuzzball enables programmatic management of high performance compute resources.
 
 ## Quick Start
 
@@ -41,7 +41,7 @@ Finally, start the server:
 
 ```sh
 $ go generate ./... && go run ./cmd/server/
-INFO[0000] starting                                      name="Compute Server" org=Sylabs
+INFO[0000] starting                                      name="Fuzzball Server" org=Sylabs
 INFO[0000] connecting to database
 INFO[0000] database ready                                took=7.375268ms
 INFO[0000] connecting to messaging system

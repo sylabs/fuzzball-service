@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/sylabs/compute-service/internal/pkg/token"
+	"github.com/sylabs/fuzzball-service/internal/pkg/token"
 )
 
 // tokenHandler parses and validates a JSON Web Token (JWT) in the authorization bearer of the
