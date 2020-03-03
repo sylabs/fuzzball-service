@@ -5,7 +5,7 @@ package resolver
 import (
 	"context"
 
-	"github.com/sylabs/compute-service/internal/pkg/core"
+	"github.com/sylabs/fuzzball-service/internal/pkg/core"
 )
 
 // CreateWorkflow creates a new workflow.

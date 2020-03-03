@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	metricsNamespace = "computeserver"
+	metricsNamespace = "fuzzballserver"
 )
 
 var (

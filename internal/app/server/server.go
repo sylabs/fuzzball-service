@@ -11,12 +11,12 @@ import (
 	"github.com/graph-gophers/graphql-go"
 	"github.com/nats-io/nats.go"
 	"github.com/sirupsen/logrus"
-	"github.com/sylabs/compute-service/internal/pkg/core"
-	"github.com/sylabs/compute-service/internal/pkg/mongodb"
-	"github.com/sylabs/compute-service/internal/pkg/rediskv"
-	"github.com/sylabs/compute-service/internal/pkg/resolver"
-	"github.com/sylabs/compute-service/internal/pkg/scheduler"
-	"github.com/sylabs/compute-service/internal/pkg/schema"
+	"github.com/sylabs/fuzzball-service/internal/pkg/core"
+	"github.com/sylabs/fuzzball-service/internal/pkg/mongodb"
+	"github.com/sylabs/fuzzball-service/internal/pkg/rediskv"
+	"github.com/sylabs/fuzzball-service/internal/pkg/resolver"
+	"github.com/sylabs/fuzzball-service/internal/pkg/scheduler"
+	"github.com/sylabs/fuzzball-service/internal/pkg/schema"
 	"gopkg.in/square/go-jose.v2"
 )
 

@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/sylabs/compute-service/internal/pkg/graph"
+	"github.com/sylabs/fuzzball-service/internal/pkg/graph"
 )
 
 // WorkflowPersister is the interface by which workflows are persisted.

@@ -54,7 +54,7 @@ func run(m *testing.M) int {
 	ctx := context.Background()
 
 	// Construct unique database name.
-	testDBName = fmt.Sprintf("compute-service-%09d", time.Now().UnixNano()%time.Second.Nanoseconds())
+	testDBName = fmt.Sprintf("fuzzball-service-%09d", time.Now().UnixNano()%time.Second.Nanoseconds())
 
 	// Create test connection.
 	c, err := NewConnection(ctx, *mongoURI, testDBName)

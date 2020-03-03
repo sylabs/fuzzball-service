@@ -7,7 +7,7 @@ import (
 
 	"github.com/nats-io/nats.go"
 	"github.com/sirupsen/logrus"
-	"github.com/sylabs/compute-service/internal/pkg/rediskv"
+	"github.com/sylabs/fuzzball-service/internal/pkg/rediskv"
 )
 
 // Config describes the IO manager configuration.

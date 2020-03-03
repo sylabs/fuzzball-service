@@ -2,7 +2,7 @@ package resolver
 
 import (
 	"github.com/graph-gophers/graphql-go"
-	"github.com/sylabs/compute-service/internal/pkg/core"
+	"github.com/sylabs/fuzzball-service/internal/pkg/core"
 )
 
 // VolumeResolver resolves a volume.

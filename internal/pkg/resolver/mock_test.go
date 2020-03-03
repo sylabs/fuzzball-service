@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/sylabs/compute-service/internal/pkg/core"
+	"github.com/sylabs/fuzzball-service/internal/pkg/core"
 )
 
 type mockPersister struct {

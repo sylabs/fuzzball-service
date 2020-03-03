@@ -6,7 +6,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/sylabs/compute-service/internal/pkg/token"
+	"github.com/sylabs/fuzzball-service/internal/pkg/token"
 )
 
 // Persister is the interface by which all data is persisted.

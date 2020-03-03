@@ -2,7 +2,7 @@
 
 package resolver
 
-import "github.com/sylabs/compute-service/internal/pkg/core"
+import "github.com/sylabs/fuzzball-service/internal/pkg/core"
 
 // WorkflowEdgeResolver resolves a workflow edge.
 type WorkflowEdgeResolver struct {

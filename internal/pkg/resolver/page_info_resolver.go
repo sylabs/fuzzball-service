@@ -3,7 +3,7 @@
 package resolver
 
 import (
-	"github.com/sylabs/compute-service/internal/pkg/core"
+	"github.com/sylabs/fuzzball-service/internal/pkg/core"
 )
 
 // PageInfoResolver resolves information about pagination in a connection.

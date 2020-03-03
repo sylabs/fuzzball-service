@@ -2,7 +2,7 @@
 
 package resolver
 
-import "github.com/sylabs/compute-service/internal/pkg/core"
+import "github.com/sylabs/fuzzball-service/internal/pkg/core"
 
 // VolumeEdgeResolver resolves a volume edge.
 type VolumeEdgeResolver struct {
