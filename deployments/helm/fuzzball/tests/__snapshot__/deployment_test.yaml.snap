@@ -23,7 +23,14 @@ should have 10 replicas:
             app.kubernetes.io/name: fuzzball
         spec:
           containers:
-          - image: server:0.1.0
+          - env:
+            - name: MONGO_URI
+              value: mongodb://server:changeme@RELEASE-NAME-mongodb/server
+            - name: NATS_URIS
+              value: nats://server:changeme@RELEASE-NAME-nats-client
+            - name: REDIS_URI
+              value: redis://:changeme@RELEASE-NAME-redis-master
+            image: server:0.1.0
             imagePullPolicy: IfNotPresent
             name: fuzzball
             ports:
@@ -69,7 +76,14 @@ should have affinity:
                     - store
                 topologyKey: kubernetes.io/hostname
           containers:
-          - image: server:0.1.0
+          - env:
+            - name: MONGO_URI
+              value: mongodb://server:changeme@RELEASE-NAME-mongodb/server
+            - name: NATS_URIS
+              value: nats://server:changeme@RELEASE-NAME-nats-client
+            - name: REDIS_URI
+              value: redis://:changeme@RELEASE-NAME-redis-master
+            image: server:0.1.0
             imagePullPolicy: IfNotPresent
             name: fuzzball
             ports:
@@ -105,7 +119,14 @@ should have image 'repo':
             app.kubernetes.io/name: fuzzball
         spec:
           containers:
-          - image: repo:0.1.0
+          - env:
+            - name: MONGO_URI
+              value: mongodb://server:changeme@RELEASE-NAME-mongodb/server
+            - name: NATS_URIS
+              value: nats://server:changeme@RELEASE-NAME-nats-client
+            - name: REDIS_URI
+              value: redis://:changeme@RELEASE-NAME-redis-master
+            image: repo:0.1.0
             imagePullPolicy: IfNotPresent
             name: fuzzball
             ports:
@@ -141,7 +162,14 @@ should have imagePullPolicy 'Always':
             app.kubernetes.io/name: fuzzball
         spec:
           containers:
-          - image: server:0.1.0
+          - env:
+            - name: MONGO_URI
+              value: mongodb://server:changeme@RELEASE-NAME-mongodb/server
+            - name: NATS_URIS
+              value: nats://server:changeme@RELEASE-NAME-nats-client
+            - name: REDIS_URI
+              value: redis://:changeme@RELEASE-NAME-redis-master
+            image: server:0.1.0
             imagePullPolicy: Always
             name: fuzzball
             ports:
@@ -177,7 +205,14 @@ should have imagePullSecrets:
             app.kubernetes.io/name: fuzzball
         spec:
           containers:
-          - image: server:0.1.0
+          - env:
+            - name: MONGO_URI
+              value: mongodb://server:changeme@RELEASE-NAME-mongodb/server
+            - name: NATS_URIS
+              value: nats://server:changeme@RELEASE-NAME-nats-client
+            - name: REDIS_URI
+              value: redis://:changeme@RELEASE-NAME-redis-master
+            image: server:0.1.0
             imagePullPolicy: IfNotPresent
             name: fuzzball
             ports:
@@ -215,7 +250,14 @@ should have name 'NameOverride':
             app.kubernetes.io/name: fuzzball
         spec:
           containers:
-          - image: server:0.1.0
+          - env:
+            - name: MONGO_URI
+              value: mongodb://server:changeme@RELEASE-NAME-mongodb/server
+            - name: NATS_URIS
+              value: nats://server:changeme@RELEASE-NAME-nats-client
+            - name: REDIS_URI
+              value: redis://:changeme@RELEASE-NAME-redis-master
+            image: server:0.1.0
             imagePullPolicy: IfNotPresent
             name: fuzzball
             ports:
@@ -251,7 +293,14 @@ should have name 'RELEASE-NAME-NameOverride':
             app.kubernetes.io/name: NameOverride
         spec:
           containers:
-          - image: server:0.1.0
+          - env:
+            - name: MONGO_URI
+              value: mongodb://server:changeme@RELEASE-NAME-mongodb/server
+            - name: NATS_URIS
+              value: nats://server:changeme@RELEASE-NAME-nats-client
+            - name: REDIS_URI
+              value: redis://:changeme@RELEASE-NAME-redis-master
+            image: server:0.1.0
             imagePullPolicy: IfNotPresent
             name: fuzzball
             ports:
@@ -287,7 +336,14 @@ should have nodeSelector:
             app.kubernetes.io/name: fuzzball
         spec:
           containers:
-          - image: server:0.1.0
+          - env:
+            - name: MONGO_URI
+              value: mongodb://server:changeme@RELEASE-NAME-mongodb/server
+            - name: NATS_URIS
+              value: nats://server:changeme@RELEASE-NAME-nats-client
+            - name: REDIS_URI
+              value: redis://:changeme@RELEASE-NAME-redis-master
+            image: server:0.1.0
             imagePullPolicy: IfNotPresent
             name: fuzzball
             ports:
@@ -325,7 +381,14 @@ should have podSecurityContext:
             app.kubernetes.io/name: fuzzball
         spec:
           containers:
-          - image: server:0.1.0
+          - env:
+            - name: MONGO_URI
+              value: mongodb://server:changeme@RELEASE-NAME-mongodb/server
+            - name: NATS_URIS
+              value: nats://server:changeme@RELEASE-NAME-nats-client
+            - name: REDIS_URI
+              value: redis://:changeme@RELEASE-NAME-redis-master
+            image: server:0.1.0
             imagePullPolicy: IfNotPresent
             name: fuzzball
             ports:
@@ -362,7 +425,14 @@ should have resource limits:
             app.kubernetes.io/name: fuzzball
         spec:
           containers:
-          - image: server:0.1.0
+          - env:
+            - name: MONGO_URI
+              value: mongodb://server:changeme@RELEASE-NAME-mongodb/server
+            - name: NATS_URIS
+              value: nats://server:changeme@RELEASE-NAME-nats-client
+            - name: REDIS_URI
+              value: redis://:changeme@RELEASE-NAME-redis-master
+            image: server:0.1.0
             imagePullPolicy: IfNotPresent
             name: fuzzball
             ports:
@@ -400,7 +470,14 @@ should have securityContext:
             app.kubernetes.io/name: fuzzball
         spec:
           containers:
-          - image: server:0.1.0
+          - env:
+            - name: MONGO_URI
+              value: mongodb://server:changeme@RELEASE-NAME-mongodb/server
+            - name: NATS_URIS
+              value: nats://server:changeme@RELEASE-NAME-nats-client
+            - name: REDIS_URI
+              value: redis://:changeme@RELEASE-NAME-redis-master
+            image: server:0.1.0
             imagePullPolicy: IfNotPresent
             name: fuzzball
             ports:
@@ -438,7 +515,14 @@ should have serviceAccount 'SvcAcctName':
             app.kubernetes.io/name: fuzzball
         spec:
           containers:
-          - image: server:0.1.0
+          - env:
+            - name: MONGO_URI
+              value: mongodb://server:changeme@RELEASE-NAME-mongodb/server
+            - name: NATS_URIS
+              value: nats://server:changeme@RELEASE-NAME-nats-client
+            - name: REDIS_URI
+              value: redis://:changeme@RELEASE-NAME-redis-master
+            image: server:0.1.0
             imagePullPolicy: IfNotPresent
             name: fuzzball
             ports:
@@ -474,7 +558,14 @@ should have serviceAccount 'default':
             app.kubernetes.io/name: fuzzball
         spec:
           containers:
-          - image: server:0.1.0
+          - env:
+            - name: MONGO_URI
+              value: mongodb://server:changeme@RELEASE-NAME-mongodb/server
+            - name: NATS_URIS
+              value: nats://server:changeme@RELEASE-NAME-nats-client
+            - name: REDIS_URI
+              value: redis://:changeme@RELEASE-NAME-redis-master
+            image: server:0.1.0
             imagePullPolicy: IfNotPresent
             name: fuzzball
             ports:
@@ -510,7 +601,14 @@ should have tolerations:
             app.kubernetes.io/name: fuzzball
         spec:
           containers:
-          - image: server:0.1.0
+          - env:
+            - name: MONGO_URI
+              value: mongodb://server:changeme@RELEASE-NAME-mongodb/server
+            - name: NATS_URIS
+              value: nats://server:changeme@RELEASE-NAME-nats-client
+            - name: REDIS_URI
+              value: redis://:changeme@RELEASE-NAME-redis-master
+            image: server:0.1.0
             imagePullPolicy: IfNotPresent
             name: fuzzball
             ports:
@@ -550,7 +648,14 @@ should render by default:
             app.kubernetes.io/name: fuzzball
         spec:
           containers:
-          - image: server:0.1.0
+          - env:
+            - name: MONGO_URI
+              value: mongodb://server:changeme@RELEASE-NAME-mongodb/server
+            - name: NATS_URIS
+              value: nats://server:changeme@RELEASE-NAME-nats-client
+            - name: REDIS_URI
+              value: redis://:changeme@RELEASE-NAME-redis-master
+            image: server:0.1.0
             imagePullPolicy: IfNotPresent
             name: fuzzball
             ports:

@@ -62,7 +62,7 @@ affinity: {}
 mongodb:
   enabled: true
 
-  mongodbUsername: "changeme"
+  mongodbUsername: "server"
   mongodbPassword: "changeme"
   mongodbDatabase: "server"
 
