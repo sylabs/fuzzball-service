@@ -14,10 +14,14 @@ jobs:
       - uses: azure/setup-helm@v1
         with:
           version: v3.1.1
+      - name: Install Helm Unit Test Plugin	
+        run: helm plugin install https://github.com/rancher/helm-unittest --version v0.1.7-rancher1
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Lint
         run: helm lint deployments/helm/fuzzball/
+      - name: Unit Test
+        run: helm unittest deployments/helm/fuzzball/
 
   build-and-unit-test:
     strategy:
