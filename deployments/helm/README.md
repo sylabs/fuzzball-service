@@ -12,10 +12,10 @@ Install [Helm](https://helm.sh) according to the [docs](https://helm.sh/docs/int
 
 ### Helm Unit Test Plugin
 
-This repo uses using [helm-unittest](https://github.com/lrills/helm-unittest) plugin for unit testing of Helm Charts. If you wish to run these tests locally, install the plugin:
+This repo uses using the [helm-unittest](https://github.com/rancher/helm-unittest) plugin for unit testing of Helm Charts (note that this is a Rancher fork of the plugin, since it supports Helm 3). If you wish to run these tests locally, install the plugin:
 
 ```sh
-helm plugin install https://github.com/lrills/helm-unittest
+helm plugin install https://github.com/rancher/helm-unittest --version v0.1.7-rancher1
 ```
 
 ## Deployment
@@ -79,7 +79,7 @@ helm delete fuzzball
 
 ## Helm Chart Unit Tests
 
-You can test using the [helm-unittest](https://github.com/lrills/helm-unittest) plugin. For example, to test the `fuzzball` chart:
+You can test using the [helm-unittest](https://github.com/rancher/helm-unittest) plugin. For example, to test the `fuzzball` chart:
 
 ```sh
 helm unittest fuzzball/
