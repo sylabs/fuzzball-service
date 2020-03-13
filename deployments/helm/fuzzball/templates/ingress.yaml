@@ -1,6 +1,7 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "fuzzball.fullname" . -}}
 {{- $svcPort := .Values.service.port -}}
+{{- $ingressPath := .Values.ingress.path -}}
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
@@ -24,14 +25,14 @@ spec:
 {{- end }}
   rules:
   {{- range .Values.ingress.hosts }}
-  - host: {{ .host | quote }}
-    http:
+  - http:
       paths:
-      {{- range .paths }}
-      - path: {{ . }}
+      - path: {{ $ingressPath | default "/" }}
         backend:
           serviceName: {{ $fullName }}
           servicePort: {{ $svcPort }}
-      {{- end }}
+    {{- if . }}
+    host: {{ . | quote }}
+    {{- end }}
   {{- end }}
 {{- end }}
