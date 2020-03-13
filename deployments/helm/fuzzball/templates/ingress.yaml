@@ -27,7 +27,7 @@ spec:
   - host: {{ .host | quote }}
     http:
       paths:
-      {{- range .paths }}
+      {{- range .paths | default (splitList "$" "/") }}
       - path: {{ . }}
         backend:
           serviceName: {{ $fullName }}

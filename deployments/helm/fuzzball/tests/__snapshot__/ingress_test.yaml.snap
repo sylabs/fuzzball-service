@@ -41,7 +41,11 @@ should have annotations:
       rules:
       - host: chart-example.local
         http:
-          paths: null
+          paths:
+          - backend:
+              serviceName: RELEASE-NAME-fuzzball
+              servicePort: 8080
+            path: /
 should have host 'example.com':
   1: |
     apiVersion: networking.k8s.io/v1beta1
@@ -100,7 +104,11 @@ should have name 'NameOverride':
       rules:
       - host: chart-example.local
         http:
-          paths: null
+          paths:
+          - backend:
+              serviceName: NameOverride
+              servicePort: 8080
+            path: /
 should have name 'RELEASE-NAME-NameOverride':
   1: |
     apiVersion: networking.k8s.io/v1beta1
@@ -117,4 +125,8 @@ should have name 'RELEASE-NAME-NameOverride':
       rules:
       - host: chart-example.local
         http:
-          paths: null
+          paths:
+          - backend:
+              serviceName: RELEASE-NAME-NameOverride
+              servicePort: 8080
+            path: /
