@@ -23,6 +23,23 @@ jobs:
       - name: Unit Test
         run: helm unittest deployments/helm/fuzzball/
 
+  push-helm:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - uses: azure/setup-helm@v1
+        with:
+          version: v3.1.1
+      - name: Install Helm Push Plugin	
+        run: helm plugin install https://github.com/chartmuseum/helm-push
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Push
+        run: helm push -f deployments/helm/fuzzball/ https://charts.enterprise.sylabs.io
+        env:
+          HELM_REPO_USERNAME: ${{ secrets.HELM_REPO_USERNAME }}
+          HELM_REPO_PASSWORD: ${{ secrets.HELM_REPO_PASSWORD }}
+
   build-and-unit-test:
     strategy:
       matrix:
