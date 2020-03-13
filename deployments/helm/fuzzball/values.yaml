@@ -36,7 +36,7 @@ service:
 
 ingress:
   enabled: false
-  path: /
+  # path: /
   annotations: {}
   hosts:
     - chart-example.local
