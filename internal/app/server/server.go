@@ -4,6 +4,8 @@ package server
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"net"
 	"net/http"
@@ -26,11 +28,12 @@ type Config struct {
 	HTTPAddr           string
 	CORSAllowedOrigins []string
 	CORSDebug          bool
+	OAuth2IssuerURI    string
+	OAuth2Audience     string
+	RootCACertificates []*x509.Certificate
 	Persist            *mongodb.Connection
 	NATSConn           *nats.Conn
 	RedisConn          *rediskv.Connection
-	OAuth2IssuerURI    string
-	OAuth2Audience     string
 }
 
 // Server contains the state of the server.
@@ -42,9 +45,37 @@ type Server struct {
 	authKeys jose.JSONWebKeySet
 }
 
+// getTLSConfig returns a TLS config based on c.
+func getTLSConfig(c Config) (*tls.Config, error) {
+	rootCAs, err := x509.SystemCertPool()
+	if err != nil {
+		logrus.WithError(err).Warn("failed to get system certificate pool")
+		rootCAs = x509.NewCertPool()
+	}
+
+	for _, c := range c.RootCACertificates {
+		rootCAs.AddCert(c)
+	}
+
+	return &tls.Config{
+		RootCAs: rootCAs,
+	}, nil
+}
+
 // New returns a new Server.
 func New(ctx context.Context, c Config) (s Server, err error) {
-	hc := &http.Client{}
+	// Get TLS configuration.
+	tc, err := getTLSConfig(c)
+	if err != nil {
+		return Server{}, err
+	}
+
+	// Build up HTTP client.
+	hc := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: tc,
+		},
+	}
 
 	// Discover OAuth 2.0 metadata.
 	md, err := discoverAuthMetadata(ctx, hc, c.OAuth2IssuerURI)

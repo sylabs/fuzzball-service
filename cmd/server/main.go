@@ -4,6 +4,9 @@ package main
 
 import (
 	"context"
+	"crypto/x509"
+	"encoding/pem"
+	"io/ioutil"
 	"os"
 	"os/signal"
 	"strings"
@@ -35,6 +38,7 @@ const (
 	keyRedisURI           = "redis-uri"
 	keyOAuth2IssuerURI    = "oauth2-issuer-uri"
 	keyOAuth2Audience     = "oauth2-audience"
+	keyRootCACertificates = "root-ca-certs"
 )
 
 var version = "unknown"
@@ -123,6 +127,7 @@ func getFlagSet() *pflag.FlagSet {
 	fs.String(keyRedisURI, "redis://localhost", "URI of Redis")
 	fs.String(keyOAuth2IssuerURI, "https://dev-930666.okta.com/oauth2/default", "URI of OAuth 2.0 issuer")
 	fs.String(keyOAuth2Audience, "api://default", "OAuth 2.0 audience expected in tokens")
+	fs.StringSlice(keyRootCACertificates, []string{}, "Comma-separated list of root certificate authority certificates")
 
 	fs.Parse(os.Args[1:])
 
@@ -145,6 +150,37 @@ func getConfig() (*viper.Viper, error) {
 	return v, nil
 }
 
+// readCerts reads certificates from the supplied paths.
+func readCerts(pemPaths []string) ([]*x509.Certificate, error) {
+	certs := make([]*x509.Certificate, 0)
+
+	for _, p := range pemPaths {
+		b, err := ioutil.ReadFile(p)
+		if err != nil {
+			return nil, err
+		}
+
+		for len(b) > 0 {
+			var block *pem.Block
+			block, b = pem.Decode(b)
+			if block == nil {
+				break
+			}
+			if block.Type != "CERTIFICATE" || len(block.Headers) != 0 {
+				continue
+			}
+
+			cert, err := x509.ParseCertificate(block.Bytes)
+			if err != nil {
+				return nil, err
+			}
+			certs = append(certs, cert)
+		}
+	}
+
+	return certs, nil
+}
+
 func main() {
 	log := logrus.WithFields(logrus.Fields{
 		"org":  org,
@@ -160,6 +196,13 @@ func main() {
 	cfg, err := getConfig()
 	if err != nil {
 		logrus.WithError(err).Error("failed to get configuration")
+		return
+	}
+
+	// Parse TLS certificates, if supplied.
+	certs, err := readCerts(cfg.GetStringSlice(keyRootCACertificates))
+	if err != nil {
+		logrus.WithError(err).Error("failed to read certs")
 		return
 	}
 
@@ -223,6 +266,7 @@ func main() {
 		CORSDebug:          cfg.GetBool(keyCORSDebug),
 		OAuth2IssuerURI:    cfg.GetString(keyOAuth2IssuerURI),
 		OAuth2Audience:     cfg.GetString(keyOAuth2Audience),
+		RootCACertificates: certs,
 		Persist:            mc,
 		NATSConn:           nc,
 		RedisConn:          rc,
