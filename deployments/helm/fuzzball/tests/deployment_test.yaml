@@ -55,6 +55,12 @@ tests:
       repository: repo
   asserts:
   - matchSnapshot: {}
+- it: "should have image tag 'TagOverride'"
+  set:
+    image:
+      tag: "TagOverride"
+  asserts:
+  - matchSnapshot: {}
 - it: "should have imagePullPolicy 'Always'"
   set:
     image:
