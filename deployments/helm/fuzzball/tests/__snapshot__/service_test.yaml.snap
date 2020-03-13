@@ -7,8 +7,8 @@ should have name 'NameOverride':
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: fuzzball
-        app.kubernetes.io/version: 0.1.0
-        helm.sh/chart: fuzzball-0.1.0
+        app.kubernetes.io/version: 0.2.0
+        helm.sh/chart: fuzzball-0.2.0
       name: NameOverride
     spec:
       ports:
@@ -29,8 +29,8 @@ should have name 'RELEASE-NAME-NameOverride':
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: NameOverride
-        app.kubernetes.io/version: 0.1.0
-        helm.sh/chart: fuzzball-0.1.0
+        app.kubernetes.io/version: 0.2.0
+        helm.sh/chart: fuzzball-0.2.0
       name: RELEASE-NAME-NameOverride
     spec:
       ports:
@@ -51,8 +51,8 @@ should have type LoadBalancer:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: fuzzball
-        app.kubernetes.io/version: 0.1.0
-        helm.sh/chart: fuzzball-0.1.0
+        app.kubernetes.io/version: 0.2.0
+        helm.sh/chart: fuzzball-0.2.0
       name: RELEASE-NAME-fuzzball
     spec:
       ports:
@@ -73,8 +73,8 @@ should have type NodePort:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: fuzzball
-        app.kubernetes.io/version: 0.1.0
-        helm.sh/chart: fuzzball-0.1.0
+        app.kubernetes.io/version: 0.2.0
+        helm.sh/chart: fuzzball-0.2.0
       name: RELEASE-NAME-fuzzball
     spec:
       ports:
@@ -95,8 +95,8 @@ should render by default:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: fuzzball
-        app.kubernetes.io/version: 0.1.0
-        helm.sh/chart: fuzzball-0.1.0
+        app.kubernetes.io/version: 0.2.0
+        helm.sh/chart: fuzzball-0.2.0
       name: RELEASE-NAME-fuzzball
     spec:
       ports:

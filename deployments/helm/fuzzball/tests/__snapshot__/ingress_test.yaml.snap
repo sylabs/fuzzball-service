@@ -7,8 +7,8 @@ should have TLS:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: fuzzball
-        app.kubernetes.io/version: 0.1.0
-        helm.sh/chart: fuzzball-0.1.0
+        app.kubernetes.io/version: 0.2.0
+        helm.sh/chart: fuzzball-0.2.0
       name: RELEASE-NAME-fuzzball
     spec:
       rules:
@@ -34,8 +34,8 @@ should have annotations:
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: fuzzball
-        app.kubernetes.io/version: 0.1.0
-        helm.sh/chart: fuzzball-0.1.0
+        app.kubernetes.io/version: 0.2.0
+        helm.sh/chart: fuzzball-0.2.0
       name: RELEASE-NAME-fuzzball
     spec:
       rules:
@@ -55,8 +55,8 @@ should have host 'example.com':
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: fuzzball
-        app.kubernetes.io/version: 0.1.0
-        helm.sh/chart: fuzzball-0.1.0
+        app.kubernetes.io/version: 0.2.0
+        helm.sh/chart: fuzzball-0.2.0
       name: RELEASE-NAME-fuzzball
     spec:
       rules:
@@ -76,8 +76,8 @@ should have host 'example.com' and servicePort '9999':
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: fuzzball
-        app.kubernetes.io/version: 0.1.0
-        helm.sh/chart: fuzzball-0.1.0
+        app.kubernetes.io/version: 0.2.0
+        helm.sh/chart: fuzzball-0.2.0
       name: RELEASE-NAME-fuzzball
     spec:
       rules:
@@ -97,8 +97,8 @@ should have name 'NameOverride':
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: fuzzball
-        app.kubernetes.io/version: 0.1.0
-        helm.sh/chart: fuzzball-0.1.0
+        app.kubernetes.io/version: 0.2.0
+        helm.sh/chart: fuzzball-0.2.0
       name: NameOverride
     spec:
       rules:
@@ -118,8 +118,8 @@ should have name 'RELEASE-NAME-NameOverride':
         app.kubernetes.io/instance: RELEASE-NAME
         app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: NameOverride
-        app.kubernetes.io/version: 0.1.0
-        helm.sh/chart: fuzzball-0.1.0
+        app.kubernetes.io/version: 0.2.0
+        helm.sh/chart: fuzzball-0.2.0
       name: RELEASE-NAME-NameOverride
     spec:
       rules:
