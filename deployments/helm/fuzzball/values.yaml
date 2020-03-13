@@ -10,6 +10,10 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
+oAuth2: {}
+  # audience: ""
+  # issuerURI: ""
+
 serviceAccount:
   # Specifies whether a service account should be created
   create: true

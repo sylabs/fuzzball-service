@@ -33,6 +33,14 @@ spec:
           value: {{ include "fuzzball.mongoURI" . }}
         - name: NATS_URIS
           value: {{ include "fuzzball.natsURI" . }}
+        {{- if .Values.oAuth2.audience }}
+        - name: OAUTH2_AUDIENCE
+          value: {{ .Values.oAuth2.audience }}
+        {{- end }}
+        {{- if .Values.oAuth2.issuerURI }}
+        - name: OAUTH2_ISSUER_URI
+          value: {{ .Values.oAuth2.issuerURI }}
+        {{- end }}
         - name: REDIS_URI
           value: {{ include "fuzzball.redisURI" . }}
         ports:
