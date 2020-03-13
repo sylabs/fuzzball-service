@@ -41,6 +41,96 @@ should have 10 replicas:
             securityContext: {}
           securityContext: {}
           serviceAccountName: RELEASE-NAME-fuzzball
+should have OAuth2 audience 'AudienceOverride':
+  1: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      labels:
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/managed-by: Tiller
+        app.kubernetes.io/name: fuzzball
+        app.kubernetes.io/version: 0.2.0
+        helm.sh/chart: fuzzball-0.3.0
+      name: RELEASE-NAME-fuzzball
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          app.kubernetes.io/instance: RELEASE-NAME
+          app.kubernetes.io/name: fuzzball
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/name: fuzzball
+        spec:
+          containers:
+          - env:
+            - name: MONGO_URI
+              value: mongodb://server:changeme@RELEASE-NAME-mongodb/server
+            - name: NATS_URIS
+              value: nats://server:changeme@RELEASE-NAME-nats-client
+            - name: OAUTH2_AUDIENCE
+              value: AudienceOverride
+            - name: REDIS_URI
+              value: redis://:changeme@RELEASE-NAME-redis-master
+            image: server:0.2.0
+            imagePullPolicy: IfNotPresent
+            name: fuzzball
+            ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+            resources: {}
+            securityContext: {}
+          securityContext: {}
+          serviceAccountName: RELEASE-NAME-fuzzball
+should have OAuth2 issuer 'IssuerOverride':
+  1: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      labels:
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/managed-by: Tiller
+        app.kubernetes.io/name: fuzzball
+        app.kubernetes.io/version: 0.2.0
+        helm.sh/chart: fuzzball-0.3.0
+      name: RELEASE-NAME-fuzzball
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          app.kubernetes.io/instance: RELEASE-NAME
+          app.kubernetes.io/name: fuzzball
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/name: fuzzball
+        spec:
+          containers:
+          - env:
+            - name: MONGO_URI
+              value: mongodb://server:changeme@RELEASE-NAME-mongodb/server
+            - name: NATS_URIS
+              value: nats://server:changeme@RELEASE-NAME-nats-client
+            - name: OAUTH2_ISSUER_URI
+              value: IssuerOverride
+            - name: REDIS_URI
+              value: redis://:changeme@RELEASE-NAME-redis-master
+            image: server:0.2.0
+            imagePullPolicy: IfNotPresent
+            name: fuzzball
+            ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+            resources: {}
+            securityContext: {}
+          securityContext: {}
+          serviceAccountName: RELEASE-NAME-fuzzball
 should have affinity:
   1: |
     apiVersion: apps/v1
