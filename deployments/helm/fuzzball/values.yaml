@@ -5,8 +5,8 @@ replicaCount: 1
 image:
   repository: server
   pullPolicy: IfNotPresent
+  pullSecrets: []
 
-imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
