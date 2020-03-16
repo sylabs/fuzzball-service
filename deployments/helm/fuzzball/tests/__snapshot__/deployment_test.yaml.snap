@@ -8,7 +8,7 @@ should have 10 replicas:
         app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: fuzzball
         app.kubernetes.io/version: 0.2.0
-        helm.sh/chart: fuzzball-0.3.0
+        helm.sh/chart: fuzzball-0.4.0
       name: RELEASE-NAME-fuzzball
     spec:
       replicas: 10
@@ -51,7 +51,7 @@ should have OAuth2 audience 'AudienceOverride':
         app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: fuzzball
         app.kubernetes.io/version: 0.2.0
-        helm.sh/chart: fuzzball-0.3.0
+        helm.sh/chart: fuzzball-0.4.0
       name: RELEASE-NAME-fuzzball
     spec:
       replicas: 1
@@ -96,7 +96,7 @@ should have OAuth2 issuer 'IssuerOverride':
         app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: fuzzball
         app.kubernetes.io/version: 0.2.0
-        helm.sh/chart: fuzzball-0.3.0
+        helm.sh/chart: fuzzball-0.4.0
       name: RELEASE-NAME-fuzzball
     spec:
       replicas: 1
@@ -141,7 +141,7 @@ should have affinity:
         app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: fuzzball
         app.kubernetes.io/version: 0.2.0
-        helm.sh/chart: fuzzball-0.3.0
+        helm.sh/chart: fuzzball-0.4.0
       name: RELEASE-NAME-fuzzball
     spec:
       replicas: 1
@@ -194,7 +194,7 @@ should have image 'repo':
         app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: fuzzball
         app.kubernetes.io/version: 0.2.0
-        helm.sh/chart: fuzzball-0.3.0
+        helm.sh/chart: fuzzball-0.4.0
       name: RELEASE-NAME-fuzzball
     spec:
       replicas: 1
@@ -237,7 +237,7 @@ should have image tag 'TagOverride':
         app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: fuzzball
         app.kubernetes.io/version: 0.2.0
-        helm.sh/chart: fuzzball-0.3.0
+        helm.sh/chart: fuzzball-0.4.0
       name: RELEASE-NAME-fuzzball
     spec:
       replicas: 1
@@ -280,7 +280,7 @@ should have imagePullPolicy 'Always':
         app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: fuzzball
         app.kubernetes.io/version: 0.2.0
-        helm.sh/chart: fuzzball-0.3.0
+        helm.sh/chart: fuzzball-0.4.0
       name: RELEASE-NAME-fuzzball
     spec:
       replicas: 1
@@ -323,7 +323,7 @@ should have imagePullSecrets:
         app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: fuzzball
         app.kubernetes.io/version: 0.2.0
-        helm.sh/chart: fuzzball-0.3.0
+        helm.sh/chart: fuzzball-0.4.0
       name: RELEASE-NAME-fuzzball
     spec:
       replicas: 1
@@ -368,7 +368,7 @@ should have name 'NameOverride':
         app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: fuzzball
         app.kubernetes.io/version: 0.2.0
-        helm.sh/chart: fuzzball-0.3.0
+        helm.sh/chart: fuzzball-0.4.0
       name: NameOverride
     spec:
       replicas: 1
@@ -411,7 +411,7 @@ should have name 'RELEASE-NAME-NameOverride':
         app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: NameOverride
         app.kubernetes.io/version: 0.2.0
-        helm.sh/chart: fuzzball-0.3.0
+        helm.sh/chart: fuzzball-0.4.0
       name: RELEASE-NAME-NameOverride
     spec:
       replicas: 1
@@ -454,7 +454,7 @@ should have nodeSelector:
         app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: fuzzball
         app.kubernetes.io/version: 0.2.0
-        helm.sh/chart: fuzzball-0.3.0
+        helm.sh/chart: fuzzball-0.4.0
       name: RELEASE-NAME-fuzzball
     spec:
       replicas: 1
@@ -499,7 +499,7 @@ should have podSecurityContext:
         app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: fuzzball
         app.kubernetes.io/version: 0.2.0
-        helm.sh/chart: fuzzball-0.3.0
+        helm.sh/chart: fuzzball-0.4.0
       name: RELEASE-NAME-fuzzball
     spec:
       replicas: 1
@@ -543,7 +543,7 @@ should have resource limits:
         app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: fuzzball
         app.kubernetes.io/version: 0.2.0
-        helm.sh/chart: fuzzball-0.3.0
+        helm.sh/chart: fuzzball-0.4.0
       name: RELEASE-NAME-fuzzball
     spec:
       replicas: 1
@@ -588,7 +588,7 @@ should have securityContext:
         app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: fuzzball
         app.kubernetes.io/version: 0.2.0
-        helm.sh/chart: fuzzball-0.3.0
+        helm.sh/chart: fuzzball-0.4.0
       name: RELEASE-NAME-fuzzball
     spec:
       replicas: 1
@@ -633,7 +633,7 @@ should have serviceAccount 'SvcAcctName':
         app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: fuzzball
         app.kubernetes.io/version: 0.2.0
-        helm.sh/chart: fuzzball-0.3.0
+        helm.sh/chart: fuzzball-0.4.0
       name: RELEASE-NAME-fuzzball
     spec:
       replicas: 1
@@ -676,7 +676,7 @@ should have serviceAccount 'default':
         app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: fuzzball
         app.kubernetes.io/version: 0.2.0
-        helm.sh/chart: fuzzball-0.3.0
+        helm.sh/chart: fuzzball-0.4.0
       name: RELEASE-NAME-fuzzball
     spec:
       replicas: 1
@@ -719,7 +719,7 @@ should have tolerations:
         app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: fuzzball
         app.kubernetes.io/version: 0.2.0
-        helm.sh/chart: fuzzball-0.3.0
+        helm.sh/chart: fuzzball-0.4.0
       name: RELEASE-NAME-fuzzball
     spec:
       replicas: 1
@@ -766,7 +766,7 @@ should render by default:
         app.kubernetes.io/managed-by: Tiller
         app.kubernetes.io/name: fuzzball
         app.kubernetes.io/version: 0.2.0
-        helm.sh/chart: fuzzball-0.3.0
+        helm.sh/chart: fuzzball-0.4.0
       name: RELEASE-NAME-fuzzball
     spec:
       replicas: 1

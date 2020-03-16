@@ -5,8 +5,8 @@ replicaCount: 1
 image:
   repository: registry.enterprise.sylabs.io/fuzzball-server
   pullPolicy: IfNotPresent
+  pullSecrets: []
 
-imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
