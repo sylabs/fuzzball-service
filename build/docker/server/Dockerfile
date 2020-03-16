@@ -4,7 +4,7 @@ FROM golang:$GOLANG_TAG as build-stage
 RUN apk add --no-cache git ca-certificates && update-ca-certificates
 WORKDIR /src
 COPY . .
-RUN CGO_ENABLED=0 go install -ldflags "-s -w -X main.version=`git describe --long --dirty --always`" ./cmd/server/...
+RUN CGO_ENABLED=0 go run ./mage-bootstrap.go install
 
 FROM scratch
 COPY --from=build-stage /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/

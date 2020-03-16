@@ -14,7 +14,7 @@ jobs:
       - uses: azure/setup-helm@v1
         with:
           version: v3.1.1
-      - name: Install Helm Unit Test Plugin	
+      - name: Install Helm Unit Test Plugin
         run: helm plugin install https://github.com/rancher/helm-unittest --version v0.1.7-rancher1
       - name: Checkout code
         uses: actions/checkout@v2
@@ -30,7 +30,7 @@ jobs:
       - uses: azure/setup-helm@v1
         with:
           version: v3.1.1
-      - name: Install Helm Push Plugin	
+      - name: Install Helm Push Plugin
         run: helm plugin install https://github.com/chartmuseum/helm-push
       - name: Checkout code
         uses: actions/checkout@v2
@@ -53,16 +53,12 @@ jobs:
           go-version: ${{ matrix.go }}
       - name: Add Go Bin to Path
         run: echo "::add-path::$(go env GOPATH)/bin"
-      - name: Install go-bindata
-        run: go get -u github.com/go-bindata/go-bindata/...
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Generate
-        run: go generate ./...
       - name: Build
-        run: go build ./...
+        run: go run ./mage-bootstrap.go build
       - name: Unit Test
-        run: go test -cover -race ./...
+        run: go run ./mage-bootstrap.go unittest
 
   integration-test:
     strategy:
@@ -89,11 +85,7 @@ jobs:
           go-version: ${{ matrix.go }}
       - name: Add Go Bin to Path
         run: echo "::add-path::$(go env GOPATH)/bin"
-      - name: Install go-bindata
-        run: go get -u github.com/go-bindata/go-bindata/...
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Generate
-        run: go generate ./...
       - name: Test
-        run: go test -cover -race -tags=integration ./...
+        run: go run ./mage-bootstrap.go test
