@@ -6,7 +6,9 @@ package main
 
 import (
 	"fmt"
+	"path/filepath"
 
+	"github.com/go-bindata/go-bindata/v3"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 )
@@ -18,7 +20,13 @@ func ldFlags() string {
 
 // generateSchema generates a Go file containing the GraphQL schema.
 func generateSchema() error {
-	return sh.RunV(mg.GoCmd(), "generate", "./...")
+	c := bindata.NewConfig()
+	c.NoMetadata = true
+	c.Package = "schema"
+	c.Input = []bindata.InputConfig{{Path: filepath.Join("api", "graphql-schema")}}
+	c.Output = filepath.Join("internal", "pkg", "schema", "bindata.go")
+
+	return bindata.Translate(c)
 }
 
 // Build builds Fuzzball assets using `go build`.

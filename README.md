@@ -12,12 +12,6 @@ Ensure that you have one of the two most recent minor versions of Go installed a
 
 Install [Mage](https://magefile.org) as per the [installation instructions](https://magefile.org/#installation).
 
-Install `go-bindata` (used to generate the GraphQL schema):
-
-```sh
-go get -u github.com/go-bindata/go-bindata/...
-```
-
 To run the server, you'll need MongoDB, NATS, and Redis endpoints to point it to. If you don't have these already, you can start them with Docker easy enough:
 
 ```sh
