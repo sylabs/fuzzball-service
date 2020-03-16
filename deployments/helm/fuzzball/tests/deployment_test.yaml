@@ -102,3 +102,15 @@ tests:
           topologyKey: "kubernetes.io/hostname"
   asserts:
   - matchSnapshot: {}
+- it: "should have OAuth2 audience 'AudienceOverride'"
+  set:
+    oAuth2:
+      audience: AudienceOverride
+  asserts:
+  - matchSnapshot: {}
+- it: "should have OAuth2 issuer 'IssuerOverride'"
+  set:
+    oAuth2:
+      issuerURI: IssuerOverride
+  asserts:
+  - matchSnapshot: {}
