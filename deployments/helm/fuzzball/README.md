@@ -44,7 +44,7 @@ The following table lists the configurable parameters of the Fuzzball chart and 
 | Parameter                    | Description                                           | Default                                                  |
 | ---------------------------- | ----------------------------------------------------- | -------------------------------------------------------- |
 | `replicaCount`               | Replica count                                         | `1`                                                      |
-| `image.repository`           | Fuzzball image name                                   | `server`                                                 |
+| `image.repository`           | Fuzzball image name                                   | `registry.enterprise.sylabs.io/fuzzball-server`          |
 | `image.tag`                  | Fuzzball image tag                                    | `{{ .Chart.AppVersion }}`                                |
 | `image.pullPolicy`           | Image pull policy                                     | `IfNotPresent`                                           |
 | `image.pullSecrets`          | Specify registry secret names as an array             | `[]`                                                     |
