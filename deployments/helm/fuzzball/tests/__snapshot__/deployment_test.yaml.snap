@@ -30,7 +30,7 @@ should have 10 replicas:
               value: nats://server:changeme@RELEASE-NAME-nats-client
             - name: REDIS_URI
               value: redis://:changeme@RELEASE-NAME-redis-master
-            image: server:0.2.0
+            image: registry.enterprise.sylabs.io/fuzzball-server:0.2.0
             imagePullPolicy: IfNotPresent
             name: fuzzball
             ports:
@@ -75,7 +75,7 @@ should have OAuth2 audience 'AudienceOverride':
               value: AudienceOverride
             - name: REDIS_URI
               value: redis://:changeme@RELEASE-NAME-redis-master
-            image: server:0.2.0
+            image: registry.enterprise.sylabs.io/fuzzball-server:0.2.0
             imagePullPolicy: IfNotPresent
             name: fuzzball
             ports:
@@ -120,7 +120,7 @@ should have OAuth2 issuer 'IssuerOverride':
               value: IssuerOverride
             - name: REDIS_URI
               value: redis://:changeme@RELEASE-NAME-redis-master
-            image: server:0.2.0
+            image: registry.enterprise.sylabs.io/fuzzball-server:0.2.0
             imagePullPolicy: IfNotPresent
             name: fuzzball
             ports:
@@ -173,7 +173,7 @@ should have affinity:
               value: nats://server:changeme@RELEASE-NAME-nats-client
             - name: REDIS_URI
               value: redis://:changeme@RELEASE-NAME-redis-master
-            image: server:0.2.0
+            image: registry.enterprise.sylabs.io/fuzzball-server:0.2.0
             imagePullPolicy: IfNotPresent
             name: fuzzball
             ports:
@@ -259,7 +259,7 @@ should have image tag 'TagOverride':
               value: nats://server:changeme@RELEASE-NAME-nats-client
             - name: REDIS_URI
               value: redis://:changeme@RELEASE-NAME-redis-master
-            image: server:TagOverride
+            image: registry.enterprise.sylabs.io/fuzzball-server:TagOverride
             imagePullPolicy: IfNotPresent
             name: fuzzball
             ports:
@@ -302,7 +302,7 @@ should have imagePullPolicy 'Always':
               value: nats://server:changeme@RELEASE-NAME-nats-client
             - name: REDIS_URI
               value: redis://:changeme@RELEASE-NAME-redis-master
-            image: server:0.2.0
+            image: registry.enterprise.sylabs.io/fuzzball-server:0.2.0
             imagePullPolicy: Always
             name: fuzzball
             ports:
@@ -345,7 +345,7 @@ should have imagePullSecrets:
               value: nats://server:changeme@RELEASE-NAME-nats-client
             - name: REDIS_URI
               value: redis://:changeme@RELEASE-NAME-redis-master
-            image: server:0.2.0
+            image: registry.enterprise.sylabs.io/fuzzball-server:0.2.0
             imagePullPolicy: IfNotPresent
             name: fuzzball
             ports:
@@ -390,7 +390,7 @@ should have name 'NameOverride':
               value: nats://server:changeme@RELEASE-NAME-nats-client
             - name: REDIS_URI
               value: redis://:changeme@RELEASE-NAME-redis-master
-            image: server:0.2.0
+            image: registry.enterprise.sylabs.io/fuzzball-server:0.2.0
             imagePullPolicy: IfNotPresent
             name: fuzzball
             ports:
@@ -433,7 +433,7 @@ should have name 'RELEASE-NAME-NameOverride':
               value: nats://server:changeme@RELEASE-NAME-nats-client
             - name: REDIS_URI
               value: redis://:changeme@RELEASE-NAME-redis-master
-            image: server:0.2.0
+            image: registry.enterprise.sylabs.io/fuzzball-server:0.2.0
             imagePullPolicy: IfNotPresent
             name: fuzzball
             ports:
@@ -476,7 +476,7 @@ should have nodeSelector:
               value: nats://server:changeme@RELEASE-NAME-nats-client
             - name: REDIS_URI
               value: redis://:changeme@RELEASE-NAME-redis-master
-            image: server:0.2.0
+            image: registry.enterprise.sylabs.io/fuzzball-server:0.2.0
             imagePullPolicy: IfNotPresent
             name: fuzzball
             ports:
@@ -521,7 +521,7 @@ should have podSecurityContext:
               value: nats://server:changeme@RELEASE-NAME-nats-client
             - name: REDIS_URI
               value: redis://:changeme@RELEASE-NAME-redis-master
-            image: server:0.2.0
+            image: registry.enterprise.sylabs.io/fuzzball-server:0.2.0
             imagePullPolicy: IfNotPresent
             name: fuzzball
             ports:
@@ -565,7 +565,7 @@ should have resource limits:
               value: nats://server:changeme@RELEASE-NAME-nats-client
             - name: REDIS_URI
               value: redis://:changeme@RELEASE-NAME-redis-master
-            image: server:0.2.0
+            image: registry.enterprise.sylabs.io/fuzzball-server:0.2.0
             imagePullPolicy: IfNotPresent
             name: fuzzball
             ports:
@@ -610,7 +610,7 @@ should have securityContext:
               value: nats://server:changeme@RELEASE-NAME-nats-client
             - name: REDIS_URI
               value: redis://:changeme@RELEASE-NAME-redis-master
-            image: server:0.2.0
+            image: registry.enterprise.sylabs.io/fuzzball-server:0.2.0
             imagePullPolicy: IfNotPresent
             name: fuzzball
             ports:
@@ -655,7 +655,7 @@ should have serviceAccount 'SvcAcctName':
               value: nats://server:changeme@RELEASE-NAME-nats-client
             - name: REDIS_URI
               value: redis://:changeme@RELEASE-NAME-redis-master
-            image: server:0.2.0
+            image: registry.enterprise.sylabs.io/fuzzball-server:0.2.0
             imagePullPolicy: IfNotPresent
             name: fuzzball
             ports:
@@ -698,7 +698,7 @@ should have serviceAccount 'default':
               value: nats://server:changeme@RELEASE-NAME-nats-client
             - name: REDIS_URI
               value: redis://:changeme@RELEASE-NAME-redis-master
-            image: server:0.2.0
+            image: registry.enterprise.sylabs.io/fuzzball-server:0.2.0
             imagePullPolicy: IfNotPresent
             name: fuzzball
             ports:
@@ -741,7 +741,7 @@ should have tolerations:
               value: nats://server:changeme@RELEASE-NAME-nats-client
             - name: REDIS_URI
               value: redis://:changeme@RELEASE-NAME-redis-master
-            image: server:0.2.0
+            image: registry.enterprise.sylabs.io/fuzzball-server:0.2.0
             imagePullPolicy: IfNotPresent
             name: fuzzball
             ports:
@@ -788,7 +788,7 @@ should render by default:
               value: nats://server:changeme@RELEASE-NAME-nats-client
             - name: REDIS_URI
               value: redis://:changeme@RELEASE-NAME-redis-master
-            image: server:0.2.0
+            image: registry.enterprise.sylabs.io/fuzzball-server:0.2.0
             imagePullPolicy: IfNotPresent
             name: fuzzball
             ports:
