@@ -32,8 +32,9 @@ tests:
   - matchSnapshot: {}
 - it: "should have imagePullSecrets"
   set:
-    imagePullSecrets:
-    - name: regcred
+    image:
+      pullSecrets:
+      - name: regcred
   asserts:
   - matchSnapshot: {}
 - it: "should have podSecurityContext"
