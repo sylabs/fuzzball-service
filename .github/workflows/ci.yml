@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - master
-env:
-  GOPRIVATE: github.com/sylabs/fuzzball-service
 
 jobs:
   lint-and-test-helm:
