@@ -5,15 +5,14 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"regexp"
+	"strings"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/go-git/go-git/v5/plumbing/storer"
-	"github.com/sirupsen/logrus"
 )
 
 // getVersionTags returns a map of commit hashes to tags.
@@ -47,27 +46,45 @@ func getVersionTags(r *git.Repository) (map[plumbing.Hash]*object.Tag, error) {
 	return tags, err
 }
 
-// describe returns the semver tag closest to the current commit, and the number of commits since
-// the tag.
-func describe(r *git.Repository, from plumbing.Hash) (*object.Tag, int, error) {
+type gitDescription struct {
+	ref *plumbing.Reference // reference being described
+	tag *object.Tag         // nearest semver tag reachable from ref (or nil if none found)
+	n   int                 // number of commits between nearest semver tag and ref (if tag is non-nil)
+}
+
+// String returns a string representation of d.
+func (d *gitDescription) String() string {
+	if d.tag == nil {
+		return fmt.Sprintf("0.0.0+0-g%v", d.ref.Hash().String()[:8])
+	}
+
+	version := strings.TrimPrefix(d.tag.Name, "v")
+	if d.n > 0 {
+		return fmt.Sprintf("%v+%v-g%v", version, d.n, d.ref.Hash().String()[:8])
+	}
+	return version
+}
+
+// describe returns a gitDescription of ref.
+func describe(r *git.Repository, ref *plumbing.Reference) (*gitDescription, error) {
 	// Get version tags.
 	tags, err := getVersionTags(r)
 	if err != nil {
-		return nil, 0, err
+		return nil, err
 	}
 
 	// Get commit log.
 	logIter, err := r.Log(&git.LogOptions{
 		Order: git.LogOrderCommitterTime,
-		From:  from,
+		From:  ref.Hash(),
 	})
 	if err != nil {
-		return nil, 0, err
+		return nil, err
 	}
 
 	// Iterate through commit log until we find a matching tag.
 	var tag *object.Tag
-	var count int
+	var n int
 	err = logIter.ForEach(func(c *object.Commit) error {
 		if t, ok := tags[c.Hash]; ok {
 			tag = t
@@ -75,50 +92,33 @@ func describe(r *git.Repository, from plumbing.Hash) (*object.Tag, int, error) {
 		if tag != nil {
 			return storer.ErrStop
 		}
-		count++
+		n++
 		return nil
 	})
 	if err != nil {
-		return nil, 0, err
+		return nil, err
 	}
 
-	// If no tag found, return error. Otherwise return tag and distance.
-	if tag == nil {
-		return nil, 0, errors.New("descriptive version tag not found")
-	}
-	return tag, count, err
+	return &gitDescription{
+		ref: ref,
+		tag: tag,
+		n:   n,
+	}, nil
 }
 
-// version attempts to return a semantic version based on git tags. If the current commit is tagged
-// with a semver tag (ex. v0.1.0), the version is returned (0.1.0). If the current commit is not
-// tagged, the most recent tag is used, and the distance from the tag and the commit hash are
-// appended to the version (ex. v0.1.0+14-g3b038b67).
-func version() string {
+// describeHead returns a gitDescription of HEAD.
+func describeHead() (*gitDescription, error) {
 	// Open git repo.
 	r, err := git.PlainOpen(".")
 	if err != nil {
-		logrus.WithError(err).Warn("mage: failed to open git repo")
-		return "unknown"
+		return nil, err
 	}
 
 	// Get HEAD commit.
 	head, err := r.Head()
 	if err != nil {
-		logrus.WithError(err).Warn("mage: failed to get HEAD")
-		return "unknown"
-	}
-	headHash := head.Hash().String()[:8]
-
-	// Get descriptive tag and distance from the tag.
-	tag, n, err := describe(r, head.Hash())
-	if err != nil {
-		logrus.WithError(err).Warn("mage: failed to describe git commit")
-		return fmt.Sprintf("0.0.0+0-g%v", headHash)
+		return nil, err
 	}
 
-	// Build version.
-	if n > 0 {
-		return fmt.Sprintf("%v+%v-g%v", tag.Name, n, headHash)
-	}
-	return tag.Name
+	return describe(r, head)
 }
