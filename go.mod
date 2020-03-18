@@ -5,7 +5,6 @@ go 1.13
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/friendsofgo/graphiql v0.2.2
-	github.com/go-bindata/go-bindata/v3 v3.1.3
 	github.com/go-git/go-git/v5 v5.0.0
 	github.com/go-redis/redis v6.15.7+incompatible
 	github.com/graph-gophers/graphql-go v0.0.0-20191115155744-f33e81362277
