@@ -18,8 +18,6 @@ require (
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.6.2
-	github.com/tidwall/pretty v1.0.1 // indirect
-	github.com/xdg/stringprep v1.0.0 // indirect
 	go.mongodb.org/mongo-driver v1.3.1
 	gopkg.in/square/go-jose.v2 v2.4.1
 )
