@@ -18,7 +18,11 @@ func Schema() error {
 
 // ldFlags returns standard linker flags to pass to various Go commands.
 func ldFlags() string {
-	return fmt.Sprintf("-X main.version=%s", version())
+	d, err := describeHead()
+	if err != nil {
+		return "-X main.version=unknown"
+	}
+	return fmt.Sprintf("-X main.version=%s", d)
 }
 
 // Build builds Fuzzball assets using `go build`.
