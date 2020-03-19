@@ -93,9 +93,9 @@ func (s *Scheduler) createVolume(ctx context.Context, v core.Volume) error {
 
 	// TODO: this should be a persistent subscription elsewhere.
 	_, err := s.m.Subscribe(fmt.Sprintf("volume.%v.create", v.ID), func(msg struct {
-		err error
+		Err error
 	}) {
-		createFinished <- msg.err
+		createFinished <- msg.Err
 		close(createFinished)
 	})
 	if err != nil {
@@ -133,9 +133,9 @@ func (s *Scheduler) deleteVolume(ctx context.Context, v core.Volume) error {
 
 	// TODO: this should be a persistent subscription elsewhere.
 	_, err := s.m.Subscribe(fmt.Sprintf("volume.%v.delete", v.ID), func(msg struct {
-		err error
+		Err error
 	}) {
-		deleteFinished <- msg.err
+		deleteFinished <- msg.Err
 		close(deleteFinished)
 	})
 	if err != nil {
@@ -175,9 +175,9 @@ func (s *Scheduler) imageDownload(ctx context.Context, i image) error {
 
 	// TODO: this should be a persistent subscription elsewhere.
 	sub, err := s.m.Subscribe("image.download", func(msg struct {
-		err error
+		Err error
 	}) {
-		downloadFinished <- msg.err
+		downloadFinished <- msg.Err
 		close(downloadFinished)
 	})
 	if err != nil {
@@ -214,9 +214,9 @@ func (s *Scheduler) imageCached(ctx context.Context, hash string) (bool, error) 
 
 	// TODO: this should be a persistent subscription elsewhere.
 	sub, err := s.m.Subscribe("image.cached", func(msg struct {
-		exists bool
+		Exists bool
 	}) {
-		checkFinished <- msg.exists
+		checkFinished <- msg.Exists
 		close(checkFinished)
 	})
 	if err != nil {
