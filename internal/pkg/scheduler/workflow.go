@@ -5,20 +5,31 @@ package scheduler
 import (
 	"context"
 	"fmt"
+	"runtime"
+	"strings"
 	"time"
 
 	"github.com/nats-io/nats.go"
 	"github.com/sirupsen/logrus"
 	"github.com/sylabs/fuzzball-service/internal/pkg/core"
+	scs "github.com/sylabs/scs-library-client/client"
 )
 
 const (
-	jobStartAckTimeout = time.Minute
-	volumeOpAckTimeout = time.Minute
+	jobStartAckTimeout        = time.Minute
+	volumeOpAckTimeout        = time.Minute
+	cacheOpAckTimeout         = time.Minute
+	imageDownloadOpAckTimeout = 10 * time.Minute
 )
 
+// agentCacheInfo describes the state of the cache on the agent
+type agentCacheInfo struct {
+	Cached bool
+	Hash   string
+}
+
 // runJob runs a job to completion.
-func (s *Scheduler) runJob(ctx context.Context, j core.Job) error {
+func (s *Scheduler) runJob(ctx context.Context, j core.Job, ac agentCacheInfo) error {
 	log := logrus.WithFields(logrus.Fields{
 		"jobID":   j.ID,
 		"jobName": j.Name,
@@ -43,8 +54,16 @@ func (s *Scheduler) runJob(ctx context.Context, j core.Job) error {
 		return err
 	}
 
+	jobInfo := struct {
+		core.Job
+		agentCacheInfo
+	}{
+		j,
+		ac,
+	}
+
 	var resp nats.Msg
-	if err := s.m.Request("node.1.job.start", j, &resp, jobStartAckTimeout); err != nil {
+	if err := s.m.Request("node.1.job.start", jobInfo, &resp, jobStartAckTimeout); err != nil {
 		log.WithError(err).Print("failed to start job")
 		return err
 	}
@@ -138,6 +157,154 @@ func (s *Scheduler) deleteVolume(ctx context.Context, v core.Volume) error {
 	}
 }
 
+type image struct {
+	URI string
+}
+
+// imageDownload pull an image to the cache on the agent.
+func (s *Scheduler) imageDownload(ctx context.Context, i image) error {
+	log := logrus.WithFields(logrus.Fields{
+		"imageURI": i.URI,
+	})
+	log.Print("downloading image")
+	defer func(t time.Time) {
+		log.WithField("took", time.Since(t)).Print("download completed")
+	}(time.Now())
+
+	downloadFinished := make(chan error)
+
+	// TODO: this should be a persistent subscription elsewhere.
+	sub, err := s.m.Subscribe("image.download", func(msg struct {
+		err error
+	}) {
+		downloadFinished <- msg.err
+		close(downloadFinished)
+	})
+	if err != nil {
+		return err
+	}
+	sub.AutoUnsubscribe(1)
+
+	var resp nats.Msg
+	if err := s.m.Request("node.1.image.download", i, &resp, imageDownloadOpAckTimeout); err != nil {
+		log.WithError(err).Print("failed to download image")
+		return err
+	}
+
+	// Wait for response or timeout.
+	select {
+	case err := <-downloadFinished:
+		return err
+	case <-ctx.Done():
+		return ctx.Err()
+	}
+}
+
+// imageCached checks the agent image cache for existance of an image based on its hash.
+func (s *Scheduler) imageCached(ctx context.Context, hash string) (bool, error) {
+	log := logrus.WithFields(logrus.Fields{
+		"hash": hash,
+	})
+	log.Print("checking agent image cache")
+	defer func(t time.Time) {
+		log.WithField("took", time.Since(t)).Print("agent image cache check completed")
+	}(time.Now())
+
+	checkFinished := make(chan bool)
+
+	// TODO: this should be a persistent subscription elsewhere.
+	sub, err := s.m.Subscribe("image.cached", func(msg struct {
+		exists bool
+	}) {
+		checkFinished <- msg.exists
+		close(checkFinished)
+	})
+	if err != nil {
+		return false, err
+	}
+	sub.AutoUnsubscribe(1)
+
+	var resp nats.Msg
+	if err := s.m.Request("node.1.image.cached", hash, &resp, cacheOpAckTimeout); err != nil {
+		log.WithError(err).Print("failed to get cache data")
+		return false, err
+	}
+
+	// Wait for response or timeout.
+	select {
+	case exists := <-checkFinished:
+		return exists, nil
+	case <-ctx.Done():
+		return false, ctx.Err()
+	}
+}
+
+func (s *Scheduler) prepAgent(ctx context.Context, j core.Job) (ac agentCacheInfo, err error) {
+	logrus.Print("preparing agent")
+	defer func(t time.Time) {
+		logrus.WithField("took", time.Since(t)).Print("agent prepared")
+	}(time.Now())
+	// skip caching for sources other than the library
+	if !strings.HasPrefix(j.Image, "library:") {
+		return ac, nil
+	}
+
+	// Parse image ref
+	r, err := scs.Parse(j.Image)
+	if err != nil {
+		return ac, err
+	}
+
+	if len(r.Tags) == 0 {
+		r.Tags = []string{"latest"}
+	}
+
+	// Point library client to specific library if included in uri
+	var scsConf *scs.Config
+	if r.Host != "" {
+		scsConf = &scs.Config{BaseURL: "https://" + r.Host}
+	}
+
+	// Initialize library client
+	client, err := scs.NewClient(scsConf)
+	if err != nil {
+		logrus.WithError(err).Warnf("could not initialize library client")
+		return ac, err
+	}
+
+	// Get library image metadata using the path and tag of the uri
+	imageRef := r.Path + ":" + r.Tags[0]
+	// TODO: this should use agent GOARCH, should be part of agent check-in
+	meta, err := client.GetImage(ctx, runtime.GOARCH, imageRef)
+	if err != nil {
+		logrus.WithError(err).Warnf("could not fetch image metadata")
+		return ac, err
+	}
+
+	// Check image in cache by hash
+	cached, err := s.imageCached(ctx, meta.Hash)
+	if err != nil {
+		logrus.WithError(err).Warnf("while checking agent cache")
+		return ac, err
+	}
+
+	// Set reference tag to be image hash
+	r.Tags = []string{meta.Hash}
+	if !cached {
+		// Have agent download image by hash
+		err := s.imageDownload(ctx, image{r.String()})
+		if err != nil {
+			logrus.WithError(err).Warnf("while downloading image to agent cache")
+			return ac, err
+		}
+	}
+
+	ac.Cached = true
+	ac.Hash = meta.Hash
+
+	return ac, nil
+}
+
 // runWorkflow runs a workflow to completion.
 func (s *Scheduler) runWorkflow(w core.Workflow, jobs []core.Job, volumes map[string]core.Volume) {
 	ctx := context.Background()
@@ -168,7 +335,13 @@ func (s *Scheduler) runWorkflow(w core.Workflow, jobs []core.Job, volumes map[st
 		ctx, cancel := context.WithTimeout(ctx, time.Minute) // TODO
 		defer cancel()
 
-		if err := s.runJob(ctx, j); err != nil {
+		ci, err := s.prepAgent(ctx, j)
+		if err != nil {
+			break
+		}
+
+		// NOTE: default to singularity image pulling for non-library images for now
+		if err := s.runJob(ctx, j, ci); err != nil {
 			break
 		}
 	}
