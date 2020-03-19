@@ -10,14 +10,17 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/blang/semver"
 	"github.com/nats-io/nats.go"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	"github.com/sylabs/fuzzball-service/internal/app/iomanager"
 	"github.com/sylabs/fuzzball-service/internal/app/server"
+	"github.com/sylabs/fuzzball-service/internal/pkg/core"
 	"github.com/sylabs/fuzzball-service/internal/pkg/mongodb"
 	"github.com/sylabs/fuzzball-service/internal/pkg/rediskv"
+	"github.com/sylabs/fuzzball-service/internal/pkg/scheduler"
 )
 
 const (
@@ -37,7 +40,13 @@ const (
 	keyOAuth2Audience     = "oauth2-audience"
 )
 
-var version = "unknown"
+// Values set during build.
+var (
+	builtAt      = ""
+	gitCommit    = ""
+	gitTreeState = ""
+	gitVersion   = ""
+)
 
 // signalHandler catches SIGINT/SIGTERM to perform an orderly shutdown.
 func signalHandler(nc *nats.Conn, s server.Server, m iomanager.IOManager) {
@@ -145,13 +154,55 @@ func getConfig() (*viper.Viper, error) {
 	return v, nil
 }
 
+// getCore returns an initilized Core.
+func getCore(mc *mongodb.Connection, nc *nats.Conn, rc *rediskv.Connection) (*core.Core, error) {
+	// Encoded NATS connection.
+	ec, err := nats.NewEncodedConn(nc, nats.JSON_ENCODER)
+	if err != nil {
+		return nil, err
+	}
+
+	// Initialize scheduler.
+	sched, err := scheduler.New(ec, mc, rc)
+	if err != nil {
+		return nil, err
+	}
+
+	// Build up core options.
+	opts := [](func(*core.Core) error){}
+	if t, err := time.Parse(time.RFC3339, builtAt); err == nil {
+		opts = append(opts, core.OptBuiltAt(t))
+	}
+	if gitCommit != "" {
+		opts = append(opts, core.OptGitCommit(gitCommit))
+	}
+	if gitTreeState != "" {
+		opts = append(opts, core.OptGitTreeState(gitTreeState))
+	}
+	if v, err := semver.Parse(gitVersion); err == nil {
+		opts = append(opts, core.OptGitVersion(v))
+	}
+
+	// Initialize core.
+	return core.New(mc, rc, sched, opts...)
+}
+
 func main() {
 	log := logrus.WithFields(logrus.Fields{
 		"org":  org,
 		"name": name,
 	})
-	if version != "" {
-		log = log.WithField("version", version)
+	if builtAt != "" {
+		log = log.WithField("builtAt", builtAt)
+	}
+	if gitCommit != "" {
+		log = log.WithField("gitCommit", gitCommit)
+	}
+	if gitTreeState != "" {
+		log = log.WithField("gitTreeState", gitTreeState)
+	}
+	if gitVersion != "" {
+		log = log.WithField("gitVersion", gitVersion)
 	}
 	log.Info("starting")
 	defer log.Info("stopped")
@@ -204,7 +255,6 @@ func main() {
 
 	// Spin up IO Manager.
 	ioc := iomanager.Config{
-		Version:   version,
 		NATSConn:  nc,
 		RedisConn: rc,
 	}
@@ -215,19 +265,25 @@ func main() {
 	}
 	m.Start()
 
-	// Spin up server.
-	c := server.Config{
-		Version:            version,
+	// Get core.
+	c, err := getCore(mc, nc, rc)
+	if err != nil {
+		logrus.WithError(err).Error("failed to get core")
+		return
+	}
+
+	// Set up server configuration.
+	sc := server.Config{
 		HTTPAddr:           cfg.GetString(keyHTTPAddr),
 		CORSAllowedOrigins: cfg.GetStringSlice(keyCORSAllowedOrigins),
 		CORSDebug:          cfg.GetBool(keyCORSDebug),
 		OAuth2IssuerURI:    cfg.GetString(keyOAuth2IssuerURI),
 		OAuth2Audience:     cfg.GetString(keyOAuth2Audience),
-		Persist:            mc,
-		NATSConn:           nc,
-		RedisConn:          rc,
+		Core:               c,
 	}
-	s, err := server.New(ctx, c)
+
+	// Spin up server.
+	s, err := server.New(ctx, sc)
 	if err != nil {
 		logrus.WithError(err).Error("failed to create server")
 		return

@@ -16,8 +16,7 @@ func TestGetVersion(t *testing.T) {
 		version  string
 		wantCode int
 	}{
-		{"GetVersion", http.MethodGet, "v1.0.0", http.StatusOK},
-		{"GetVersionEmpty", http.MethodGet, "", http.StatusOK},
+		{"GetVersion", http.MethodGet, "1.0.0", http.StatusOK},
 		{"PostVersion", http.MethodPost, "", http.StatusMethodNotAllowed},
 	}
 

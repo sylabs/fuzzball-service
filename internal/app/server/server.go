@@ -9,13 +9,9 @@ import (
 	"net/http"
 
 	"github.com/graph-gophers/graphql-go"
-	"github.com/nats-io/nats.go"
 	"github.com/sirupsen/logrus"
 	"github.com/sylabs/fuzzball-service/internal/pkg/core"
-	"github.com/sylabs/fuzzball-service/internal/pkg/mongodb"
-	"github.com/sylabs/fuzzball-service/internal/pkg/rediskv"
 	"github.com/sylabs/fuzzball-service/internal/pkg/resolver"
-	"github.com/sylabs/fuzzball-service/internal/pkg/scheduler"
 	"github.com/sylabs/fuzzball-service/internal/pkg/schema"
 	"gopkg.in/square/go-jose.v2"
 )
@@ -26,9 +22,7 @@ type Config struct {
 	HTTPAddr           string
 	CORSAllowedOrigins []string
 	CORSDebug          bool
-	Persist            *mongodb.Connection
-	NATSConn           *nats.Conn
-	RedisConn          *rediskv.Connection
+	Core               *core.Core
 	OAuth2IssuerURI    string
 	OAuth2Audience     string
 }
@@ -60,26 +54,8 @@ func New(ctx context.Context, c Config) (s Server, err error) {
 	}
 	s.authKeys = ks
 
-	// Encoded NATS connection.
-	ec, err := nats.NewEncodedConn(c.NATSConn, nats.JSON_ENCODER)
-	if err != nil {
-		return Server{}, err
-	}
-
-	// Initialize scheduler.
-	sched, err := scheduler.New(ec, c.Persist, c.RedisConn)
-	if err != nil {
-		return Server{}, err
-	}
-
-	// Initialize core.
-	core, err := core.New(c.Persist, c.RedisConn, sched)
-	if err != nil {
-		return Server{}, err
-	}
-
 	// Initialize GraphQL.
-	r, err := resolver.New(core)
+	r, err := resolver.New(c.Core)
 	if err != nil {
 		return Server{}, err
 	}
