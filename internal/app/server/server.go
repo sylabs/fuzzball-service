@@ -18,7 +18,6 @@ import (
 
 // Config describes server configuration.
 type Config struct {
-	Version            string
 	HTTPAddr           string
 	CORSAllowedOrigins []string
 	CORSDebug          bool

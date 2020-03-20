@@ -48,7 +48,7 @@ func TestNewRunStop(t *testing.T) {
 	}()
 
 	// Hit an endpoint to check the server is up.
-	r, err := http.Get(fmt.Sprintf("http://%v/version", s.httpLn.Addr().String()))
+	r, err := http.Get(fmt.Sprintf("http://%v/graphql", s.httpLn.Addr().String()))
 	if err != nil {
 		t.Errorf("failed to get HTTP: %v", err)
 	}

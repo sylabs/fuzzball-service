@@ -15,7 +15,6 @@ var routeConfigs = []struct {
 	pattern string
 	getHandlerFunc
 }{
-	{"/version", (*Server).getVersionHandler},
 	{"/metrics", (*Server).getMetricsHandler},
 	{"/graphql", (*Server).getGraphQLHandler},
 	{"/graphiql", (*Server).getGraphiQLHandler},
