@@ -22,7 +22,6 @@ var testRouteConfigs = []struct {
 	path         string
 	expectedCode int
 }{
-	{"GetVersion", http.MethodGet, "/version", http.StatusUnauthorized},
 	{"GetMetrics", http.MethodGet, "/metrics", http.StatusUnauthorized},
 	{"PostGraphQL", http.MethodPost, "/graphql", http.StatusUnauthorized},
 	{"GetGraphiQL", http.MethodGet, "/graphiql", http.StatusUnauthorized},

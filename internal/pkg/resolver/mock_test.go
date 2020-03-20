@@ -123,6 +123,6 @@ type mockCore struct {
 	s mockScheduler
 }
 
-func getMockCore(mc mockCore) (*core.Core, error) {
-	return core.New(&mc.p, &mc.f, &mc.s)
+func getMockCore(mc mockCore, opts ...func(*core.Core) error) (*core.Core, error) {
+	return core.New(&mc.p, &mc.f, &mc.s, opts...)
 }

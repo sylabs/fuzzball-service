@@ -5,7 +5,11 @@ package core
 import (
 	"context"
 	"errors"
+	"fmt"
+	"runtime"
+	"time"
 
+	"github.com/blang/semver"
 	"github.com/sylabs/fuzzball-service/internal/pkg/token"
 )
 
@@ -28,14 +32,85 @@ type Scheduler interface {
 
 // Core represents core business logic.
 type Core struct {
-	p Persister
-	f IOFetcher
-	s Scheduler
+	p  Persister
+	f  IOFetcher
+	s  Scheduler
+	bi BuildInfo
+}
+
+// OptGitVersion sets the core version to v.
+func OptGitVersion(gitVersion semver.Version) func(*Core) error {
+	return func(c *Core) error {
+		c.bi.GitVersion = &gitVersion
+		return nil
+	}
+}
+
+// OptGitCommit sets the git commit to s.
+func OptGitCommit(gitCommit string) func(*Core) error {
+	return func(c *Core) error {
+		c.bi.GitCommit = &gitCommit
+		return nil
+	}
+}
+
+// OptGitTreeState sets the git tree state to s.
+func OptGitTreeState(gitTreeState string) func(*Core) error {
+	return func(c *Core) error {
+		c.bi.GitTreeState = &gitTreeState
+		return nil
+	}
+}
+
+// OptBuiltAt sets the time the core was built at to t.
+func OptBuiltAt(t time.Time) func(*Core) error {
+	return func(c *Core) error {
+		c.bi.BuiltAt = &t
+		return nil
+	}
+}
+
+// OptGoVersionOverride overrides the Go version. This is not normally required, but can be useful
+// during testing to ensure predictable build info.
+func OptGoVersionOverride(s string) func(*Core) error {
+	return func(c *Core) error {
+		c.bi.GoVersion = s
+		return nil
+	}
+}
+
+// OptCompilerOverride overrides the compiler. This is not normally required, but can be useful
+// during testing to ensure predictable build info.
+func OptCompilerOverride(s string) func(*Core) error {
+	return func(c *Core) error {
+		c.bi.Compiler = s
+		return nil
+	}
+}
+
+// OptPlatformOverride overrides the platform. This is not normally required, but can be useful
+// during testing to ensure predictable build info.
+func OptPlatformOverride(s string) func(*Core) error {
+	return func(c *Core) error {
+		c.bi.Platform = s
+		return nil
+	}
 }
 
 // New creates a new core.
-func New(p Persister, f IOFetcher, s Scheduler) (*Core, error) {
-	return &Core{p: p, f: f, s: s}, nil
+func New(p Persister, f IOFetcher, s Scheduler, options ...func(*Core) error) (*Core, error) {
+	bi := BuildInfo{
+		GoVersion: runtime.Version(),
+		Compiler:  runtime.Compiler,
+		Platform:  fmt.Sprintf("%v/%v", runtime.GOOS, runtime.GOARCH),
+	}
+	c := Core{p: p, f: f, s: s, bi: bi}
+	for _, opt := range options {
+		if err := opt(&c); err != nil {
+			return nil, err
+		}
+	}
+	return &c, nil
 }
 
 // Viewer returns the user associated with ctx.

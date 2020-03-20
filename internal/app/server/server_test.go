@@ -11,14 +11,10 @@ import (
 	"net/http/httptest"
 	"sync"
 	"testing"
-
-	"github.com/nats-io/nats.go"
 )
 
 func TestNewRunStop(t *testing.T) {
 	ctx := context.Background()
-
-	nc, err := nats.Connect(*natsURIs)
 
 	// Mock key server.
 	jwks := mockJWKS{keys: testKeySet}
@@ -35,7 +31,6 @@ func TestNewRunStop(t *testing.T) {
 	// Get a new server.
 	c := Config{
 		HTTPAddr:        "localhost:",
-		NATSConn:        nc,
 		OAuth2IssuerURI: mds.URL,
 	}
 	s, err := New(ctx, c)
@@ -53,7 +48,7 @@ func TestNewRunStop(t *testing.T) {
 	}()
 
 	// Hit an endpoint to check the server is up.
-	r, err := http.Get(fmt.Sprintf("http://%v/version", s.httpLn.Addr().String()))
+	r, err := http.Get(fmt.Sprintf("http://%v/graphql", s.httpLn.Addr().String()))
 	if err != nil {
 		t.Errorf("failed to get HTTP: %v", err)
 	}

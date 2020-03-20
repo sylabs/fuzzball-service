@@ -6,9 +6,12 @@ package main
 
 import (
 	"fmt"
+	"strings"
+	"time"
 
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
+	"github.com/sirupsen/logrus"
 )
 
 // Schema validates the GraphQL schema and generates a Go file containing the schema.
@@ -18,11 +21,29 @@ func Schema() error {
 
 // ldFlags returns standard linker flags to pass to various Go commands.
 func ldFlags() string {
-	d, err := describeHead()
-	if err != nil {
-		return "-X main.version=unknown"
+	vals := []string{
+		fmt.Sprintf("-X main.builtAt=%v", time.Now().UTC().Format(time.RFC3339)),
 	}
-	return fmt.Sprintf("-X main.version=%s", d)
+
+	// Attempt to get git details.
+	d, err := describeHead()
+	if err == nil {
+		vals = append(vals, fmt.Sprintf("-X main.gitCommit=%v", d.ref.Hash().String()))
+
+		if d.isClean {
+			vals = append(vals, "-X main.gitTreeState=clean")
+		} else {
+			vals = append(vals, "-X main.gitTreeState=dirty")
+		}
+
+		if v, err := getVersion(d); err != nil {
+			logrus.WithError(err).Warn("failed to get version from git description")
+		} else {
+			vals = append(vals, fmt.Sprintf("-X main.gitVersion=%v", v.String()))
+		}
+	}
+
+	return strings.Join(vals, " ")
 }
 
 // Build builds Fuzzball assets using `go build`.

@@ -12,7 +12,6 @@ import (
 
 // Config describes the IO manager configuration.
 type Config struct {
-	Version   string
 	NATSConn  *nats.Conn
 	RedisConn *rediskv.Connection
 }

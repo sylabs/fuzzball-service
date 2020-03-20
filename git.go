@@ -5,9 +5,7 @@
 package main
 
 import (
-	"fmt"
 	"regexp"
-	"strings"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
@@ -47,26 +45,23 @@ func getVersionTags(r *git.Repository) (map[plumbing.Hash]*object.Tag, error) {
 }
 
 type gitDescription struct {
-	ref *plumbing.Reference // reference being described
-	tag *object.Tag         // nearest semver tag reachable from ref (or nil if none found)
-	n   int                 // number of commits between nearest semver tag and ref (if tag is non-nil)
-}
-
-// String returns a string representation of d.
-func (d *gitDescription) String() string {
-	if d.tag == nil {
-		return fmt.Sprintf("0.0.0+0-g%v", d.ref.Hash().String()[:8])
-	}
-
-	version := strings.TrimPrefix(d.tag.Name, "v")
-	if d.n > 0 {
-		return fmt.Sprintf("%v+%v-g%v", version, d.n, d.ref.Hash().String()[:8])
-	}
-	return version
+	isClean bool                // if true, the git working tree has local modifications
+	ref     *plumbing.Reference // reference being described
+	tag     *object.Tag         // nearest semver tag reachable from ref (or nil if none found)
+	n       uint64              // number of commits between nearest semver tag and ref (if tag is non-nil)
 }
 
 // describe returns a gitDescription of ref.
 func describe(r *git.Repository, ref *plumbing.Reference) (*gitDescription, error) {
+	w, err := r.Worktree()
+	if err != nil {
+		return nil, err
+	}
+	status, err := w.Status()
+	if err != nil {
+		return nil, err
+	}
+
 	// Get version tags.
 	tags, err := getVersionTags(r)
 	if err != nil {
@@ -84,7 +79,7 @@ func describe(r *git.Repository, ref *plumbing.Reference) (*gitDescription, erro
 
 	// Iterate through commit log until we find a matching tag.
 	var tag *object.Tag
-	var n int
+	var n uint64
 	err = logIter.ForEach(func(c *object.Commit) error {
 		if t, ok := tags[c.Hash]; ok {
 			tag = t
@@ -100,9 +95,10 @@ func describe(r *git.Repository, ref *plumbing.Reference) (*gitDescription, erro
 	}
 
 	return &gitDescription{
-		ref: ref,
-		tag: tag,
-		n:   n,
+		isClean: status.IsClean(),
+		ref:     ref,
+		tag:     tag,
+		n:       n,
 	}, nil
 }
 

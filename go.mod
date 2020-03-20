@@ -3,6 +3,7 @@ module github.com/sylabs/fuzzball-service
 go 1.13
 
 require (
+	github.com/blang/semver v3.5.1+incompatible
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/friendsofgo/graphiql v0.2.2
 	github.com/go-git/go-git/v5 v5.0.0
