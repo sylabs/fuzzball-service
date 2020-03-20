@@ -6,9 +6,7 @@ import (
 	"context"
 	"fmt"
 	"reflect"
-	"time"
 
-	"github.com/blang/semver"
 	"github.com/sylabs/fuzzball-service/internal/pkg/core"
 )
 
@@ -120,28 +118,11 @@ func (m mockScheduler) AddWorkflow(context.Context, core.Workflow, []core.Job, m
 }
 
 type mockCore struct {
-	gitVersion   *semver.Version
-	gitCommit    *string
-	gitTreeState *string
-	builtAt      *time.Time
-	p            mockPersister
-	f            mockIOFetcher
-	s            mockScheduler
+	p mockPersister
+	f mockIOFetcher
+	s mockScheduler
 }
 
-func getMockCore(mc mockCore) (*core.Core, error) {
-	opts := make([](func(*core.Core) error), 0)
-	if v := mc.gitVersion; v != nil {
-		opts = append(opts, core.OptGitVersion(*v))
-	}
-	if c := mc.gitCommit; c != nil {
-		opts = append(opts, core.OptGitCommit(*c))
-	}
-	if s := mc.gitTreeState; s != nil {
-		opts = append(opts, core.OptGitTreeState(*s))
-	}
-	if t := mc.builtAt; t != nil {
-		opts = append(opts, core.OptBuiltAt(*t))
-	}
+func getMockCore(mc mockCore, opts ...func(*core.Core) error) (*core.Core, error) {
 	return core.New(&mc.p, &mc.f, &mc.s, opts...)
 }

@@ -2,6 +2,9 @@
 The query root of the GraphQL interface.
 """
 type Query {
+  "Build information about the server."
+  serverBuildInfo(): BuildInfo!
+
   "Look up a workflow."
   workflow(id: ID!): Workflow
 

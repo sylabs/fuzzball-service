@@ -70,6 +70,33 @@ func OptBuiltAt(t time.Time) func(*Core) error {
 	}
 }
 
+// OptGoVersionOverride overrides the Go version. This is not normally required, but can be useful
+// during testing to ensure predictable build info.
+func OptGoVersionOverride(s string) func(*Core) error {
+	return func(c *Core) error {
+		c.bi.GoVersion = s
+		return nil
+	}
+}
+
+// OptCompilerOverride overrides the compiler. This is not normally required, but can be useful
+// during testing to ensure predictable build info.
+func OptCompilerOverride(s string) func(*Core) error {
+	return func(c *Core) error {
+		c.bi.Compiler = s
+		return nil
+	}
+}
+
+// OptPlatformOverride overrides the platform. This is not normally required, but can be useful
+// during testing to ensure predictable build info.
+func OptPlatformOverride(s string) func(*Core) error {
+	return func(c *Core) error {
+		c.bi.Platform = s
+		return nil
+	}
+}
+
 // New creates a new core.
 func New(p Persister, f IOFetcher, s Scheduler, options ...func(*Core) error) (*Core, error) {
 	bi := BuildInfo{

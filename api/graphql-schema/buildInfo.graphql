@@ -1,0 +1,45 @@
+"""
+`BuildInfo` represents build information about a component.
+"""
+type BuildInfo {
+  "Semantic version info (if available)."
+  gitVersion: SemanticVersion
+
+  "Specific git commit the component was built from (if available)."
+  gitCommit: String
+
+  "Clean/dirty state of the git tree the component was built from (if available)."
+  gitTreeState: String
+
+  "Time at which the component was built (if available)."
+  builtAt: Time
+
+  "The version of Go the component utilizes."
+  goVersion: String!
+
+  "Name of the compiler toolchain that built the component."  
+  compiler: String!
+
+  "The operating system and architecture of the component."
+  platform: String!
+}
+
+"""
+`VersionInfo` represents semantic version information.
+"""
+type SemanticVersion {
+  "Major version."
+  major: Int!
+
+  "Minor Version."
+  minor: Int!
+
+  "Patch Version."
+  patch: Int!
+
+  "Pre-release version identifier."
+  preRelease: String
+
+  "Build metadata."
+  buildMetadata: String
+}

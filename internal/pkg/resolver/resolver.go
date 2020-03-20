@@ -4,6 +4,7 @@ package resolver
 
 // Servicer is the interface required to service GraphQL queries.
 type Servicer interface {
+	BuildInfoServicer
 	UserServicer
 	WorkflowServicer
 }
