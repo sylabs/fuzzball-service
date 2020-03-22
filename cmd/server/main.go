@@ -29,15 +29,18 @@ const (
 
 	dbName = "server"
 
-	keyStartupTime        = "startup-time"
-	keyHTTPAddr           = "http-addr"
-	keyCORSAllowedOrigins = "cors-allowed-origins"
-	keyCORSDebug          = "cors-debug"
-	keyMongoURI           = "mongo-uri"
-	keyNatsURIs           = "nats-uris"
-	keyRedisURI           = "redis-uri"
-	keyOAuth2IssuerURI    = "oauth2-issuer-uri"
-	keyOAuth2Audience     = "oauth2-audience"
+	keyStartupTime                = "startup-time"
+	keyHTTPAddr                   = "http-addr"
+	keyCORSAllowedOrigins         = "cors-allowed-origins"
+	keyCORSDebug                  = "cors-debug"
+	keyMongoURI                   = "mongo-uri"
+	keyNatsURIs                   = "nats-uris"
+	keyRedisURI                   = "redis-uri"
+	keyOAuth2IssuerURI            = "oauth2-issuer-uri"
+	keyOAuth2Audience             = "oauth2-audience"
+	keyOAuth2Scopes               = "oauth2-scopes"
+	keyOAuth2PKCEClientID         = "oauth2-pkce-client-id"
+	keyOAuth2PKCERedirectEndpoint = "oauth2-pkce-redirect-endpoint"
 )
 
 // Values set during build.
@@ -132,6 +135,9 @@ func getFlagSet() *pflag.FlagSet {
 	fs.String(keyRedisURI, "redis://localhost", "URI of Redis")
 	fs.String(keyOAuth2IssuerURI, "https://dev-930666.okta.com/oauth2/default", "URI of OAuth 2.0 issuer")
 	fs.String(keyOAuth2Audience, "api://default", "OAuth 2.0 audience expected in tokens")
+	fs.StringSlice(keyOAuth2Scopes, []string{"openid", "offline_access"}, "Recommended scope(s) for OAuth 2.0 clients to request")
+	fs.String(keyOAuth2PKCEClientID, "", "Client ID for OAuth 2.0 clients to use for Authorization Code flow with PKCE")
+	fs.String(keyOAuth2PKCERedirectEndpoint, "http://localhost:9876/authorization/callback", "Callback URL for OAuth 2.0 clients to use for Authorization Code flow with PKCE")
 
 	fs.Parse(os.Args[1:])
 
@@ -274,12 +280,15 @@ func main() {
 
 	// Set up server configuration.
 	sc := server.Config{
-		HTTPAddr:           cfg.GetString(keyHTTPAddr),
-		CORSAllowedOrigins: cfg.GetStringSlice(keyCORSAllowedOrigins),
-		CORSDebug:          cfg.GetBool(keyCORSDebug),
-		OAuth2IssuerURI:    cfg.GetString(keyOAuth2IssuerURI),
-		OAuth2Audience:     cfg.GetString(keyOAuth2Audience),
-		Core:               c,
+		HTTPAddr:                   cfg.GetString(keyHTTPAddr),
+		CORSAllowedOrigins:         cfg.GetStringSlice(keyCORSAllowedOrigins),
+		CORSDebug:                  cfg.GetBool(keyCORSDebug),
+		OAuth2IssuerURI:            cfg.GetString(keyOAuth2IssuerURI),
+		OAuth2Audience:             cfg.GetString(keyOAuth2Audience),
+		OAuth2Scopes:               cfg.GetStringSlice(keyOAuth2Scopes),
+		OAuth2PKCEClientID:         cfg.GetString(keyOAuth2PKCEClientID),
+		OAuth2PKCERedirectEndpoint: cfg.GetString(keyOAuth2PKCERedirectEndpoint),
+		Core:                       c,
 	}
 
 	// Spin up server.

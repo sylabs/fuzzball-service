@@ -70,7 +70,7 @@ func TestNew(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err := New(mc); err != nil {
+	if _, err := New(mc, OAuth2Configuration{}); err != nil {
 		t.Fatal(err)
 	}
 }

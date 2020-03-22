@@ -12,9 +12,10 @@ type Servicer interface {
 // Resolver is the root type for resolving GraphQL queries.
 type Resolver struct {
 	s Servicer
+	c OAuth2Configuration
 }
 
 // New creates a new GraphQL resolver.
-func New(s Servicer) (*Resolver, error) {
-	return &Resolver{s: s}, nil
+func New(s Servicer, c OAuth2Configuration) (*Resolver, error) {
+	return &Resolver{s: s, c: c}, nil
 }

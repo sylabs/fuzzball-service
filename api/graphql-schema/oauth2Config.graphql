@@ -1,0 +1,42 @@
+"""
+`OAuth2Configuration` represents OAuth 2.0 configuration.
+"""
+type OAuth2Configuration {
+    "Configuration for Authorization Code Flow with Proof Key for Code Exchange (if supported)."
+    authCodePkce: AuthCodePKCEConfig
+
+    "Configuration for Client Credentials Flow (if supported)."
+    clientCredentials: ClientCredentialsConfig
+}
+
+"""
+`AuthCodePKCEConfig` contains OAuth 2.0 configuration for the Authorization Code Flow with Proof
+Key for Code Exchange (PKCE).
+"""
+type AuthCodePKCEConfig {
+    "The client identifier to use."
+    clientId: String!
+
+    "The URL of the authorization server's authorization endpoint."
+    authorizationEndpoint: String!
+
+    "The URL of the authorization server's token endpoint."
+    tokenEndpoint: String!
+
+    "The URL of the redirect endpoint."
+    redirectEndpoint: String!
+
+    "Recommended scope(s) to request."
+    scopes: [String!]!
+}
+
+"""
+`ClientCredentialsConfig` contains OAuth 2.0 configuration for the Client Credentials Flow.
+"""
+type ClientCredentialsConfig {
+    "The URL of the authorization server's token endpoint."
+    tokenEndpoint: String!
+
+    "Recommended scope(s) to request."
+    scopes: [String!]!
+}

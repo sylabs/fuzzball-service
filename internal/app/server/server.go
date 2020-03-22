@@ -18,12 +18,15 @@ import (
 
 // Config describes server configuration.
 type Config struct {
-	HTTPAddr           string
-	CORSAllowedOrigins []string
-	CORSDebug          bool
-	Core               *core.Core
-	OAuth2IssuerURI    string
-	OAuth2Audience     string
+	HTTPAddr                   string
+	CORSAllowedOrigins         []string
+	CORSDebug                  bool
+	Core                       *core.Core
+	OAuth2IssuerURI            string
+	OAuth2Audience             string
+	OAuth2Scopes               []string
+	OAuth2PKCEClientID         string
+	OAuth2PKCERedirectEndpoint string
 }
 
 // Server contains the state of the server.
@@ -53,8 +56,30 @@ func New(ctx context.Context, c Config) (s Server, err error) {
 	}
 	s.authKeys = ks
 
+	// Construct OAuth 2.0 configuration.
+	oc := resolver.OAuth2Configuration{
+		ClientCredentials: &resolver.ClientCredentialsConfig{
+			TokenEndpoint: md.TokenEndpoint,
+			Scopes:        c.OAuth2Scopes,
+		},
+	}
+	if c.OAuth2PKCEClientID != "" && c.OAuth2PKCERedirectEndpoint != "" {
+		oc.AuthCodePKCE = &resolver.AuthCodePKCEConfig{
+			ClientID:              c.OAuth2PKCEClientID,
+			AuthorizationEndpoint: md.AuthorizationEndpoint,
+			TokenEndpoint:         md.TokenEndpoint,
+			RedirectEndpoint:      c.OAuth2PKCERedirectEndpoint,
+			Scopes:                c.OAuth2Scopes,
+		}
+	} else {
+		logrus.WithFields(logrus.Fields{
+			"ClientID":         c.OAuth2PKCEClientID,
+			"RedirectEndpoint": c.OAuth2PKCERedirectEndpoint,
+		}).Warn("OAuth 2.0 Auth Code with PKCE disabled due to missing configuration value(s)")
+	}
+
 	// Initialize GraphQL.
-	r, err := resolver.New(c.Core)
+	r, err := resolver.New(c.Core, oc)
 	if err != nil {
 		return Server{}, err
 	}

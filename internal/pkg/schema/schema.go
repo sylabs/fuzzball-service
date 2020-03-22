@@ -14,5 +14,5 @@ func Get(resolver interface{}) (*graphql.Schema, error) {
 	if err != nil {
 		return nil, err
 	}
-	return graphql.ParseSchema(s, resolver, graphql.UseStringDescriptions())
+	return graphql.ParseSchema(s, resolver, graphql.UseStringDescriptions(), graphql.UseFieldResolvers())
 }
