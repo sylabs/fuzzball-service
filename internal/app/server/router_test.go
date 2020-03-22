@@ -22,9 +22,9 @@ var testRouteConfigs = []struct {
 	path         string
 	expectedCode int
 }{
-	{"GetMetrics", http.MethodGet, "/metrics", http.StatusUnauthorized},
-	{"PostGraphQL", http.MethodPost, "/graphql", http.StatusUnauthorized},
-	{"GetGraphiQL", http.MethodGet, "/graphiql", http.StatusUnauthorized},
+	{"GetMetrics", http.MethodGet, "/metrics", http.StatusOK},
+	{"PostGraphQL", http.MethodPost, "/graphql", http.StatusBadRequest},
+	{"GetGraphiQL", http.MethodGet, "/graphiql", http.StatusOK},
 }
 
 func TestRouteConfigs(t *testing.T) {

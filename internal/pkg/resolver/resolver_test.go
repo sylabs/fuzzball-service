@@ -4,6 +4,7 @@ package resolver
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"flag"
@@ -12,6 +13,9 @@ import (
 	"path"
 	"strings"
 	"testing"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/sylabs/fuzzball-service/internal/pkg/token"
 )
 
 var update = flag.Bool("update", false, "update .golden files")
@@ -57,6 +61,20 @@ func verifyGoldenJSON(name string, v interface{}) error {
 	}
 
 	return verifyGolden(name, b)
+}
+
+// getTokenContext returns a context containing a valid token.
+func getTokenContext() context.Context {
+	// User token to pass in context.
+	tok := token.Token{
+		Token: jwt.NewWithClaims(jwt.SigningMethodNone, &token.Claims{
+			StandardClaims: jwt.StandardClaims{
+				Subject: "jimbob",
+			},
+			UserID: "507f1f77bcf86cd799439011",
+		}),
+	}
+	return token.NewContext(context.Background(), &tok)
 }
 
 func TestMain(m *testing.M) {

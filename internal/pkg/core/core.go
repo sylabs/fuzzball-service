@@ -13,6 +13,11 @@ import (
 	"github.com/sylabs/fuzzball-service/internal/pkg/token"
 )
 
+var (
+	// ErrNotAuthenticated is returned when authentication is required but not supplied.
+	ErrNotAuthenticated = errors.New("not authenticated")
+)
+
 // Persister is the interface by which all data is persisted.
 type Persister interface {
 	WorkflowPersister
@@ -117,7 +122,7 @@ func New(p Persister, f IOFetcher, s Scheduler, options ...func(*Core) error) (*
 func (c *Core) Viewer(ctx context.Context) (User, error) {
 	t, ok := token.FromContext(ctx)
 	if !ok {
-		return User{}, errors.New("viewer not logged in")
+		return User{}, ErrNotAuthenticated
 	}
 	tc := t.Claims()
 
@@ -152,7 +157,10 @@ type volumeRequirementSpec struct {
 // CreateWorkflow creates a new workflow. If an ID is provided in w, it is ignored and replaced
 // with a unique identifier in the returned workflow.
 func (c *Core) CreateWorkflow(ctx context.Context, s WorkflowSpec) (Workflow, error) {
-	// TODO: authorization
+	if _, ok := token.FromContext(ctx); !ok {
+		return Workflow{}, ErrNotAuthenticated
+	}
+
 	w, err := c.p.CreateWorkflow(ctx, Workflow{Name: s.Name})
 	if err != nil {
 		return Workflow{}, err
@@ -182,7 +190,10 @@ func (c *Core) CreateWorkflow(ctx context.Context, s WorkflowSpec) (Workflow, er
 // DeleteWorkflow deletes a workflow by ID. If the supplied ID is not valid, or there there is not
 // a workflow with a matching ID in the database, an error is returned.
 func (c *Core) DeleteWorkflow(ctx context.Context, id string) (Workflow, error) {
-	// TODO: authorization
+	if _, ok := token.FromContext(ctx); !ok {
+		return Workflow{}, ErrNotAuthenticated
+	}
+
 	w, err := c.p.DeleteWorkflow(ctx, id)
 	if err != nil {
 		return Workflow{}, err
@@ -205,7 +216,10 @@ func (c *Core) DeleteWorkflow(ctx context.Context, id string) (Workflow, error) 
 // GetWorkflow retrieves a workflow by ID. If the supplied ID is not valid, or there there is not a
 // workflow with a matching ID in the database, an error is returned.
 func (c *Core) GetWorkflow(ctx context.Context, id string) (Workflow, error) {
-	// TODO: authorization
+	if _, ok := token.FromContext(ctx); !ok {
+		return Workflow{}, ErrNotAuthenticated
+	}
+
 	w, err := c.p.GetWorkflow(ctx, id)
 	w.setCore(c)
 	return w, err
