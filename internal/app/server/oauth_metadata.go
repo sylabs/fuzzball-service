@@ -84,7 +84,7 @@ func getAuthMetadata(ctx context.Context, hc *http.Client, uri string) (md core.
 		if err != nil {
 			log.WithError(err).Warn("failed to get auth metadata")
 		} else {
-			log.WithField("metadata", fmt.Sprintf("%#v", md)).Info("got auth metadata")
+			log.WithField("metadata", fmt.Sprintf("%+v", md)).Info("got auth metadata")
 		}
 	}(time.Now())
 

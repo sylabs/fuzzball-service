@@ -288,11 +288,10 @@ func main() {
 		OAuth2Scopes:               cfg.GetStringSlice(keyOAuth2Scopes),
 		OAuth2PKCEClientID:         cfg.GetString(keyOAuth2PKCEClientID),
 		OAuth2PKCERedirectEndpoint: cfg.GetString(keyOAuth2PKCERedirectEndpoint),
-		Core:                       c,
 	}
 
 	// Spin up server.
-	s, err := server.New(ctx, sc)
+	s, err := server.New(ctx, c, sc)
 	if err != nil {
 		logrus.WithError(err).Error("failed to create server")
 		return
