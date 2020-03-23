@@ -51,3 +51,7 @@ Integration tests can then be run like so:
 ```sh
 mage test
 ```
+
+## License
+
+This project is licensed under a 3-clause BSD license found in the [license file](LICENSE.md).
