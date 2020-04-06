@@ -3,7 +3,6 @@
 package resolver
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -118,7 +117,7 @@ func TestBuildInfo(t *testing.T) {
 			  }
 			}`
 
-			res := s.Exec(context.Background(), q, "", nil)
+			res := s.Exec(getTokenContext(), q, "", nil)
 
 			if err := verifyGoldenJSON(t.Name(), res); err != nil {
 				t.Fatal(err)

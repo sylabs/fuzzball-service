@@ -3,26 +3,14 @@
 package resolver
 
 import (
-	"context"
 	"testing"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/sylabs/fuzzball-service/internal/pkg/core"
 	"github.com/sylabs/fuzzball-service/internal/pkg/schema"
-	"github.com/sylabs/fuzzball-service/internal/pkg/token"
 )
 
 func TestViewerWorkflows(t *testing.T) {
-	// User token to pass in context.
-	tok := token.Token{
-		Token: jwt.NewWithClaims(jwt.SigningMethodNone, &token.Claims{
-			StandardClaims: jwt.StandardClaims{
-				Subject: "jimbob",
-			},
-			UserID: "507f1f77bcf86cd799439011",
-		}),
-	}
-	ctx := token.NewContext(context.Background(), &tok)
+	ctx := getTokenContext()
 
 	sc := "startCursor"
 	ec := "endCursor"
@@ -111,16 +99,7 @@ func TestViewerWorkflows(t *testing.T) {
 }
 
 func TestViewerJobs(t *testing.T) {
-	// User token to pass in context.
-	tok := token.Token{
-		Token: jwt.NewWithClaims(jwt.SigningMethodNone, &token.Claims{
-			StandardClaims: jwt.StandardClaims{
-				Subject: "jimbob",
-			},
-			UserID: "507f1f77bcf86cd799439011",
-		}),
-	}
-	ctx := token.NewContext(context.Background(), &tok)
+	ctx := getTokenContext()
 
 	sc := "startCursor"
 	ec := "endCursor"
@@ -209,16 +188,7 @@ func TestViewerJobs(t *testing.T) {
 }
 
 func TestViewerVolumes(t *testing.T) {
-	// User token to pass in context.
-	tok := token.Token{
-		Token: jwt.NewWithClaims(jwt.SigningMethodNone, &token.Claims{
-			StandardClaims: jwt.StandardClaims{
-				Subject: "jimbob",
-			},
-			UserID: "507f1f77bcf86cd799439011",
-		}),
-	}
-	ctx := token.NewContext(context.Background(), &tok)
+	ctx := getTokenContext()
 
 	sc := "startCursor"
 	ec := "endCursor"

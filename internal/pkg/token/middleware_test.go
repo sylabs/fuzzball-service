@@ -34,7 +34,11 @@ func TestHandler(t *testing.T) {
 					return testSigningKey, nil
 				},
 			})
-			h := m.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
+			h := m.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				if _, ok := FromContext(r.Context()); !ok {
+					w.WriteHeader(http.StatusUnauthorized)
+				}
+			}))
 
 			r := httptest.NewRequest(http.MethodGet, "/", nil)
 			if tt.token != "" {
@@ -93,7 +97,7 @@ func TestVerifyJWT(t *testing.T) {
 		{"InvalidAudience", testTokenInvalidAudience, true},
 		{"InvalidIssuer", testTokenInvalidIssuer, true},
 		{"Expired", testTokenExpired, true},
-		{"NoAuthHeader", "", true},
+		{"NoAuthHeader", "", false},
 	}
 
 	for _, tt := range tests {

@@ -33,7 +33,7 @@ func TestNewRunStop(t *testing.T) {
 		HTTPAddr:        "localhost:",
 		OAuth2IssuerURI: mds.URL,
 	}
-	s, err := New(ctx, c)
+	s, err := New(ctx, nil, c)
 	if err != nil {
 		t.Fatalf("failed to get new server: %v", err)
 	}

@@ -70,13 +70,16 @@ func parseAndValidate(tokenString string, kf jwt.Keyfunc) (*Token, error) {
 	return &Token{t}, nil
 }
 
-// verifyJWT attempts to extract a bearer token from the authorization header of r. If a valid
-// token is found, it is added to r.Context().
+// verifyJWT attempts to extract a bearer token from the authorization header of r.
+//
+// If a valid token is found, it is added to r.Context(). If no bearer token is present in r, this
+// is not considered to be an error. If a bearer token is present but cannot be parsed/validated,
+// an appropriate error is returned.
 func (m *Middleware) verifyJWT(r *http.Request) error {
 	// Get token from authorization header.
 	tokenString, err := getBearerToken(r)
 	if err != nil {
-		return err
+		return nil
 	}
 
 	// Parse the token.

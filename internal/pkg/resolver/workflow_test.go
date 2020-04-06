@@ -3,7 +3,6 @@
 package resolver
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -112,7 +111,7 @@ func TestWorkflowJobs(t *testing.T) {
 			  }
 			}`
 
-			res := s.Exec(context.Background(), q, "", tt.args)
+			res := s.Exec(getTokenContext(), q, "", tt.args)
 
 			if err := verifyGoldenJSON(t.Name(), res); err != nil {
 				t.Fatal(err)
@@ -222,7 +221,7 @@ func TestWorkflowVolumes(t *testing.T) {
 			  }
 			}`
 
-			res := s.Exec(context.Background(), q, "", tt.args)
+			res := s.Exec(getTokenContext(), q, "", tt.args)
 
 			if err := verifyGoldenJSON(t.Name(), res); err != nil {
 				t.Fatal(err)
@@ -304,7 +303,7 @@ func TestCreateWorkflow(t *testing.T) {
 			  }
 			}`
 
-			res := s.Exec(context.Background(), q, "", tt.vars)
+			res := s.Exec(getTokenContext(), q, "", tt.vars)
 			if err := verifyGoldenJSON(t.Name(), res); err != nil {
 				t.Fatal(err)
 			}
@@ -372,7 +371,7 @@ func TestDeleteWorkflow(t *testing.T) {
 				"id": tt.id,
 			}
 
-			res := s.Exec(context.Background(), q, "", args)
+			res := s.Exec(getTokenContext(), q, "", args)
 
 			if err := verifyGoldenJSON(t.Name(), res); err != nil {
 				t.Fatal(err)
