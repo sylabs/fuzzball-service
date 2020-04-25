@@ -277,6 +277,8 @@ github.com/sylabs/json-resp v0.6.0 h1:W/yxwBu6WPMqiU9YBaelUsfWU1ZD+x4f4rxqmTr0La
 github.com/sylabs/json-resp v0.6.0/go.mod h1:QYGGBTYDgiIH+c6zRQuVd4PIYfm//vFD2flnIdF1k7E=
 github.com/sylabs/scs-library-client v0.5.1 h1:1XLkz+3UZCK5x7x7L3uTh5Gvk6HfXRvXP5CxRAV551I=
 github.com/sylabs/scs-library-client v0.5.1/go.mod h1:7YcpzK8v8eDzjbwycYDm4qEQElypeuIKfj+jrg0rcZ4=
+github.com/sylabs/scs-library-client v0.5.3 h1:RAVUxW232r/Lko8biSeNMVHXThGGWekhC3m7WOywrYo=
+github.com/sylabs/scs-library-client v0.5.3/go.mod h1:7YcpzK8v8eDzjbwycYDm4qEQElypeuIKfj+jrg0rcZ4=
 github.com/tidwall/pretty v1.0.0 h1:HsD+QiTn7sK6flMKIvNmpqz1qrpP3Ps6jOKIKMooyg4=
 github.com/tidwall/pretty v1.0.0/go.mod h1:XNkn88O1ChpSDQmQeStsy+sBenx6DDtFZJxhVysOjyk=
 github.com/tidwall/pretty v1.0.1 h1:WE4RBSZ1x6McVVC8S/Md+Qse8YUv6HRObAx6ke00NY8=
