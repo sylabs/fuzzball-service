@@ -22,6 +22,6 @@ require (
 	github.com/sylabs/scs-library-client v0.5.1
 	github.com/tidwall/pretty v1.0.1 // indirect
 	github.com/xdg/stringprep v1.0.0 // indirect
-	go.mongodb.org/mongo-driver v1.3.1
+	go.mongodb.org/mongo-driver v1.4.0
 	gopkg.in/square/go-jose.v2 v2.4.1
 )
